@@ -2,20 +2,20 @@
 Typescript 和 Koa 构建 Node 应用（demo）
 
 ### 项目初始化创建教程
-1. `cd project` 并创建 `src` 目录
-2. 初始化 `package.json`，之后的所有配置和命令都会写在里面
+##### 1. `cd project` 并创建 `src` 目录
+##### 2. 初始化 `package.json`，之后的所有配置和命令都会写在里面
 ```md
 npm init
 ```
-3. 安装 `koa` 和对应的路由 `koa-router`
+##### 3. 安装 `koa` 和对应的路由 `koa-router`
 ```md
 npm install koa koa-router
 ```
-4. 安装 `TypeScript` 类型检测
+##### 4. 安装 `TypeScript` 类型检测
 ```md
 npm install --save-dev @types/koa @types/koa-router
 ```
-5. 最后就是 `TypeScript` 热更新编译 
+##### 5. 最后就是 `TypeScript` 热更新编译 
 ```md
 npm install --save-dev typescript ts-node nodemon
 ```
@@ -23,7 +23,7 @@ npm install --save-dev typescript ts-node nodemon
 ```md
 npm install -g -force ts-node nodemon
 ```
-6. 再配置一下 `package.json` 设置
+##### 6. 再配置一下 `package.json` 设置
 ```json
 "scripts": {
     "start": "tsc && node dist/index.js",
