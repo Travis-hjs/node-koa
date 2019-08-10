@@ -6,10 +6,12 @@ import utils from './modules/utils';
 const App = new Koa();
 const router = new Router();
 
-router.get('/*', ctx => {
+router.get('/*', (ctx, next) => {
     ctx.body = content;
+    next().then(() => {
+        utils.log('page success');
+    })
 });
-
 App.use(router.routes());
 // App.use((ctx, next) => {
 //     ctx.body = content;
@@ -17,17 +19,3 @@ App.use(router.routes());
 // });
 
 App.listen(1995);
-
-function timeout(time: number) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, time);
-    });
-}
-
-async function asyncPrint(time: number) {
-    utils.log('执行 asyncPrint')
-    await timeout(time);
-    utils.log('async');
-}
-
-asyncPrint(2000)
