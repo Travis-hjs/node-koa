@@ -1,19 +1,22 @@
-import * as Koa from 'koa';
-import * as Router from 'koa-router';
-import * as bodyParser from 'koa-bodyparser';
+import * as Koa from 'koa';                     // learn: https://www.npmjs.com/package/koa
+import * as Router from 'koa-router';           // learn: https://www.npmjs.com/package/koa-router
+import * as bodyParser from 'koa-bodyparser';   // learn: https://www.npmjs.com/package/koa-bodyparser
 import content from './modules/template';
 import utils from './modules/utils';
 import config from './modules/config';
 import { getHomeData } from './views/home';
+
 const App = new Koa();
 const router = new Router();
 
-// learn: https://blog.csdn.net/weixin_33894640/article/details/91459845
-
 // 先统一设置打开跨域
 App.use(async (ctx, next) => {
-    ctx.set('Access-Control-Allow-Origin', '*');
-    // ctx.set('Content-Type', 'application/json');
+    ctx.set({
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+    });
+    // ctx.append('Content-Type', 'application/json');
+    // ctx.type = 'application/json';
     await next()
 });
 
@@ -43,7 +46,10 @@ App.listen(config.port, () => {
 router.get('/', (ctx, next) => {
     ctx.body = content;
     utils.log('get 根目录');
-    // next()
+    
+    // 302 重定向到其他网站
+    // ctx.status = 302;
+    // ctx.redirect('https://www.baidu.com');
 })
 
 router.get('/getHome', (ctx, next) => {
@@ -51,7 +57,6 @@ router.get('/getHome', (ctx, next) => {
     const params: object | string = ctx.query || ctx.querystring;
     utils.log('get /getHome', params);
     ctx.body = getHomeData();
-    // next();
 })
 
 router.post('/send', (ctx, next) => {
@@ -63,3 +68,5 @@ router.post('/send', (ctx, next) => {
         code: 100
     }
 })
+
+// 参考项目配置连接: https://blog.csdn.net/weixin_33894640/article/details/91459845
