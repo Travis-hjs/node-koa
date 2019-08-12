@@ -7,13 +7,13 @@ Typescript 和 Koa 构建 Node 应用（demo）
 ```md
 npm init
 ```
-##### 3. 安装 `koa` 和对应的路由 `koa-router`
+##### 3. 安装 `koa` 和对应的路由 `koa-router` 还有接收 post 请求的中间件 `koa-bodyparser`
 ```md
-npm install koa koa-router
+npm install koa koa-router koa-bodyparser
 ```
-##### 4. 安装 `TypeScript` 类型检测
+##### 4. 安装 `TypeScript` 类型检测提示
 ```md
-npm install --save-dev @types/koa @types/koa-router
+npm install --save-dev @types/koa @types/koa-router @types/koa-bodyparser
 ```
 ##### 5. 最后就是 `TypeScript` 热更新编译 
 ```md
