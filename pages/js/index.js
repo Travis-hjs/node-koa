@@ -18,7 +18,6 @@ function postData() {
     baseRequest('POST', BASE_URL + '/sendData', {
         name: 'hjs',
         age: new Date().getFullYear() - 1995,
-        tall: '178cm'
     }, res => {
         console.log('post 成功', res);
 

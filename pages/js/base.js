@@ -73,7 +73,7 @@ function ajax(param) {
         data = param.file;
     } else {
         // XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        // XHR.setRequestHeader('Content-Type', 'application/json'); // 设置这个就请求不了
+        XHR.setRequestHeader('Content-Type', 'application/json'); 
     }
     
     // 在IE中，超时属性只能在调用 open() 方法之后且在调用 send() 方法之前设置。
