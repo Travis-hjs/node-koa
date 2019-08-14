@@ -4,7 +4,7 @@ const style = `
 div { background: orange; margin-bottom: 10px; color: #fff; padding: 4px 8px; font-size: 18px; }
 </style>
 `
-const html = `
+const content = `
 <div>1</div>
 <div>2</div>
 <div>3</div>
@@ -13,6 +13,6 @@ const html = `
 <div>6</div>
 `
 /** 页面内容 */
-const content = (style + html).replace(/\n/g, '');
+const html = (style + content).replace(/\n/g, '');
 
-export default content;
+export default html;
