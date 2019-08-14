@@ -8,6 +8,16 @@
     <link rel="stylesheet" href="./css/base.css">
     <style>
         .item{ margin: 0 auto 22px; text-align: center; }
+        .upload-img{ width: 240px; min-height: 240px; margin: 0 auto 20px; }
+        .upload-img .img-box{ position: relative; width: 100%; height: 100%; overflow: hidden; }
+        .upload-img .img-box .image{ display: block; width: 100%; }
+        .upload-img .img-box .remove{ position: absolute; top: 0; right: 0; border-radius: 100%; cursor: pointer; width: 30px; height: 30px; line-height: 28px; text-align: center; background-color: rgba(0,0,0,0.5); font-size: 28px; color: #fff; }
+        .upload-img .upload{ width: 100%; min-height: 240px; position: relative; }
+        .upload-img .upload .add-icon{ position: relative; width: 50px; height: 50px; }
+        .upload-img .upload .add-icon::after{ content: ""; position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background-color: #999; transform: translateX(-50%); }
+        .upload-img .upload .add-icon::before{ content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background-color: #999; transform: translateY(-50%); }
+        .upload-img .upload .upload-input{ width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2; opacity: 0; cursor: pointer; }
+        .hide{ display: none; }
     </style>
 </head>
 <body>
@@ -17,6 +27,16 @@
         </div>
         <div class="item">
             <button class="button btn-blue" onclick="postData()">post 获取数据</button>
+        </div>
+        <div class="card upload-img">
+            <div class="img-box hide">
+                <img class="image" src="">
+                <div onclick="removeImg(this)" class="remove">×</div>
+            </div>
+            <div class="upload flex flex_vertical flex_center">
+                <div class="add-icon"></div>
+                <input class="upload-input" type="file" name="picture" onchange="uploadImg(this)">
+            </div>
         </div>
     </div>
     <script src="./js/base.js"></script>
