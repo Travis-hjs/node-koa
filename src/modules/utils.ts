@@ -3,8 +3,8 @@ class ModuleUtils {
      * 格式化?后面参数成 JSON 对象
      * @param value 
      * @example {
-    * searchFormat(window.location.search);
-    * }
+     * searchFormat(window.location.search);
+     * }
     */
     public searchFormat(value: string) {
         return JSON.parse(`{"${decodeURIComponent(value.substring(1)).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"')}"}`);

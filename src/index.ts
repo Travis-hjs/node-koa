@@ -5,22 +5,31 @@ import router from './modules/api';
 
 const App = new Koa();
 
+/** 请求次数 */
+let count = 1;
+
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx, next) => {
-    console.log('setting ---------------------------')
-
+    console.log('--------------------------');
+    console.log('start >>', count);
+    count++;
+    
     ctx.set({
         'Access-Control-Allow-Origin': '*',
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/json',
+        // 'Access-Control-Allow-Credentials': 'true',
+        // 'Access-Control-Allow-Methods': 'OPTIONS, GET, PUT, POST, DELETE',
+        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+        // 'X-Powered-By': '3.2.1'
     });
-
-    // ctx.response.is('application/json');
-    // ctx.is('application/json');
-    // ctx.request.is('application/json');
-    // ctx.response.set('Content-Type', 'application/json');
-    // ctx.response.type = 'application/json';
-    // ctx.type = 'application/json';
+    
+    // 如果前端设置了 XHR.setRequestHeader('Content-Type', 'application/json')
+    // ctx.set 就必须携带 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+    // 并且这里要转换一下状态码
+    // console.log(ctx.request.method);
+    if (ctx.request.method === 'OPTIONS') {
+        ctx.response.status = 200;
+    }
 
     try {
         await next();
