@@ -21,12 +21,15 @@ class ModuleConfig {
         admin_interface_prefix: 'admin',
     }
 
-    /** 上传图片地址 */
-    public readonly upload_path = 'public/upload';
+    /** 上传图片存放目录 */
+    public readonly upload_path = 'public/upload/images/';
 
     /** 上传图片大小限制 */
     public readonly upload_img_size = 5 * 1024 * 1024;
 
+    // formData.append('img', file)
+    /** 前端上传图片时约定的字段 */
+    public readonly upload_img_name = 'img';
 }
 
 /** 项目配置 */
