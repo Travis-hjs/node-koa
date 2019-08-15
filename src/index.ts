@@ -1,5 +1,5 @@
 import * as Koa from 'koa';                     // learn: https://www.npmjs.com/package/koa
-import * as bodyParser from 'koa-bodyparser';   // learn: https://www.npmjs.com/package/koa-bodyparser
+import * as koaBody from 'koa-body';            // learn: http://www.ptbird.cn/koa-body.html
 import config from './modules/config';
 import router from './modules/api';
 
@@ -41,9 +41,12 @@ App.use(async (ctx, next) => {
     }
 });
 
-// 使用中间件接收 post 传参
-App.use(bodyParser({
-    enableTypes: ['json', 'form', 'text']
+// 使用中间件处理 post 传参 和上传图片
+App.use(koaBody({
+    multipart: true,
+    formidable: {
+        maxFileSize: config.upload_img_size
+    }
 }));
 
 // 开始使用路由
