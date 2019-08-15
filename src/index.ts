@@ -66,4 +66,5 @@ App.listen(config.port, () => {
     console.log(`server is running at http://localhost:${config.port}`)
 })
 
-// 参考项目配置连接: https://blog.csdn.net/weixin_33894640/article/details/91459845
+// 参考项目配置连接: https://juejin.im/post/5ce25993f265da1baa1e464f
+// mysql learn: https://www.jianshu.com/p/d54e055db5e0
