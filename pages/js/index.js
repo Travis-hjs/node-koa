@@ -72,15 +72,16 @@ function uploadImg(el) {
     if (file.size > 2 * 1024 * 1024) return alert('上传的文件不能大于2M');
 
     const formData = new FormData();
+    // formData.append('name', 'hjs-img');
     formData.append('img', file);
     // console.log(formData);
     
     upload(formData, res => {
         console.log('上传成功', res);
-    
+        const src = window.location.href.replace('pages/index.html', res.result.file) || getObjectURL(file);
         el.parentNode.classList.add('hide');
         el.parentNode.parentNode.querySelector('.img-box').classList.remove('hide');
-        el.parentNode.parentNode.querySelector('.img-box .image').src = getObjectURL(file);
+        el.parentNode.parentNode.querySelector('.img-box .image').src = src;
     }, err => {
         console.log('上传失败', err);
         
