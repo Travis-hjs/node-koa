@@ -28,7 +28,7 @@ function postData() {
 }
 
 /**
- * 上传文件
+ * 上传图片
  * @param {FormData} formdata 
  * @param {Function} success 
  * @param {Function} fail 
@@ -68,7 +68,7 @@ function uploadImg(el) {
     const types = ['image/jpg', 'image/png', 'image/jpeg', 'image/gif'];
     // 判断文件类型
     if (types.indexOf(file.type) < 0) return alert('文件格式只支持：jpg 和 png');
-    /** 判断大小 */
+    // 判断大小
     if (file.size > 2 * 1024 * 1024) return alert('上传的文件不能大于2M');
 
     const formData = new FormData();
