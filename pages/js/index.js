@@ -1,10 +1,14 @@
-const BASE_URL = 'http://10.0.18.116:1995';
+const userInfo = fetchData('userInfo');
+
+if (!userInfo) {
+    window.location.href = 'user.html';
+}
 
 /** 页面整体 */
 const page = document.querySelector('.page');
 
 function getData() {
-    baseRequest('GET', BASE_URL + '/getHome', {
+    baseRequest('GET', '/getHome', {
         id: 10
     }, res => {
         console.log('get 成功', res);
@@ -15,7 +19,7 @@ function getData() {
 }
 
 function postData() {
-    baseRequest('POST', BASE_URL + '/sendData', {
+    baseRequest('POST', '/sendData', {
         name: 'hjs',
         age: new Date().getFullYear() - 1995,
     }, res => {
@@ -34,7 +38,7 @@ function postData() {
  * @param {Function} fail 
  */
 function upload(formdata, success, fail) {
-    baseRequest('POST', BASE_URL + '/uploadImg', {}, res => {
+    baseRequest('POST', '/uploadImg', {}, res => {
         if (typeof success === 'function') success(res);
     }, err => {
         if (typeof fail === 'function') fail(err);

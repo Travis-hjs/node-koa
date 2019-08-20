@@ -89,6 +89,8 @@ function ajax(param) {
     XHR.send(data);
 }
 
+const BASE_URL = 'http://10.0.18.116:1995';
+
 /**
  * 基础请求
  * @param {'GET'|'POST'} method post | get
@@ -100,7 +102,7 @@ function ajax(param) {
  */
 function baseRequest(method, url, data, success, fail, upload) {
     ajax({
-        url: url,
+        url: BASE_URL + url,
         method: method,
         data: data,
         file: upload,
@@ -128,4 +130,24 @@ function baseRequest(method, url, data, success, fail, upload) {
             if (typeof fail === 'function') fail(error);
         }
     });
+}
+
+const cache = window.sessionStorage;
+
+/**
+ * 本地储存数据
+ * @param {string} key 对应的 key 值
+ * @param {object} data 对应的数据
+ */
+function saveData(key, data) {
+    cache.setItem(key, JSON.stringify(data));
+}
+
+/**
+ * 获取本地数据
+ * @param {string} key 对应的 key 值
+ */
+function fetchData(key) {
+    let data = cache.getItem(key) ? JSON.parse(cache.getItem(key)) : null;
+    return data;
 }

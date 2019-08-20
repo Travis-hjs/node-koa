@@ -41,6 +41,36 @@ img { display: block; object-fit: cover; }
 
 .button:active { box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12); }
 
+.input{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    border: none;
+    background: none;
+    border-radius: 0 0 0 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    display: block;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 32px;
+    font-style: inherit;
+    font-variant: inherit;
+    font-weight: inherit;
+    font-stretch: inherit;
+    font-size: inherit;
+    color: rgba(0,0,0,.87);
+    font-family: inherit;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.2);
+    font-size: 15px;
+}
+
+.input:focus{
+    border-color: #2196f3;
+}
+
 .btn-blue{ background-color: #2196f3; color: #fff; }
 .btn-red{ background-color: #f44336; color: #fff; }
 .btn-green{ background-color: #4caf50; color: #fff; }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>登录 | 注册</title>
+    <link rel="stylesheet" href="./css/base.css">
+    <style>
+        .title{ text-align: center; font-size: 22px; color: #333; padding: 8px 0; }
+        .input-item{ position: relative; width: 100%; padding: 4px; margin-bottom: 28px; }
+        .input-item .input-tip{ font-size: 14px; color: #666; margin-bottom: 8px; }
+        .sub-box{ margin-bottom: 28px; padding: 4px 0; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="title">登录</div>
+        <div class="input-item">
+            <div class="input-tip">账号：</div>
+            <input class="input" id="login_account" type="text" placeholder="请输入账号">
+        </div>
+        <div class="input-item">
+            <div class="input-tip">密码：</div>
+            <input class="input" id="login_password" type="password" placeholder="请输入密码">
+        </div>
+        <div class="sub-box">
+            <button class="button btn-blue" onclick="subLogin()">登录</button>
+        </div>
+        <div class="title">注册</div>
+        <div class="input-item">
+            <div class="input-tip">账号：</div>
+            <input class="input" id="register_account" type="text" placeholder="请输入账号">
+        </div>
+        <div class="input-item">
+            <div class="input-tip">密码：</div>
+            <input class="input" id="register_password" type="password" placeholder="请输入密码">
+        </div>
+        <div class="input-item">
+            <div class="input-tip">用户名（可选）：</div>
+            <input class="input" id="register_name" type="text" placeholder="请输入用户名">
+        </div>
+        <div class="sub-box">
+            <button class="button btn-blue" onclick="subRegister()">注册</button>
+            <button class="button btn-green" onclick="resetRegister()">重置</button>
+        </div>
+    </div>
+    <script src="./js/base.js"></script>
+    <script src="./js/user.js"></script>
+</body>
+</html>
