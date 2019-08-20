@@ -1,6 +1,6 @@
 import * as Router from 'koa-router';       // learn: https://www.npmjs.com/package/koa-router
-import * as fs from 'fs';
-import * as path from 'path';
+import * as FS from 'fs';
+import * as PATH from 'path';
 import config from './config';
 import stateInfo from './state';
 import html from './template';
@@ -13,7 +13,7 @@ router.get('/', (ctx, next) => {
     // 指定返回类型
     ctx.response.type = 'html';
     ctx.body = html;
-    console.log('get 根目录');
+    console.log('根目录');
 
     // 302 重定向到其他网站
     // ctx.status = 302;
@@ -57,16 +57,16 @@ router.post('/uploadImg', async (ctx, next) => {
     fileName = `${ fileName }.${file.name.split('.')[1]}`;
 
     // 创建可读流
-    const render = fs.createReadStream(file.path);
-    const filePath = path.join(config.upload_path, fileName);
-    const fileDir = path.join(config.upload_path);
+    const render = FS.createReadStream(file.path);
+    const filePath = PATH.join(config.upload_path, fileName);
+    const fileDir = PATH.join(config.upload_path);
 
-    if (!fs.existsSync(fileDir)) {
-        fs.mkdirSync(fileDir);
+    if (!FS.existsSync(fileDir)) {
+        FS.mkdirSync(fileDir);
     }
 
     // 创建写入流
-    const upStream = fs.createWriteStream(filePath);
+    const upStream = FS.createWriteStream(filePath);
 
     render.pipe(upStream);
 

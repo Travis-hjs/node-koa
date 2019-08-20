@@ -2,12 +2,14 @@ import { successInfoType, failInfoType } from './interfaces';
 
 class ModuleState {
 
+    /** 成功提示 */
     private success: successInfoType = {
         message: '',
         code: 200,
         result: {}
     }
 
+    /** 失败提示 */
     private fail: failInfoType = {
         message: '',
         code: 500,
