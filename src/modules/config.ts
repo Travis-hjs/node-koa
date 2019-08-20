@@ -6,8 +6,8 @@ class ModuleConfig {
     /** 数据库配置 */
     public readonly db = {
         host: 'localhost',
-        user: 'hjs',
-        password: 123456,
+        user: 'root',
+        password: 'root',
         database: 'test',
         /** 链接上限次数 */
         connection_limit: 10
