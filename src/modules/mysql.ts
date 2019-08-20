@@ -25,26 +25,26 @@ export default function query(command: string, value?: Array<any>) {
                     message: '数据库连接出错'
                 }
                 reject(errorInfo);
-            }
-            
-            const callback: MYSQL.queryCallback = (err, results, fields) => {
-                if (err) {
-                    errorInfo = {
-                        error: err,
-                        message: '数据库增删改查出错'
-                    }
-                    reject(errorInfo);
-                }
-                resolve({ results, fields });
-                mysql.end(); 
-            }
-            
-            if (value) {
-                mysql.query(command, value, callback);
             } else {
-                mysql.query(command, callback);
+                const callback: MYSQL.queryCallback = (err, results, fields) => {
+                    mysql.end(); 
+                    if (err) {
+                        errorInfo = {
+                            error: err,
+                            message: '数据库增删改查出错'
+                        }
+                        reject(errorInfo);
+                    } else {
+                        resolve({ results, fields });
+                    }
+                }
+                
+                if (value) {
+                    mysql.query(command, value, callback);
+                } else {
+                    mysql.query(command, callback);
+                }
             }
-
         })
     });
 }
