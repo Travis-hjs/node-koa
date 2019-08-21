@@ -1,7 +1,10 @@
 import * as Koa from 'koa';                     // learn: https://www.npmjs.com/package/koa
 import * as koaBody from 'koa-body';            // learn: http://www.ptbird.cn/koa-body.html
 import config from './modules/config';
-import router from './modules/api';
+import router from './api/main';
+import './api/apiUser';                         // 用户模块
+import './api/apiUpload';                       // 上传文件模块
+import './api/apiTest';                         // 基础测试模块
 
 const App = new Koa();
 
@@ -59,11 +62,11 @@ App.use(router.routes())
 // });
 
 App.on('error', (err, ctx) => {
-    console.error('server error !!!!!!!!!!!!!', err, ctx)
+    console.error('server error !!!!!!!!!!!!!', err, ctx);
 })
 
 App.listen(config.port, () => {
-    console.log(`server is running at http://localhost:${config.port}`)
+    console.log(`server is running at http://localhost:${ config.port }`);
 })
 
 // 参考项目配置连接: https://juejin.im/post/5ce25993f265da1baa1e464f

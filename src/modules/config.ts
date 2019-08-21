@@ -8,6 +8,7 @@ class ModuleConfig {
         host: 'localhost',
         user: 'root',
         password: 'root',
+        /** 数据库名 */
         database: 'test',
         /** 链接上限次数 */
         connection_limit: 10
