@@ -12,7 +12,7 @@ const pool = mysql.createPool({
 
 /**
  * 数据库增删改查
- * @param command 增删改查命令
+ * @param command 增删改查语句
  * @param value 对应的值
  */
 export default function query(command: string, value?: Array<any>): Promise<any> {
@@ -51,4 +51,5 @@ export default function query(command: string, value?: Array<any>): Promise<any>
         });
     });
 }
+
 // learn: https://blog.csdn.net/gymaisyl/article/details/84777139
