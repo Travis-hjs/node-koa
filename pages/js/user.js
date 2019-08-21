@@ -54,7 +54,7 @@ function subLogin() {
      }, res => {
         console.log('登录成功', res);
         saveData('userInfo', res.result);
-        // window.location.href = 'index.html';
+        window.location.href = 'index.html';
      }, err => {
         console.log('登录失败', err);
         alert(err.message);
