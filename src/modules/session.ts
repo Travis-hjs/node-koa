@@ -24,9 +24,9 @@ class ModuleSession {
 
     /** 从本地临时表里面初始化用户状态 */
     private init() {
-        this.checkRecord();
         const userFrom = fs.readFileSync(config.user_file).toString();
         this.userRecord = userFrom ? JSON.parse(userFrom) : {};
+        this.checkRecord();
         // console.log('token临时表', userFrom, this.userRecord);
     }
 
@@ -50,20 +50,19 @@ class ModuleSession {
     /** 定时检测过期的 token 并清理 */
     private checkRecord() {
         const check = () => {
-            const obj = this.userRecord;
             const now = Date.now();
             let isChange = false;
-            for (const key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    const item = obj[key];
+            for (const key in this.userRecord) {
+                if (this.userRecord.hasOwnProperty(key)) {
+                    const item = this.userRecord[key];
                     if (item.online - this.maxAge * 3600000 > now) {
                         isChange = true;
-                        delete obj[key];
+                        delete this.userRecord[key];
                     }
                 }
             }
             if (isChange) {
-                this.write(obj);
+                this.write();
             }
         }
         // 10分钟检测一次
