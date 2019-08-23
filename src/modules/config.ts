@@ -30,7 +30,10 @@ class ModuleConfig {
 
     // formData.append('img', file)
     /** 前端上传图片时约定的字段 */
-    public readonly upload_img_name = 'img';
+    public readonly upload_img_name = 'img';    
+
+    /** 用户临时表 */
+    public readonly user_file = 'public/user.json';
 }
 
 /** 项目配置 */

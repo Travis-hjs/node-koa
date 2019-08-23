@@ -1,17 +1,13 @@
 import router from './main';
 import query from '../modules/mysql';
 import stateInfo from '../modules/state';
-import { mysqlErrorType, mysqlQueryType } from '../modules/interfaces';
-
-/** mysql错误数据类型 */
-type sqlerr = mysqlErrorType;
-/** 数据库增删改查返回数据类型 */
-type sqlsuc = mysqlQueryType;
+import { mysqlErrorType, mysqlQueryType, userInfoType } from '../modules/interfaces';
+import session from '../modules/session';
 
 // 注册
 router.post('/register', async (ctx) => {
     /** 接收参数 */
-    const params = ctx.request.body;
+    const params: userInfoType = ctx.request.body;
     /** 返回结果 */
     let bodyResult = null;
     /** 账号是否可用 */
@@ -31,24 +27,24 @@ router.post('/register', async (ctx) => {
     }
 
     // 先查询是否有重复账号
-    await query(`select account from user where account = '${ params.account }'`).then((res: sqlsuc) => {
+    await query(`select account from user where account = '${ params.account }'`).then((res: mysqlQueryType) => {
         // console.log('注册查询', res);
         if (res.results.length > 0) {
             bodyResult = stateInfo.getFailData('该账号已被注册');
         } else {
             validAccount = true;
         }
-    }).catch((error: sqlerr) => {
+    }).catch((error: mysqlErrorType) => {
         // console.log('注册查询错误', error);
         bodyResult = stateInfo.getFailData(error.message);
     })
 
     // 再写入表格
     if (validAccount) {
-        await query('insert into user(account, password, username) values(?,?,?)', [params.account, params.password, params.name]).then((res: sqlsuc) => {
+        await query('insert into user(account, password, name) values(?,?,?)', [params.account, params.password, params.name]).then((res: mysqlQueryType) => {
             // console.log('注册写入', res);
             bodyResult = stateInfo.getSuccessData(params, '注册成功');
-        }).catch((error: sqlerr) => {
+        }).catch((error: mysqlErrorType) => {
             // console.log('注册写入错误', error);
             bodyResult = stateInfo.getFailData(error.message);
         })
@@ -60,7 +56,7 @@ router.post('/register', async (ctx) => {
 // 登录
 router.post('/login', async (ctx) => {
     /** 接收参数 */
-    const params = ctx.request.body;
+    const params: userInfoType = ctx.request.body;
     /** 返回结果 */
     let bodyResult = null;
     // console.log('登录', params);
@@ -73,13 +69,14 @@ router.post('/login', async (ctx) => {
     }
 
     // 先查询是否有当前账号
-    await query(`select * from user where account = '${ params.account }'`).then((res: sqlsuc) => {
+    await query(`select * from user where account = '${ params.account }'`).then((res: mysqlQueryType) => {
         // console.log('登录查询', res.results);
         // 再判断账号是否可用
         if (res.results.length > 0) {
-            const data = res.results[0];
+            const data: userInfoType = res.results[0];
             // 最后判断密码是否正确
             if (data.password == params.password) {
+                data.token = session.setRecord(data);
                 bodyResult = stateInfo.getSuccessData(data ,'登录成功');
             } else {
                 bodyResult = stateInfo.getFailData('密码不正确');
@@ -87,10 +84,64 @@ router.post('/login', async (ctx) => {
         } else {
             bodyResult = stateInfo.getFailData('该账号不存在，请先注册');
         }
-    }).catch((error: sqlerr) => {
+    }).catch((error: mysqlErrorType) => {
         // console.log('登录查询错误', error);
         bodyResult = stateInfo.getFailData(error.message);
     })
 
     ctx.body = bodyResult;
+})
+
+// 获取用户信息
+router.post('/getUserInfo', async (ctx) => {
+    /** 接收参数 */
+    const params = ctx.request.body;
+    /** 返回结果 */
+    let bodyResult = null;
+
+    // console.log('getUserInfo', params);
+
+    if (!params['token']) {
+        return ctx.body = stateInfo.getFailData('参数缺少 token ');
+    }
+
+    let state = session.updateRecord(params.token);
+
+    if (!state.success) {
+        return ctx.body = stateInfo.getFailData(state.message);
+    }
+
+    await query(`select * from user where account = '${ state.info.account }'`).then((res: mysqlQueryType) => {
+        // 判断账号是否可用
+        if (res.results.length > 0) {
+            const data: userInfoType = res.results[0];
+            bodyResult = stateInfo.getSuccessData(data);
+        } else {
+            bodyResult = stateInfo.getFailData('该账号不存在，可能已经从数据库中删除');
+        }
+    }).catch((error: mysqlErrorType) => {
+        bodyResult = stateInfo.getFailData(error.message);
+    })
+
+    ctx.body = bodyResult;
+})
+
+// 退出登录
+router.post('/logout', ctx => {
+    /** 接收参数 */
+    const params = ctx.request.body;
+
+    console.log('logout', params);
+
+    if (!params['token']) {
+        return ctx.body = stateInfo.getFailData('参数缺少 token ');
+    }
+
+    const state = session.removeRecord(params.token);
+
+    if (state) {
+        return ctx.body = stateInfo.getSuccessData('退出登录成功');
+    } else {
+        return ctx.body = stateInfo.getFailData('token 不存在');
+    }
 })
