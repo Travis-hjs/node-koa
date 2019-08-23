@@ -1,6 +1,6 @@
 import router from './main';
-import * as Fs from 'fs';
-import * as Path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import config from '../modules/config';
 import stateInfo from '../modules/state';
 
@@ -13,16 +13,16 @@ router.post('/uploadImg', async (ctx, next) => {
     fileName = `${fileName}.${file.name.split('.')[1]}`;
 
     // 创建可读流
-    const render = Fs.createReadStream(file.path);
-    const filePath = Path.join(config.upload_path, fileName);
-    const fileDir = Path.join(config.upload_path);
+    const render = fs.createReadStream(file.path);
+    const filePath = path.join(config.upload_path, fileName);
+    const fileDir = path.join(config.upload_path);
 
-    if (!Fs.existsSync(fileDir)) {
-        Fs.mkdirSync(fileDir);
+    if (!fs.existsSync(fileDir)) {
+        fs.mkdirSync(fileDir);
     }
 
     // 创建写入流
-    const upStream = Fs.createWriteStream(filePath);
+    const upStream = fs.createWriteStream(filePath);
 
     render.pipe(upStream);
 
