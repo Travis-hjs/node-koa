@@ -103,3 +103,27 @@ function removeImg(el) {
     el.parentNode.querySelector('.image').src = '';
     el.parentNode.parentNode.querySelector('.upload').classList.remove('hide');
 }
+
+/** 获取用户信息 */
+function getUserInfo() {
+    baseRequest('POST', '/getUserInfo', {
+        token: userInfo.token
+    }, res => {
+        console.log('用户信息', res);
+
+    }, err => {
+        console.log('获取用户信息失败', err);
+    });
+}
+
+/** 退出登录 */
+function logout() {
+    baseRequest('POST', '/logout', {
+        token: userInfo.token
+    }, res => {
+        console.log('退出登录', res);
+
+    }, err => {
+        console.log('退出登录失败', err);
+    });
+}
