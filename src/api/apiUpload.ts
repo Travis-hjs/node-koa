@@ -1,6 +1,6 @@
-import router from './main';
 import * as fs from 'fs';
 import * as path from 'path';
+import router from './main';
 import config from '../modules/config';
 import stateInfo from '../modules/state';
 

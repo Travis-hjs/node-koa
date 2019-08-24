@@ -14,13 +14,8 @@ class ModuleConfig {
         connection_limit: 10
     }
 
-    /** 接口地址配置 */
-    public readonly api = {
-        /** 项目接口前缀 */
-        project_interface_prefix: '/api',
-        /** 后台接口前缀 */
-        admin_interface_prefix: 'admin',
-    }
+    /** 接口前缀 */
+    public readonly api_prefix = '/api/v1/';
 
     /** 上传图片存放目录 */
     public readonly upload_path = 'public/upload/images/';
@@ -28,12 +23,20 @@ class ModuleConfig {
     /** 上传图片大小限制 */
     public readonly upload_img_size = 5 * 1024 * 1024;
 
-    // formData.append('img', file)
-    /** 前端上传图片时约定的字段 */
+    /**
+     * 前端上传图片时约定的字段
+     * @example 
+     * const formData = new FormData()
+     * formData.append('img', file)
+     * XHR.send(formData)
+     */
     public readonly upload_img_name = 'img';    
 
     /** 用户临时表 */
     public readonly user_file = 'public/user.json';
+
+    /** token 长度 */
+    public readonly token_size = 28;
 }
 
 /** 项目配置 */

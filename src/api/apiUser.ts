@@ -1,8 +1,9 @@
 import router from './main';
 import query from '../modules/mysql';
 import stateInfo from '../modules/state';
-import { mysqlErrorType, mysqlQueryType, userInfoType } from '../modules/interfaces';
 import session from '../modules/session';
+import config from '../modules/config';
+import { mysqlErrorType, mysqlQueryType, userInfoType } from '../modules/interfaces';
 
 // 注册
 router.post('/register', async (ctx) => {
@@ -59,7 +60,7 @@ router.post('/login', async (ctx) => {
     const params: userInfoType = ctx.request.body;
     /** 返回结果 */
     let bodyResult = null;
-    // console.log('登录', params);
+    // console.log('登录', ctx);
     if (params.account.trim() === '') {
         return ctx.body = stateInfo.getFailData('登录失败！账号不能为空');
     }
@@ -93,19 +94,20 @@ router.post('/login', async (ctx) => {
 })
 
 // 获取用户信息
-router.post('/getUserInfo', async (ctx) => {
+router.get('/getUserInfo', async (ctx) => {
+    const token: string = ctx.header.authorization;
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */
     let bodyResult = null;
 
-    // console.log('getUserInfo', params);
+    console.log('getUserInfo', params, token);
 
-    if (!params['token']) {
-        return ctx.body = stateInfo.getFailData('参数缺少 token ');
+    if (token.length != config.token_size) {
+        return ctx.body = stateInfo.getFailData('token 不正确');
     }
 
-    let state = session.updateRecord(params.token);
+    let state = session.updateRecord(token);
 
     if (!state.success) {
         return ctx.body = stateInfo.getFailData(state.message);
@@ -127,17 +129,18 @@ router.post('/getUserInfo', async (ctx) => {
 })
 
 // 退出登录
-router.post('/logout', ctx => {
+router.get('/logout', ctx => {
+    const token: string = ctx.header.authorization;
     /** 接收参数 */
     const params = ctx.request.body;
 
-    console.log('logout', params);
+    console.log('logout', params, token);
 
-    if (!params['token']) {
-        return ctx.body = stateInfo.getFailData('参数缺少 token ');
+    if (token.length != config.token_size) {
+        return ctx.body = stateInfo.getFailData('token 不正确');
     }
 
-    const state = session.removeRecord(params.token);
+    const state = session.removeRecord(token);
 
     if (state) {
         return ctx.body = stateInfo.getSuccessData('退出登录成功');

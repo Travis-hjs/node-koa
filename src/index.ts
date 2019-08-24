@@ -14,7 +14,7 @@ let count = 1;
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx, next) => {
     console.log('--------------------------');
-    console.log('start >>', count);
+    console.log('request_count >>', count);
     count++;
     
     ctx.set({
@@ -22,12 +22,13 @@ App.use(async (ctx, next) => {
         // 'Content-Type': 'application/json',
         // 'Access-Control-Allow-Credentials': 'true',
         // 'Access-Control-Allow-Methods': 'OPTIONS, GET, PUT, POST, DELETE',
-        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-        // 'X-Powered-By': '3.2.1'
+        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+        // 'X-Powered-By': '3.2.1',
     });
-    
+
     // 如果前端设置了 XHR.setRequestHeader('Content-Type', 'application/json')
-    // ctx.set 就必须携带 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+    // ctx.set 就必须携带 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization' 
+    // 如果前端设置了 XHR.setRequestHeader('Authorization', 'xxxx') 那对应的字段就是 Authorization
     // 并且这里要转换一下状态码
     // console.log(ctx.request.method);
     if (ctx.request.method === 'OPTIONS') {

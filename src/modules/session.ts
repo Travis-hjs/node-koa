@@ -43,7 +43,7 @@ class ModuleSession {
             }
             return code;
         }
-        const code = getCode(28);
+        const code = getCode(config.token_size);
         return code;
     }
     
