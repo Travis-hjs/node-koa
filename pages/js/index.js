@@ -1,4 +1,4 @@
-const userInfo = fetchData('userInfo');
+const userInfo = fetchUserInfo();
 
 if (!userInfo) {
     window.location.href = 'user.html';
@@ -106,9 +106,7 @@ function removeImg(el) {
 
 /** 获取用户信息 */
 function getUserInfo() {
-    baseRequest('POST', '/getUserInfo', {
-        token: userInfo.token
-    }, res => {
+    baseRequest('GET', '/getUserInfo', {}, res => {
         console.log('用户信息', res);
 
     }, err => {
@@ -118,12 +116,86 @@ function getUserInfo() {
 
 /** 退出登录 */
 function logout() {
-    baseRequest('POST', '/logout', {
-        token: userInfo.token
-    }, res => {
+    baseRequest('GET', '/logout', {}, res => {
         console.log('退出登录', res);
-
+        window.location.href = 'user.html';
     }, err => {
         console.log('退出登录失败', err);
     });
 }
+
+const listNode = document.querySelector('.list');
+
+/**
+ * 输出列表item
+ * @param {object} info 
+ * @param {string} info.text 
+ * @param {number} info.id 
+ */
+function ouputList(info) {
+    const itme = `<div class="card flex fvertical list-item" data-id="${info.id}">
+                    <input class="input f1" type="text" value="${info.text}" readonly="readonly">
+                    <button class="button btn-green center" onclick="onInput(this)">修改</button>
+                    <button class="button btn-blue center hide" onclick="subChange(this)">提交</button>
+                    <button class="button btn-red" onclick="removeList(this)">删除</button>
+                </div>`;
+    listNode.insertAdjacentHTML('beforeend', itme);
+}
+
+/**
+ * 增加一条列表
+ * @param {HTMLElement} el 
+ */
+function addList(el) {
+    /**
+     * @type {HTMLInputElement}
+     */
+    const input = el.parentNode.querySelector('.input');
+    if (!input.value.trim()) return alert('输入的内容不能为空~');
+    ouputList({
+        text: input.value.trim(),
+        id: input.value.trim().length
+    })
+    input.value = null;
+}
+
+/**
+ * 删除当前列表
+ * @param {HTMLElement} el 
+ */
+function removeList(el) {
+    el.parentNode.parentNode.removeChild(el.parentNode);
+}
+
+/**
+ * 改变当前列表内容
+ * @param {HTMLElement} el 
+ */
+function subChange(el) {
+    let id = el.parentNode.dataset['id'];
+    let text = el.parentNode.querySelector('.input').value.trim();
+    if (!text) return alert('内容不能为空');
+    console.log(text, id);
+    
+    offInput(el);
+}
+
+/**
+ * 使输入框可以修改
+ * @param {HTMLElement} el 
+ */
+function onInput(el) {
+    el.parentNode.querySelector('.btn-blue').classList.remove('hide');
+    el.classList.add('hide');
+    el.parentNode.querySelector('.input').removeAttribute('readonly');
+}
+
+/**
+ * 使输入框不可以修改
+ * @param {HTMLElement} el 
+ */
+function offInput(el) {
+    el.parentNode.querySelector('.btn-blue').classList.add('hide');
+    el.parentNode.querySelector('.btn-green').classList.remove('hide');
+    el.parentNode.querySelector('.input').setAttribute('readonly', 'readonly');
+}   

@@ -74,6 +74,9 @@ function ajax(param) {
     } else {
         // XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         XHR.setRequestHeader('Content-Type', 'application/json'); 
+        // 设置token
+        var token = (fetchUserInfo() && fetchUserInfo().token) || '';
+        XHR.setRequestHeader('Authorization', token);
     }
     
     // 在IE中，超时属性只能在调用 open() 方法之后且在调用 send() 方法之前设置。
@@ -135,19 +138,17 @@ function baseRequest(method, url, data, success, fail, upload) {
 const cache = window.sessionStorage;
 
 /**
- * 本地储存数据
- * @param {string} key 对应的 key 值
+ * 本地储存用户数据
  * @param {object} data 对应的数据
  */
-function saveData(key, data) {
-    cache.setItem(key, JSON.stringify(data));
+function saveUserInfo(data) {
+    cache.setItem('userInfo', JSON.stringify(data));
 }
 
 /**
- * 获取本地数据
- * @param {string} key 对应的 key 值
+ * 获取用户数据
  */
-function fetchData(key) {
-    let data = cache.getItem(key) ? JSON.parse(cache.getItem(key)) : null;
+function fetchUserInfo() {
+    let data = cache.getItem('userInfo') ? JSON.parse(cache.getItem('userInfo')) : null;
     return data;
 }

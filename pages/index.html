@@ -17,6 +17,14 @@
         .upload-img .upload .add-icon::after{ content: ""; position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background-color: #999; transform: translateX(-50%); }
         .upload-img .upload .add-icon::before{ content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background-color: #999; transform: translateY(-50%); }
         .upload-img .upload .upload-input{ width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2; opacity: 0; cursor: pointer; }
+        .todo{ width: 100%; background-color: #f2f2f2; padding: 4px 8px 8px; margin-bottom: 10px; }
+        .todo h2{ font-size: 24px; font-weight: inherit; }
+        .todo input{ margin-bottom: 10px; }
+
+        .list{ width: 100%; background-color: #f2f2f2; padding: 4px 8px; }
+        .list .list-item{ height: 60px; margin-bottom: 10px; padding: 10px; }
+        .list .list-item .center{ margin: 0 10px; }
+
         .hide{ display: none; }
     </style>
 </head>
@@ -39,10 +47,18 @@
                 <img class="image" src="">
                 <div onclick="removeImg(this)" class="remove">×</div>
             </div>
-            <div class="upload flex flex_vertical flex_center">
+            <div class="upload flex fvertical fcenter">
                 <div class="add-icon"></div>
                 <input class="upload-input" type="file" name="picture" onchange="uploadImg(this)">
             </div>
+        </div>
+        <div class="todo">
+            <h2>增删改查</h2>
+            <input class="input" type="text" placeholder="输入增加内容">
+            <button class="button btn-blue" onclick="addList(this)">增加一条</button>
+        </div>
+        <div class="list">
+            
         </div>
     </div>
     <script src="./js/base.js"></script>

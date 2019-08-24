@@ -53,7 +53,7 @@ function subLogin() {
          password: loginPassword.value
      }, res => {
         console.log('登录成功', res);
-        saveData('userInfo', res.result);
+        saveUserInfo(res.result);
         window.location.href = 'index.html';
      }, err => {
         console.log('登录失败', err);
