@@ -77,7 +77,12 @@ router.post('/login', async (ctx) => {
             const data: userInfoType = res.results[0];
             // 最后判断密码是否正确
             if (data.password == params.password) {
-                data.token = session.setRecord(data);
+                const info: userInfoType = {
+                    id: data.id,
+                    account: data.account,
+                    password: data.password
+                } 
+                data.token = session.setRecord(info);
                 bodyResult = stateInfo.getSuccessData(data ,'登录成功');
             } else {
                 bodyResult = stateInfo.getFailData('密码不正确');

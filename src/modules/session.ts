@@ -34,7 +34,7 @@ class ModuleSession {
     /** 从本地临时表里面初始化用户状态 */
     private init() {
         const userFrom = fs.readFileSync(config.user_file).toString();
-        this.userRecord = userFrom ? JSON.parse(userFrom) : {};
+        this.userRecord = (userFrom && JSON.parse(userFrom)) || {};
         this.checkRecord();
         // console.log('token临时表', userFrom, this.userRecord);
     }

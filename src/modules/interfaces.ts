@@ -72,6 +72,8 @@ export interface userInfoType {
     host?: string
     /** token */
     token?: string
+    /** 用户id */
+    id?: number
 }
 
 /** 用户 token 纪录类型 */
