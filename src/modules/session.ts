@@ -19,7 +19,16 @@ class ModuleSession {
      */
     private write(obj?: userRecordType) {
         const data = obj || this.userRecord;
-        fs.writeFileSync(config.user_file, JSON.stringify(data), { encoding: 'utf8' });
+        // 同步写入（貌似没必要）
+        // fs.writeFileSync(config.user_file, JSON.stringify(data), { encoding: 'utf8' });
+        // 异步写入
+        fs.writeFile(config.user_file, JSON.stringify(data), { encoding: 'utf8' }, (err) => {
+            if (err) {
+                console.log('session 写入失败', err);
+            } else {
+                console.log('session 写入成功');
+            }
+        })
     }
 
     /** 从本地临时表里面初始化用户状态 */
