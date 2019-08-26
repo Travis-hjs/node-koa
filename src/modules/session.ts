@@ -34,7 +34,7 @@ class ModuleSession {
     /** 从本地临时表里面初始化用户状态 */
     private init() {
         const userFrom = fs.readFileSync(config.user_file).toString();
-        this.userRecord = (userFrom && JSON.parse(userFrom)) || {};
+        this.userRecord = userFrom ? JSON.parse(userFrom) : {};
         this.checkRecord();
         // console.log('token临时表', userFrom, this.userRecord);
     }
@@ -64,7 +64,7 @@ class ModuleSession {
             for (const key in this.userRecord) {
                 if (this.userRecord.hasOwnProperty(key)) {
                     const item = this.userRecord[key];
-                    if (item.online - this.maxAge * 3600000 > now) {
+                    if (now - item.online > this.maxAge * 3600000) {
                         isChange = true;
                         delete this.userRecord[key];
                     }
@@ -111,7 +111,7 @@ class ModuleSession {
 
         const now = Date.now();
 
-        if (obj.online - this.maxAge * 3600000 > now) {
+        if (now - obj.online > this.maxAge * 3600000) {
             result.message = 'token 已过期';
             return result;
         }
