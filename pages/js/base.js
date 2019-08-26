@@ -112,7 +112,11 @@ function baseRequest(method, url, data, success, fail, upload) {
         overtime: 5000,
         success(res) {
             // console.log('请求成功', res);
-            if (typeof success === 'function') success(res);
+            if (res.code == 200) {
+                if (typeof success === 'function') success(res);
+            } else {
+                if (typeof fail === 'function') fail(res);
+            }
         },
         fail(err) {
             // console.log('请求失败', err);

@@ -129,18 +129,33 @@ const listNode = document.querySelector('.list');
 /**
  * 输出列表item
  * @param {object} info 
- * @param {string} info.text 
- * @param {number} info.id 
+ * @param {string} info.list_text 
+ * @param {number} info.list_id 
  */
 function ouputList(info) {
-    const itme = `<div class="card flex fvertical list-item" data-id="${info.id}">
-                    <input class="input f1" type="text" value="${info.text}" readonly="readonly">
+    const itme = `<div class="card flex fvertical list-item" data-id="${info.list_id}">
+                    <input class="input f1" type="text" value="${info.list_text}" readonly="readonly">
                     <button class="button btn-green center" onclick="onInput(this)">修改</button>
                     <button class="button btn-blue center hide" onclick="subChange(this)">提交</button>
                     <button class="button btn-red" onclick="removeList(this)">删除</button>
                 </div>`;
     listNode.insertAdjacentHTML('beforeend', itme);
 }
+
+/** 初始化获取列表 */
+function initList() {
+    baseRequest('GET', '/getList', {}, res => {
+        console.log('获取列表', res);
+        if (res.result.list.length == 0) return;
+        res.result.list.forEach(item => {
+            ouputList(item);
+        })
+    }, err => {
+        console.log('获取列表失败', err);
+        
+    })
+}
+initList();
 
 /**
  * 增加一条列表
@@ -151,12 +166,20 @@ function addList(el) {
      * @type {HTMLInputElement}
      */
     const input = el.parentNode.querySelector('.input');
-    if (!input.value.trim()) return alert('输入的内容不能为空~');
-    ouputList({
-        text: input.value.trim(),
-        id: input.value.trim().length
+    const text = input.value.trim();
+    if (!text) return alert('输入的内容不能为空~');
+    baseRequest('POST', '/addList', {
+        content: text
+    }, res => {
+        console.log(res.result);
+        ouputList({
+            list_text: text,
+            list_id: res.result.id
+        })
+        input.value = null;
+    }, err => {
+        console.log('添加失败', err);
     })
-    input.value = null;
 }
 
 /**
@@ -164,20 +187,37 @@ function addList(el) {
  * @param {HTMLElement} el 
  */
 function removeList(el) {
-    el.parentNode.parentNode.removeChild(el.parentNode);
+    // return console.log(el.parentNode.dataset['id']);
+    baseRequest('POST', '/deleteList', {
+        id: el.parentNode.dataset['id']
+    }, res => {
+        console.log('删除成功', res);
+        el.parentNode.parentNode.removeChild(el.parentNode);
+    }, err => {
+        console.log('删除失败', err);
+        
+    })
 }
 
 /**
- * 改变当前列表内容
+ * 修改当前列表内容
  * @param {HTMLElement} el 
  */
 function subChange(el) {
     let id = el.parentNode.dataset['id'];
     let text = el.parentNode.querySelector('.input').value.trim();
     if (!text) return alert('内容不能为空');
-    console.log(text, id);
-    
-    offInput(el);
+    // console.log(text, id);
+    baseRequest('POST', '/modifyList', {
+        content: text,
+        id: id
+    }, res => {
+        console.log('修改成功', res);
+        offInput(el);
+    }, err => {
+        console.log('修改失败', err);
+        
+    });
 }
 
 /**
