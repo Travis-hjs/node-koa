@@ -75,7 +75,7 @@ function ajax(param) {
         // XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         XHR.setRequestHeader('Content-Type', 'application/json'); 
         // 设置token
-        var token = (fetchUserInfo() && fetchUserInfo().token) || '';
+        var token = fetchUserInfo() ? fetchUserInfo().token : '';
         XHR.setRequestHeader('Authorization', token);
     }
     
