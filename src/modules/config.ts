@@ -37,6 +37,9 @@ class ModuleConfig {
 
     /** token 长度 */
     public readonly token_size = 28;
+
+    /** token 格式错误提示文字 */
+    public readonly token_tip = '无效的token';
 }
 
 /** 项目配置 */

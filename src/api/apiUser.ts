@@ -3,7 +3,7 @@ import query from '../modules/mysql';
 import stateInfo from '../modules/state';
 import session from '../modules/session';
 import config from '../modules/config';
-import { mysqlErrorType, mysqlQueryType, userInfoType } from '../modules/interfaces';
+import { mysqlErrorType, mysqlQueryType, userInfoType, sessionResultType } from '../modules/interfaces';
 
 // 注册
 router.post('/register', async (ctx) => {
@@ -100,23 +100,13 @@ router.post('/login', async (ctx) => {
 
 // 获取用户信息
 router.get('/getUserInfo', async (ctx) => {
-    const token: string = ctx.header.authorization;
+    const state: sessionResultType = ctx['the_state'];
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */
     let bodyResult = null;
 
-    console.log('getUserInfo', params, token);
-
-    if (token.length != config.token_size) {
-        return ctx.body = stateInfo.getFailData('token 不正确');
-    }
-
-    let state = session.updateRecord(token);
-
-    if (!state.success) {
-        return ctx.body = stateInfo.getFailData(state.message);
-    }
+    // console.log('getUserInfo', params, state);
 
     await query(`select * from user where account = '${ state.info.account }'`).then((res: mysqlQueryType) => {
         // 判断账号是否可用
@@ -142,7 +132,7 @@ router.get('/logout', ctx => {
     console.log('logout', params, token);
 
     if (token.length != config.token_size) {
-        return ctx.body = stateInfo.getFailData('token 不正确');
+        return ctx.body = stateInfo.getFailData(config.token_tip);
     }
 
     const state = session.removeRecord(token);

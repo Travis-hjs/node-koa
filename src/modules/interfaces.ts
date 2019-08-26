@@ -53,7 +53,7 @@ interface fieldType {
 /** 数据库增删改查返回数据类型 */
 export interface mysqlQueryType {
     /** 结果数组 */
-    results: Array<any>
+    results: any
     /** 域数组 */
     fields: Array<fieldType>
 }
