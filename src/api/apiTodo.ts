@@ -38,12 +38,12 @@ router.post('/addList', async (ctx) => {
 
     // 写入列表
     await query('insert into user_list(list_text, list_time, user_id) values(?,?,?)', [params.content, new Date().toLocaleDateString(), state.info.id]).then((res: mysqlQueryType) => {
-        // console.log('写入列表', res.results.insertId);
+        console.log('写入列表', res);
         bodyResult = stateInfo.getSuccessData({
             id: res.results.insertId
         }, '添加成功');
     }).catch((err: mysqlErrorType) => {
-        // console.log('注册写入错误', err);
+        console.log('写入列表错误', err);
         bodyResult = stateInfo.getFailData(err.message);
     })
     
@@ -52,7 +52,6 @@ router.post('/addList', async (ctx) => {
 
 // 修改列表
 router.post('/modifyList', async (ctx) => {
-    const state: sessionResultType = ctx['the_state'];
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */
@@ -75,7 +74,7 @@ router.post('/modifyList', async (ctx) => {
             bodyResult = stateInfo.getFailData('列表id不存在');
         }
     }).catch((err: mysqlErrorType) => {
-        // console.log('注册写入错误', err);
+        console.log('修改列表错误', err);
         bodyResult = stateInfo.getFailData(err.message);
     })
 
