@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { userRecordType, userInfoType, sessionResultType } from '../modules/interfaces';
 import config from './config';
+import { userRecordType, userInfoType, sessionResultType } from '../modules/interfaces';
 
 class ModuleSession {
     constructor() {
@@ -9,6 +9,9 @@ class ModuleSession {
 
     /** 效期（小时） */
     private maxAge = 12;
+
+    /** 更新 & 检测时间间隔（10分钟） */
+    private interval = 600000;
 
     /** 用户 token 纪录 */
     private userRecord: userRecordType = {}; 
@@ -75,7 +78,7 @@ class ModuleSession {
             }
         }
         // 10分钟检测一次
-        setInterval(check, 10 * 60000);
+        setInterval(check, this.interval);
         check();
     }
 
@@ -107,22 +110,25 @@ class ModuleSession {
             return result;
         } 
         
-        const obj = this.userRecord[token];
+        const userInfo = this.userRecord[token];
 
         const now = Date.now();
 
-        if (now - obj.online > this.maxAge * 3600000) {
+        if (now - userInfo.online > this.maxAge * 3600000) {
             result.message = 'token 已过期';
             return result;
         }
 
         result.message = 'token 通过验证';
         result.success = true;
-        result.info = obj;
+        result.info = userInfo;
 
-        // 更新在线时间
-        this.userRecord[token].online = now;
-        this.write();
+        // 更新在线时间并写入临时表
+        // 这里优化一下，写入和更新的时间间隔为10分钟，避免频繁写入
+        if (now - userInfo.online > this.interval) {
+            this.userRecord[token].online = now;
+            this.write();
+        }
         
         return result;
     }
