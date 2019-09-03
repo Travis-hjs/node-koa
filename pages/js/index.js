@@ -8,7 +8,7 @@ if (!userInfo) {
 const page = document.querySelector('.page');
 
 function getData() {
-    baseRequest('GET', '/getHome', {
+    baseRequest('GET', '/getData', {
         id: 10
     }, res => {
         console.log('get 成功', res);
@@ -19,7 +19,7 @@ function getData() {
 }
 
 function postData() {
-    baseRequest('POST', '/sendData', {
+    baseRequest('POST', '/postData', {
         name: 'hjs',
         age: new Date().getFullYear() - 1995,
     }, res => {
