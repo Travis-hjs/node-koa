@@ -15,11 +15,11 @@ router.get('/', (ctx, next) => {
 })
 
 // get 请求
-router.get('/getHome', (ctx, next) => {
+router.get('/getData', (ctx, next) => {
     /** 接收参数 */
     const params: object | string = ctx.query || ctx.querystring;
 
-    console.log('get /getHome', params);
+    console.log('/getData', params);
 
     ctx.body = stateInfo.getSuccessData({
         method: 'get',
@@ -29,11 +29,11 @@ router.get('/getHome', (ctx, next) => {
 })
 
 // post 请求
-router.post('/sendData', (ctx, next) => {
+router.post('/postData', (ctx, next) => {
     /** 接收参数 */
     const params: object = ctx.request.body || ctx.params;
 
-    console.log('post /sendData', params);
+    console.log('/postData', params);
 
     const result = {
         data: '请求成功'

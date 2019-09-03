@@ -72,14 +72,6 @@ class ModuleUtils {
         }
         return array.slice(min);
     }
-
-    /**
-     * utils 打印
-     * @param agr 
-     */
-    public log(...agr: any) {
-        console.log('utils.log >>', ...agr);
-    }
 }
 
 /** 工具模块 */
