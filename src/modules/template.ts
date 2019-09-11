@@ -11,6 +11,7 @@ const content = `
 <div>4</div>
 <div>5</div>
 <div>6</div>
+<a href="/home">go to home<a>
 `
 /** 页面内容 */
 const html = (style + content).replace(/\n/g, '');

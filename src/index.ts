@@ -38,7 +38,7 @@ App.use(async (ctx, next) => {
         ctx.response.status = 200;
     } else {
         /** 过滤掉不用 token 也可以请求的接口 */
-        const rule = /\/register|\/login|\/uploadImg|\/getHome|\/sendData/;
+        const rule = /\/register|\/login|\/uploadImg|\/getData|\/postData|\/home/;
         /** 请求路径 */
         const path = ctx.request.path;
         // 这里进行全局的 token 验证判断

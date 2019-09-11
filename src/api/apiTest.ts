@@ -7,11 +7,20 @@ router.get('/', (ctx, next) => {
     // 指定返回类型
     ctx.response.type = 'html';
     ctx.body = html;
-    console.log('根目录');
+    // console.log('根目录');
+
+    // 路由重定向
+    // ctx.redirect('/home');
 
     // 302 重定向到其他网站
     // ctx.status = 302;
     // ctx.redirect('https://www.baidu.com');
+})
+
+router.get('/home', (ctx, next) => {
+    ctx.response.type = 'html';
+    ctx.body = '<h1 style="text-align: center; line-height: 40px; font-size: 24px; color: #007fff">Welcome to home</h1>';
+    // console.log('/home');
 })
 
 // get 请求
