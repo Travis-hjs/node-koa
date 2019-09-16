@@ -44,7 +44,7 @@ class ModuleUtils {
      * 随机打乱数组
      * @param array
      */
-    public shuffleArray(array: Array<any>) {
+    public shuffleArray<T>(array: Array<T>) {
         for (let i = array.length - 1; i >= 0; i--) {
             let randomIndex = Math.floor(Math.random() * (i + 1));
             let itemAtIndex = array[randomIndex];
@@ -59,11 +59,11 @@ class ModuleUtils {
      * @param array 数组
      * @param count 元素个数
      */
-    public getRandomArrayElements(array: Array<any>, count: number) {
+    public getRandomArrayElements<T>(array: Array<T>, count: number) {
         let length = array.length;
         let min = length - count;
         let index = 0;
-        let value = '';
+        let value: T = null;
         while (length-- > min) {
             index = Math.floor((length + 1) * Math.random());
             value = array[index];
