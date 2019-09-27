@@ -11,11 +11,14 @@ import './api/apiTodo';                         // 用户列表模块
 
 const App = new Koa();
 
-/** 请求次数 */
+/** 请求次数（调试用） */
 let count = 1;
 
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx, next) => {
+    /** 请求路径 */
+    const path = ctx.request.path;
+
     console.log('--------------------------');
     console.log('request_count >>', count);
     count++;
@@ -29,6 +32,12 @@ App.use(async (ctx, next) => {
         // 'X-Powered-By': '3.2.1',
     });
 
+    // const hasPath = router.stack.some(item => item.path == path);
+    // // 判断是否 404
+    // if (path != '/' && !hasPath) {
+    //     return ctx.body = '<h1 style="text-align: center; line-height: 40px; font-size: 24px; color: tomato">404：访问的页面（路径）不存在</h1>';
+    // }
+
     // 如果前端设置了 XHR.setRequestHeader('Content-Type', 'application/json')
     // ctx.set 就必须携带 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization' 
     // 如果前端设置了 XHR.setRequestHeader('Authorization', 'xxxx') 那对应的字段就是 Authorization
@@ -37,13 +46,16 @@ App.use(async (ctx, next) => {
     if (ctx.request.method === 'OPTIONS') {
         ctx.response.status = 200;
     } else {
-        /** 过滤掉不用 token 也可以请求的接口 */
-        const rule = /\/register|\/login|\/uploadImg|\/getData|\/postData|\/home/;
-        /** 请求路径 */
-        const path = ctx.request.path;
+        /** 
+         * 过滤掉不用 token 也可以请求的接口 
+         * 这里有个浏览器的机制 '/favicon.ico' 默认会引用这个导致以下代码报错（虽然不影响），所以这边也需要把它列入过滤名单
+         */
+        const rule = /\/register|\/login|\/uploadImg|\/getData|\/postData|\/home|\/favicon.ico/;
+
         // 这里进行全局的 token 验证判断
         if (!rule.test(path) && path != '/') {
             const token: string = ctx.header.authorization;
+            
             if (token.length != config.token_size) {
                 return ctx.body = stateInfo.getFailData(config.token_tip);
             }
