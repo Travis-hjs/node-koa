@@ -1,5 +1,5 @@
 # node-koa
-Typescript 和 Koa 构建 Node 应用（demo）
+Typescript 和 Koa 构建 Node 应用（适用于新手起步）
 
 **详细说明：[掘金](https://juejin.im/post/5d5f630251882513cb48fd89)**
 
