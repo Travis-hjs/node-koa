@@ -33,31 +33,6 @@ export interface mysqlErrorType {
     message: string
 }
 
-interface fieldType {
-    catalog: string
-    db: string
-    table: string
-    orgTable: string
-    name: string
-    orgName: string
-    charsetNr: number
-    length: number
-    type: number
-    flags: number
-    decimals: number
-    default: any
-    zeroFill: boolean
-    protocol41: boolean
-}
-
-/** 数据库增删改查返回数据类型 */
-export interface mysqlQueryType {
-    /** 结果数组 或 对象 */
-    results: any
-    /** 域数组 */
-    fields: Array<fieldType>
-}
-
 /** 用户信息类型 */
 export interface userInfoType {
     /** 账号 */

@@ -3,7 +3,7 @@ import query from '../modules/mysql';
 import stateInfo from '../modules/state';
 import session from '../modules/session';
 import config from '../modules/config';
-import { mysqlErrorType, mysqlQueryType, userInfoType, sessionResultType } from '../modules/interfaces';
+import { mysqlErrorType, userInfoType, sessionResultType } from '../modules/interfaces';
 
 // 注册
 router.post('/register', async (ctx) => {
@@ -28,7 +28,7 @@ router.post('/register', async (ctx) => {
     }
 
     // 先查询是否有重复账号
-    await query(`select account from user where account = '${ params.account }'`).then((res: mysqlQueryType) => {
+    await query(`select account from user where account = '${ params.account }'`).then(res => {
         // console.log('注册查询', res);
         if (res.results.length > 0) {
             bodyResult = stateInfo.getFailData('该账号已被注册');
@@ -42,7 +42,7 @@ router.post('/register', async (ctx) => {
 
     // 再写入表格
     if (validAccount) {
-        await query('insert into user(account, password, name) values(?,?,?)', [params.account, params.password, params.name]).then((res: mysqlQueryType) => {
+        await query('insert into user(account, password, name) values(?,?,?)', [params.account, params.password, params.name]).then(res => {
             // console.log('注册写入', res);
             bodyResult = stateInfo.getSuccessData(params, '注册成功');
         }).catch((error: mysqlErrorType) => {
@@ -70,7 +70,7 @@ router.post('/login', async (ctx) => {
     }
 
     // 先查询是否有当前账号
-    await query(`select * from user where account = '${ params.account }'`).then((res: mysqlQueryType) => {
+    await query(`select * from user where account = '${ params.account }'`).then(res => {
         // console.log('登录查询', res.results);
         // 再判断账号是否可用
         if (res.results.length > 0) {
@@ -108,7 +108,7 @@ router.get('/getUserInfo', async (ctx) => {
 
     // console.log('getUserInfo', params, state);
 
-    await query(`select * from user where account = '${ state.info.account }'`).then((res: mysqlQueryType) => {
+    await query(`select * from user where account = '${ state.info.account }'`).then(res => {
         // 判断账号是否可用
         if (res.results.length > 0) {
             const data: userInfoType = res.results[0];

@@ -1,7 +1,7 @@
 import router from './main';
 import query from '../modules/mysql';
 import stateInfo from '../modules/state';
-import { mysqlQueryType, mysqlErrorType, sessionResultType } from '../modules/interfaces';
+import { mysqlErrorType, sessionResultType } from '../modules/interfaces';
 
 // 获取所有列表
 router.get('/getList', async (ctx) => {
@@ -12,7 +12,7 @@ router.get('/getList', async (ctx) => {
     // console.log('getList');
 
     // 这里要开始连表查询
-    await query(`select * from user_list where user_id = '${ state.info.id }'`).then((res: mysqlQueryType) => {
+    await query(`select * from user_list where user_id = '${ state.info.id }'`).then(res => {
         // console.log('/getList 查询', res.results);
         bodyResult = stateInfo.getSuccessData({
             list: res.results.length > 0 ? res.results : [] 
@@ -37,7 +37,7 @@ router.post('/addList', async (ctx) => {
     }
 
     // 写入列表
-    await query('insert into user_list(list_text, list_time, user_id) values(?,?,?)', [params.content, new Date().toLocaleDateString(), state.info.id]).then((res: mysqlQueryType) => {
+    await query('insert into user_list(list_text, list_time, user_id) values(?,?,?)', [params.content, new Date().toLocaleDateString(), state.info.id]).then(res => {
         console.log('写入列表', res);
         bodyResult = stateInfo.getSuccessData({
             id: res.results.insertId
@@ -66,7 +66,7 @@ router.post('/modifyList', async (ctx) => {
     }
 
     // 修改列表
-    await query(`update user_list set list_text='${params.content}', list_time='${new Date().toLocaleDateString()}' where list_id='${params.id}'`).then((res: mysqlQueryType) => {
+    await query(`update user_list set list_text='${params.content}', list_time='${new Date().toLocaleDateString()}' where list_id='${params.id}'`).then(res => {
         console.log('修改列表', res);
         if (res.results.affectedRows > 0) {
             bodyResult = stateInfo.getSuccessData({}, '修改成功');
@@ -90,7 +90,7 @@ router.post('/deleteList', async (ctx) => {
     let bodyResult = null;
 
     // 从数据库中删除
-    await query(`delete from user_list where list_id=${params.id} and user_id = ${state.info.id}`).then((res: mysqlQueryType) => {
+    await query(`delete from user_list where list_id=${params.id} and user_id = ${state.info.id}`).then(res => {
         console.log('从数据库中删除', res);
         if (res.results.affectedRows > 0) {
             bodyResult = stateInfo.getSuccessData({}, '删除成功');

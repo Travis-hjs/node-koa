@@ -2,6 +2,20 @@ import * as mysql from 'mysql';         // learn: https://www.npmjs.com/package/
 import config from './config';
 import { mysqlErrorType } from './interfaces';
 
+interface queryResult {
+    /** 结果数组 或 对象 */
+    results: any
+    /** 状态 */
+    fields: Array<mysql.FieldInfo>
+}
+
+interface queryError {
+    /** 错误信息 */
+    info: mysql.MysqlError
+    /** 信息描述 */
+    message: string
+}
+
 /** 数据库 */
 const pool = mysql.createPool({
     host: config.db.host,
@@ -15,11 +29,11 @@ const pool = mysql.createPool({
  * @param command 增删改查语句
  * @param value 对应的值
  */
-export default function query(command: string, value?: Array<any>): Promise<any> {
+export default function query(command: string, value?: Array<any>) {
     /** 错误信息 */
     let errorInfo: mysqlErrorType = null;
 
-    return new Promise((resolve, reject) => {
+    return new Promise<queryResult>((resolve, reject) => {
         pool.getConnection((error: any, connection) => {
             if (error) {
                 errorInfo = {
@@ -41,7 +55,7 @@ export default function query(command: string, value?: Array<any>): Promise<any>
                         resolve({ results, fields });
                     }
                 }
-                
+
                 if (value) {
                     pool.query(command, value, callback);
                 } else {
