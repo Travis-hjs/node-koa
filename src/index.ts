@@ -56,6 +56,10 @@ App.use(async (ctx, next) => {
         if (!rule.test(path) && path != '/') {
             const token: string = ctx.header.authorization;
             
+            if (!token) {
+                return ctx.body = stateInfo.getFailData('缺少token');
+            }
+
             if (token.length != config.token_size) {
                 return ctx.body = stateInfo.getFailData(config.token_tip);
             }
