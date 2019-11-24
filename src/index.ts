@@ -30,6 +30,7 @@ App.use(async (ctx, next) => {
         // 'Access-Control-Allow-Methods': 'OPTIONS, GET, PUT, POST, DELETE',
         'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
         // 'X-Powered-By': '3.2.1',
+        // 'Content-Security-Policy': `script-src 'self'` // 只允许页面`script`引入自身域名的地址
     });
 
     // const hasPath = router.stack.some(item => item.path == path);
