@@ -11,17 +11,13 @@ import './api/apiTodo';                         // 用户列表模块
 
 const App = new Koa();
 
-/** 请求次数（调试用） */
-let count = 1;
-
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx, next) => {
     /** 请求路径 */
     const path = ctx.request.path;
 
     console.log('--------------------------');
-    console.log('request_count >>', count);
-    count++;
+    console.count('request count');
     
     ctx.set({
         'Access-Control-Allow-Origin': '*',
