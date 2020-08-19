@@ -77,5 +77,5 @@ export type symbols = "+" | "-"| "*" | "/";
 
 export interface TheCtx extends Koa.ParameterizedContext {
     /** 登录时自定义设置的一个状态 */
-    the_state: sessionResultType
+    the_state?: sessionResultType
 }

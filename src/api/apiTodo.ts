@@ -1,11 +1,11 @@
 import router from "./main";
 import query from "../modules/mysql";
 import stateInfo from "../modules/state";
-import { mysqlErrorType, sessionResultType } from "../modules/interfaces";
+import { mysqlErrorType, TheCtx } from "../modules/interfaces";
 
 // 获取所有列表
-router.get("/getList", async (ctx) => {
-    const state: sessionResultType = ctx["the_state"];
+router.get("/getList", async (ctx: TheCtx) => {
+    const state = ctx["the_state"];
     /** 返回结果 */
     let bodyResult = null;
     
@@ -25,8 +25,8 @@ router.get("/getList", async (ctx) => {
 })
 
 // 添加列表
-router.post("/addList", async (ctx) => {
-    const state: sessionResultType = ctx["the_state"];
+router.post("/addList", async (ctx: TheCtx) => {
+    const state = ctx["the_state"];
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */
@@ -82,8 +82,8 @@ router.post("/modifyList", async (ctx) => {
 })
 
 // 删除列表
-router.post("/deleteList", async (ctx) => {
-    const state: sessionResultType = ctx["the_state"];
+router.post("/deleteList", async (ctx: TheCtx) => {
+    const state = ctx["the_state"];
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */
