@@ -76,6 +76,6 @@ export type javaScriptTypes = "string" | "number" | "array" | "object" | "functi
 export type symbols = "+" | "-"| "*" | "/";
 
 export interface TheCtx extends Koa.ParameterizedContext {
-    /** 登录时自定义设置的一个状态 */
+    /** 请求时自定义设置的一个状态 (see)[src/index.ts] */
     the_state?: sessionResultType
 }
