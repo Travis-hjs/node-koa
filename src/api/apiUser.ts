@@ -3,7 +3,7 @@ import query from "../modules/mysql";
 import stateInfo from "../modules/state";
 import session from "../modules/session";
 import config from "../modules/config";
-import { mysqlErrorType, userInfoType, TheCtx } from "../modules/interfaces";
+import { mysqlErrorType, userInfoType, theCtx } from "../modules/interfaces";
 
 // 注册
 router.post("/register", async (ctx) => {
@@ -99,7 +99,7 @@ router.post("/login", async (ctx) => {
 })
 
 // 获取用户信息
-router.get("/getUserInfo", async (ctx: TheCtx) => {
+router.get("/getUserInfo", async (ctx: theCtx) => {
     const state = ctx["the_state"];
     /** 接收参数 */
     const params = ctx.request.body;

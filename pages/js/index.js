@@ -1,3 +1,6 @@
+// 类型提示用
+/// <reference path="./base.d.ts" />
+
 const userInfo = fetchUserInfo();
 
 if (!userInfo) {

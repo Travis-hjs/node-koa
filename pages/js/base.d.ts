@@ -1,6 +1,7 @@
 
 /**
  * (learn)[https://www.tslang.cn/docs/handbook/declaration-files/do-s-and-don-ts.html]
+ * (jsconfig.json)[https://code.visualstudio.com/docs/languages/jsconfig]
  * @file 前端自定义`api`声明文件 
  */
 

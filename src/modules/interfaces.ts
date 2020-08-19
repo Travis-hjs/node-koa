@@ -75,7 +75,8 @@ export type javaScriptTypes = "string" | "number" | "array" | "object" | "functi
 /** 运算符号 */
 export type symbols = "+" | "-"| "*" | "/";
 
-export interface TheCtx extends Koa.ParameterizedContext {
+/** 自定义的请求上下文返回信息接口 */
+export interface theCtx extends Koa.ParameterizedContext {
     /** 请求时自定义设置的一个状态 (see)[src/index.ts] */
     the_state?: sessionResultType
 }

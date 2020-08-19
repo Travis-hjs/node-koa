@@ -1,10 +1,10 @@
 import router from "./main";
 import query from "../modules/mysql";
 import stateInfo from "../modules/state";
-import { mysqlErrorType, TheCtx } from "../modules/interfaces";
+import { mysqlErrorType, theCtx } from "../modules/interfaces";
 
 // 获取所有列表
-router.get("/getList", async (ctx: TheCtx) => {
+router.get("/getList", async (ctx: theCtx) => {
     const state = ctx["the_state"];
     /** 返回结果 */
     let bodyResult = null;
@@ -25,7 +25,7 @@ router.get("/getList", async (ctx: TheCtx) => {
 })
 
 // 添加列表
-router.post("/addList", async (ctx: TheCtx) => {
+router.post("/addList", async (ctx: theCtx) => {
     const state = ctx["the_state"];
     /** 接收参数 */
     const params = ctx.request.body;
@@ -82,7 +82,7 @@ router.post("/modifyList", async (ctx) => {
 })
 
 // 删除列表
-router.post("/deleteList", async (ctx: TheCtx) => {
+router.post("/deleteList", async (ctx: theCtx) => {
     const state = ctx["the_state"];
     /** 接收参数 */
     const params = ctx.request.body;

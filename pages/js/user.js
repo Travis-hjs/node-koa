@@ -1,3 +1,6 @@
+// 类型提示用
+/// <reference path="./base.d.ts" />
+
 /**
  * 注册
  * @param {object} info 注册传参
