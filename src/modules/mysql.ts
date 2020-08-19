@@ -1,6 +1,6 @@
-import * as mysql from 'mysql';         // learn: https://www.npmjs.com/package/mysql
-import config from './config';
-import { mysqlErrorType } from './interfaces';
+import * as mysql from "mysql";         // learn: https://www.npmjs.com/package/mysql
+import config from "./config";
+import { mysqlErrorType } from "./interfaces";
 
 interface queryResult {
     /** 结果数组 或 对象 */
@@ -38,7 +38,7 @@ export default function query(command: string, value?: Array<any>) {
             if (error) {
                 errorInfo = {
                     info: error,
-                    message: '数据库连接出错'
+                    message: "数据库连接出错"
                 }
                 reject(errorInfo);
             } else {
@@ -48,7 +48,7 @@ export default function query(command: string, value?: Array<any>) {
                     if (error) {
                         errorInfo = {
                             info: error,
-                            message: '数据库增删改查出错'
+                            message: "数据库增删改查出错"
                         }
                         reject(errorInfo);
                     } else {

@@ -1,17 +1,17 @@
-import { successInfoType, failInfoType } from './interfaces';
+import { successInfoType, failInfoType } from "./interfaces";
 
 class ModuleState {
 
     /** 成功提示 */
     private success: successInfoType = {
-        message: '',
+        message: "",
         code: 200,
         result: {}
     }
 
     /** 失败提示 */
     private fail: failInfoType = {
-        message: '',
+        message: "",
         code: 500,
     }
 
@@ -23,7 +23,7 @@ class ModuleState {
     public getSuccessData(data: object | number | string, tip: string = null) {
         const info = this.success;
         info.result = data;
-        info.message = tip || 'success';
+        info.message = tip || "success";
         return info;
     }
 

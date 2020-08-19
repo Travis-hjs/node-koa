@@ -1,60 +1,61 @@
-import * as Koa from 'koa';                     // learn: https://www.npmjs.com/package/koa
-import * as koaBody from 'koa-body';            // learn: http://www.ptbird.cn/koa-body.html
-import config from './modules/config';
-import router from './api/main';
-import stateInfo from './modules/state';
-import session from './modules/session';
-import './api/apiUser';                         // 用户模块
-import './api/apiUpload';                       // 上传文件模块
-import './api/apiTest';                         // 基础测试模块
-import './api/apiTodo';                         // 用户列表模块
+import * as Koa from "koa";                     // learn: https://www.npmjs.com/package/koa
+import * as koaBody from "koa-body";            // learn: http://www.ptbird.cn/koa-body.html
+import config from "./modules/config";
+import router from "./api/main";
+import stateInfo from "./modules/state";
+import session from "./modules/session";
+import "./api/apiUser";                         // 用户模块
+import "./api/apiUpload";                       // 上传文件模块
+import "./api/apiTest";                         // 基础测试模块
+import "./api/apiTodo";                         // 用户列表模块
+import { TheCtx } from "./modules/interfaces";
 
 const App = new Koa();
 
 // 先统一设置请求配置 => 跨域，请求头信息...
-App.use(async (ctx, next) => {
+App.use(async (ctx: TheCtx, next) => {
     /** 请求路径 */
     const path = ctx.request.path;
 
-    console.log('--------------------------');
-    console.count('request count');
+    console.log("--------------------------");
+    console.count("request count");
     
     ctx.set({
-        'Access-Control-Allow-Origin': '*',
-        // 'Content-Type': 'application/json',
-        // 'Access-Control-Allow-Credentials': 'true',
-        // 'Access-Control-Allow-Methods': 'OPTIONS, GET, PUT, POST, DELETE',
-        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-        // 'X-Powered-By': '3.2.1',
-        // 'Content-Security-Policy': `script-src 'self'` // 只允许页面`script`引入自身域名的地址
+        "Access-Control-Allow-Origin": "*",
+        // "Content-Type": "application/json",
+        // "Access-Control-Allow-Credentials": "true",
+        // "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE",
+        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+        // "X-Powered-By": "3.2.1",
+        // "Content-Security-Policy": `script-src "self"` // 只允许页面`script`引入自身域名的地址
     });
 
     // const hasPath = router.stack.some(item => item.path == path);
     // // 判断是否 404
-    // if (path != '/' && !hasPath) {
-    //     return ctx.body = '<h1 style="text-align: center; line-height: 40px; font-size: 24px; color: tomato">404：访问的页面（路径）不存在</h1>';
+    // if (path != "/" && !hasPath) {
+    //     return ctx.body = "<h1 style="text-align: center; line-height: 40px; font-size: 24px; color: tomato">404：访问的页面（路径）不存在</h1>";
     // }
 
-    // 如果前端设置了 XHR.setRequestHeader('Content-Type', 'application/json')
-    // ctx.set 就必须携带 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization' 
-    // 如果前端设置了 XHR.setRequestHeader('Authorization', 'xxxx') 那对应的字段就是 Authorization
+    // 如果前端设置了 XHR.setRequestHeader("Content-Type", "application/json")
+    // ctx.set 就必须携带 "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization" 
+    // 如果前端设置了 XHR.setRequestHeader("Authorization", "xxxx") 那对应的字段就是 Authorization
     // 并且这里要转换一下状态码
     // console.log(ctx.request.method);
-    if (ctx.request.method === 'OPTIONS') {
+    if (ctx.request.method === "OPTIONS") {
         ctx.response.status = 200;
     } else {
         /** 
          * 过滤掉不用 token 也可以请求的接口 
-         * 这里有个浏览器的机制 '/favicon.ico' 默认会引用这个导致以下代码报错（虽然不影响），所以这边也需要把它列入过滤名单
+         * 这里有个浏览器的机制 "/favicon.ico" 默认会引用这个导致以下代码报错（虽然不影响），所以这边也需要把它列入过滤名单
          */
         const rule = /\/register|\/login|\/uploadImg|\/getData|\/postData|\/home|\/favicon.ico/;
 
         // 这里进行全局的 token 验证判断
-        if (!rule.test(path) && path != '/') {
+        if (!rule.test(path) && path != "/") {
             const token: string = ctx.header.authorization;
             
             if (!token) {
-                return ctx.body = stateInfo.getFailData('缺少token');
+                return ctx.body = stateInfo.getFailData("缺少token");
             }
 
             if (token.length != config.token_size) {
@@ -67,7 +68,7 @@ App.use(async (ctx, next) => {
                 return ctx.body = stateInfo.getFailData(state.message);
             }
             // 设置 token 信息到上下文中给接口模块里面调用
-            ctx['the_state'] = state;
+            ctx["the_state"] = state;
         } 
     }
     
@@ -98,8 +99,8 @@ App.use(router.routes())
 //     // console.log(ctx.response);
 // });
 
-App.on('error', (err, ctx) => {
-    console.error('server error !!!!!!!!!!!!!', err, ctx);
+App.on("error", (err, ctx) => {
+    console.error("server error !!!!!!!!!!!!!", err, ctx);
 })
 
 App.listen(config.port, () => {

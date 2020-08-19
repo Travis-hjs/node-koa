@@ -1,3 +1,5 @@
+import * as Koa from "koa"; 
+
 /** 成功返回提示数据 */
 export interface successInfoType {
     /** 状态提示 */
@@ -65,4 +67,15 @@ export interface sessionResultType {
     success: boolean
     /** koken 信息 */
     info: userInfoType
+}
+
+/** JavaScript类型 */
+export type javaScriptTypes = "string" | "number" | "array" | "object" | "function" | "null" | "undefined";
+
+/** 运算符号 */
+export type symbols = "+" | "-"| "*" | "/";
+
+export interface TheCtx extends Koa.ParameterizedContext {
+    /** 登录时自定义设置的一个状态 */
+    the_state: sessionResultType
 }

@@ -1,16 +1,16 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import router from './main';
-import config from '../modules/config';
-import stateInfo from '../modules/state';
+import * as fs from "fs";
+import * as path from "path";
+import router from "./main";
+import config from "../modules/config";
+import stateInfo from "../modules/state";
 
 // 上传图片
 // learn: https://www.cnblogs.com/nicederen/p/10758000.html
 // learn: https://blog.csdn.net/qq_24134853/article/details/81745104
-router.post('/uploadImg', async (ctx, next) => {
+router.post("/uploadImg", async (ctx, next) => {
     const file = ctx.request.files[config.upload_img_name];
     let fileName = ctx.request.body.name || `img_${Date.now()}`;
-    fileName = `${fileName}.${file.name.split('.')[1]}`;
+    fileName = `${fileName}.${file.name.split(".")[1]}`;
 
     // 创建可读流
     const render = fs.createReadStream(file.path);
@@ -29,8 +29,8 @@ router.post('/uploadImg', async (ctx, next) => {
     // console.log(fileName, file);
 
     const result = {
-        image: '',
-        file: ''
+        image: "",
+        file: ""
     }
 
     /** 模拟上传到七牛云 */
@@ -47,5 +47,5 @@ router.post('/uploadImg', async (ctx, next) => {
 
     await uploadApi();
 
-    ctx.body = stateInfo.getSuccessData(result, '上传成功');
+    ctx.body = stateInfo.getSuccessData(result, "上传成功");
 })

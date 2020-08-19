@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import config from './config';
-import { userRecordType, userInfoType, sessionResultType } from '../modules/interfaces';
+import * as fs from "fs";
+import config from "./config";
+import { userRecordType, userInfoType, sessionResultType } from "../modules/interfaces";
 
 class ModuleSession {
     constructor() {
@@ -23,13 +23,13 @@ class ModuleSession {
     private write(obj?: userRecordType) {
         const data = obj || this.userRecord;
         // 同步写入（貌似没必要）
-        // fs.writeFileSync(config.user_file, JSON.stringify(data), { encoding: 'utf8' });
+        // fs.writeFileSync(config.user_file, JSON.stringify(data), { encoding: "utf8" });
         // 异步写入
-        fs.writeFile(config.user_file, JSON.stringify(data), { encoding: 'utf8' }, (err) => {
+        fs.writeFile(config.user_file, JSON.stringify(data), { encoding: "utf8" }, (err) => {
             if (err) {
-                console.log('session 写入失败', err);
+                console.log("session 写入失败", err);
             } else {
-                console.log('session 写入成功');
+                console.log("session 写入成功");
             }
         })
     }
@@ -39,14 +39,14 @@ class ModuleSession {
         const userFrom = fs.readFileSync(config.user_file).toString();
         this.userRecord = userFrom ? JSON.parse(userFrom) : {};
         this.checkRecord();
-        // console.log('token临时表', userFrom, this.userRecord);
+        // console.log("token临时表", userFrom, this.userRecord);
     }
 
     /** 生成 token */
     private getToken(): string {
         const getCode = (n: number): string => {
-            let codes = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789';
-            let code = '';
+            let codes = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
+            let code = "";
             for (let i = 0; i < n; i++) {
                 code += codes.charAt(Math.floor(Math.random() * codes.length));
             }
@@ -100,13 +100,13 @@ class ModuleSession {
      */
     public updateRecord(token: string) {
         let result: sessionResultType = {
-            message: '',
+            message: "",
             success: false,
             info: null
         }
 
         if (!this.userRecord.hasOwnProperty(token)) {
-            result.message = 'token 已过期或不存在';
+            result.message = "token 已过期或不存在";
             return result;
         } 
         
@@ -115,11 +115,11 @@ class ModuleSession {
         const now = Date.now();
 
         if (now - userInfo.online > this.maxAge * 3600000) {
-            result.message = 'token 已过期';
+            result.message = "token 已过期";
             return result;
         }
 
-        result.message = 'token 通过验证';
+        result.message = "token 通过验证";
         result.success = true;
         result.info = userInfo;
 

@@ -1,3 +1,5 @@
+import { javaScriptTypes, symbols } from "./interfaces";
+
 class ModuleUtils {
     /**
      * 格式化?后面参数成 JSON 对象
@@ -71,6 +73,70 @@ class ModuleUtils {
             array[length] = value;
         }
         return array.slice(min);
+    }
+
+    /**
+     * 检测类型
+     * @param target 检测的目标
+     */
+    public checkType(target: any): javaScriptTypes {
+        const value: string = Object.prototype.toString.call(target);
+        const result = value.match(/\[object (\S*)\]/)[1];
+        return result.toLocaleLowerCase() as javaScriptTypes;
+    }
+
+    /**
+     * 数字运算（主要用于小数点精度问题）
+     * [see](https://juejin.im/post/6844904066418491406#heading-12)
+     * @param a 前面的值
+     * @param type 计算方式
+     * @param b 后面的值
+     * @example 
+     * // 可链式调用
+     * const res = computeNumber(1.3, "-", 1.2).next("+", 1.5).next("*", 2.3).next("/", 0.2).result;
+     * console.log(res);
+     */
+    public computeNumber(a: number, type: symbols, b: number) {
+        const THAT = this;
+        /**
+         * 获取数字小数点的位数
+         * @param value 数字
+         */
+        function getLenth(value: number) {
+            const string = value.toString().split(".")[1];
+            return string ? string.length : 0;
+        }
+        /** 倍率 */
+        const power = Math.pow(10, Math.max(getLenth(a), getLenth(b)));
+        let result = 0;
+        
+        switch (type) {
+            case "+":
+                result = (a * power + b * power) / power;
+                break;
+            case "-":
+                result = (a * power - b * power) / power;
+                break;
+            case "*":
+                result = (a * power) * (b * power) / (power * power);
+                break;
+            case "/":
+                result = (a * power) / (b * power);
+                break;
+        }
+        
+        return {
+            /** 计算结果 */
+            result,
+            /**
+             * 继续计算
+             * @param nextType 继续计算方式
+             * @param nextValue 继续计算的值
+             */
+            next(nextType: symbols, nextValue: number) {
+                return THAT.computeNumber(result, nextType, nextValue);
+            }
+        };
     }
 }
 
