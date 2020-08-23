@@ -110,18 +110,22 @@ class ModuleUtils {
         const power = Math.pow(10, Math.max(getLenth(a), getLenth(b)));
         let result = 0;
         
+        // 防止出现 `33.33333*100000 = 3333332.9999999995` && `33.33*10 = 333.29999999999995` 这类情况做的暴力处理
+        a = Math.round(a * power);
+        b = Math.round(b * power);
+
         switch (type) {
             case "+":
-                result = (a * power + b * power) / power;
+                result = (a + b) / power;
                 break;
             case "-":
-                result = (a * power - b * power) / power;
+                result = (a - b) / power;
                 break;
             case "*":
-                result = (a * power) * (b * power) / (power * power);
+                result = (a * b) / (power * power);
                 break;
             case "/":
-                result = (a * power) / (b * power);
+                result = a  / b ;
                 break;
         }
         
