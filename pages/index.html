@@ -31,16 +31,16 @@
 <body>
     <div class="page">
         <div class="item">
-            <button class="button btn-blue" onclick="getData()">get 获取数据</button>
+            <button class="button button_blue" onclick="getData()">get 获取数据</button>
         </div>
         <div class="item">
-            <button class="button btn-blue" onclick="postData()">post 获取数据</button>
+            <button class="button button_blue" onclick="postData()">post 获取数据</button>
         </div>
         <div class="item">
-            <button class="button btn-blue" onclick="getUserInfo()">获取用户信息</button>
+            <button class="button button_blue" onclick="getUserInfo()">获取用户信息</button>
         </div>
         <div class="item">
-            <button class="button btn-blue" onclick="logout()">退出登录</button>
+            <button class="button button_blue" onclick="logout()">退出登录</button>
         </div>
         <div class="card upload-img">
             <div class="img-box hide">
@@ -55,13 +55,23 @@
         <div class="todo">
             <h2>增删改查</h2>
             <input class="input" type="text" placeholder="输入增加内容">
-            <button class="button btn-blue" onclick="addList(this)">增加一条</button>
+            <button class="button button_blue" onclick="addList(this)">增加一条</button>
         </div>
         <div class="list">
             
         </div>
     </div>
-    <script src="./js/base.js"></script>
-    <script src="./js/index.js"></script>
+
+    <script>
+        var adopt = /^(https?:|http?:|mailto:|tel:)/.test(location.href);
+        if (adopt) {
+            var scriptLabel = document.createElement("script");
+            scriptLabel.type = "module";
+            scriptLabel.src = "./js/index.js";
+            document.body.appendChild(scriptLabel);
+        } else {
+            alert("请用服务端方式打开");
+        } 
+    </script>
 </body>
 </html>

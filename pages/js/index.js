@@ -1,35 +1,41 @@
-// 类型提示用
-/// <reference path="./base.d.ts" />
+import {
+    fetchUserInfo,
+    baseRequest
+} from "./api.js";
+
+import { 
+    find 
+} from "./utils.js";
 
 const userInfo = fetchUserInfo();
 
 if (!userInfo) {
-    window.location.href = 'user.html';
+    window.location.href = "user.html";
 }
 
 /** 页面整体 */
-const page = document.querySelector('.page');
+const page = find(".page");
 
 function getData() {
-    baseRequest('GET', '/getData', {
+    baseRequest("GET", "/getData", {
         id: 10
     }, res => {
-        console.log('get 成功', res);
+        console.log("get 成功", res);
 
     }, err => {
-        console.log('get 失败', err);
+        console.log("get 失败", err);
     });
 }
 
 function postData() {
-    baseRequest('POST', '/postData', {
-        name: 'hjs',
+    baseRequest("POST", "/postData", {
+        name: "hjs",
         age: new Date().getFullYear() - 1995,
     }, res => {
-        console.log('post 成功', res);
+        console.log("post 成功", res);
 
     }, err => {
-        console.log('post 失败', err);
+        console.log("post 失败", err);
 
     });
 }
@@ -41,10 +47,10 @@ function postData() {
  * @param {Function} fail 
  */
 function upload(formdata, success, fail) {
-    baseRequest('POST', '/uploadImg', {}, res => {
-        if (typeof success === 'function') success(res);
+    baseRequest("POST", "/uploadImg", {}, res => {
+        if (typeof success === "function") success(res);
     }, err => {
-        if (typeof fail === 'function') fail(err);
+        if (typeof fail === "function") fail(err);
     }, formdata);
 }
 
@@ -72,25 +78,25 @@ function uploadImg(el) {
     /** 上传文件 */
     const file = el.files[0];
     /** 上传类型数组 */
-    const types = ['image/jpg', 'image/png', 'image/jpeg', 'image/gif'];
+    const types = ["image/jpg", "image/png", "image/jpeg", "image/gif"];
     // 判断文件类型
-    if (types.indexOf(file.type) < 0) return alert('文件格式只支持：jpg 和 png');
+    if (types.indexOf(file.type) < 0) return alert("文件格式只支持：jpg 和 png");
     // 判断大小
-    if (file.size > 2 * 1024 * 1024) return alert('上传的文件不能大于2M');
+    if (file.size > 2 * 1024 * 1024) return alert("上传的文件不能大于2M");
 
     const formData = new FormData();
-    // formData.append('name', 'hjs-img');
-    formData.append('img', file);
+    // formData.append("name", "hjs-img");
+    formData.append("img", file);
     // console.log(formData);
     
     upload(formData, res => {
-        console.log('上传成功', res);
-        const src = window.location.href.replace('pages/index.html', res.result.file) || getObjectURL(file);
-        el.parentNode.classList.add('hide');
-        el.parentNode.parentNode.querySelector('.img-box').classList.remove('hide');
-        el.parentNode.parentNode.querySelector('.img-box .image').src = src;
+        console.log("上传成功", res);
+        const src = window.location.href.replace("pages/index.html", res.result.file) || getObjectURL(file);
+        el.parentNode.classList.add("hide");
+        el.parentNode.parentNode.querySelector(".img-box").classList.remove("hide");
+        el.parentNode.parentNode.querySelector(".img-box .image").src = src;
     }, err => {
-        console.log('上传失败', err);
+        console.log("上传失败", err);
         
     })
 
@@ -102,32 +108,32 @@ function uploadImg(el) {
  * @param {HTMLElement} el 
  */
 function removeImg(el) {
-    el.parentNode.classList.add('hide');
-    el.parentNode.querySelector('.image').src = '';
-    el.parentNode.parentNode.querySelector('.upload').classList.remove('hide');
+    el.parentNode.classList.add("hide");
+    el.parentNode.querySelector(".image").src = "";
+    el.parentNode.parentNode.querySelector(".upload").classList.remove("hide");
 }
 
 /** 获取用户信息 */
 function getUserInfo() {
-    baseRequest('GET', '/getUserInfo', {}, res => {
-        console.log('用户信息', res);
+    baseRequest("GET", "/getUserInfo", {}, res => {
+        console.log("用户信息", res);
 
     }, err => {
-        console.log('获取用户信息失败', err);
+        console.log("获取用户信息失败", err);
     });
 }
 
 /** 退出登录 */
 function logout() {
-    baseRequest('GET', '/logout', {}, res => {
-        console.log('退出登录', res);
-        window.location.href = 'user.html';
+    baseRequest("GET", "/logout", {}, res => {
+        console.log("退出登录", res);
+        window.location.href = "user.html";
     }, err => {
-        console.log('退出登录失败', err);
+        console.log("退出登录失败", err);
     });
 }
 
-const listNode = document.querySelector('.list');
+const listNode = find(".list");
 
 /**
  * 输出列表item
@@ -142,19 +148,19 @@ function ouputList(info) {
                     <button class="button btn-blue center hide" onclick="subChange(this)">提交</button>
                     <button class="button btn-red" onclick="removeList(this)">删除</button>
                 </div>`;
-    listNode.insertAdjacentHTML('beforeend', itme);
+    listNode.insertAdjacentHTML("beforeend", itme);
 }
 
 /** 初始化获取列表 */
 function initList() {
-    baseRequest('GET', '/getList', {}, res => {
-        console.log('获取列表', res);
+    baseRequest("GET", "/getList", {}, res => {
+        console.log("获取列表", res);
         if (res.result.list.length == 0) return;
         res.result.list.forEach(item => {
             ouputList(item);
         })
     }, err => {
-        console.log('获取列表失败', err);
+        console.log("获取列表失败", err);
         
     })
 }
@@ -168,10 +174,10 @@ function addList(el) {
     /**
      * @type {HTMLInputElement}
      */
-    const input = el.parentNode.querySelector('.input');
+    const input = el.parentNode.querySelector(".input");
     const text = input.value.trim();
-    if (!text) return alert('输入的内容不能为空~');
-    baseRequest('POST', '/addList', {
+    if (!text) return alert("输入的内容不能为空~");
+    baseRequest("POST", "/addList", {
         content: text
     }, res => {
         console.log(res.result);
@@ -181,7 +187,7 @@ function addList(el) {
         })
         input.value = null;
     }, err => {
-        console.log('添加失败', err);
+        console.log("添加失败", err);
     })
 }
 
@@ -190,14 +196,14 @@ function addList(el) {
  * @param {HTMLElement} el 
  */
 function removeList(el) {
-    // return console.log(el.parentNode.dataset['id']);
-    baseRequest('POST', '/deleteList', {
-        id: el.parentNode.dataset['id']
+    // return console.log(el.parentNode.dataset["id"]);
+    baseRequest("POST", "/deleteList", {
+        id: el.parentNode.dataset["id"]
     }, res => {
-        console.log('删除成功', res);
+        console.log("删除成功", res);
         el.parentNode.parentNode.removeChild(el.parentNode);
     }, err => {
-        console.log('删除失败', err);
+        console.log("删除失败", err);
         
     })
 }
@@ -207,18 +213,18 @@ function removeList(el) {
  * @param {HTMLElement} el 
  */
 function subChange(el) {
-    let id = el.parentNode.dataset['id'];
-    let text = el.parentNode.querySelector('.input').value.trim();
-    if (!text) return alert('内容不能为空');
+    let id = el.parentNode.dataset["id"];
+    let text = el.parentNode.querySelector(".input").value.trim();
+    if (!text) return alert("内容不能为空");
     // console.log(text, id);
-    baseRequest('POST', '/modifyList', {
+    baseRequest("POST", "/modifyList", {
         content: text,
         id: id
     }, res => {
-        console.log('修改成功', res);
+        console.log("修改成功", res);
         offInput(el);
     }, err => {
-        console.log('修改失败', err);
+        console.log("修改失败", err);
         
     });
 }
@@ -228,9 +234,9 @@ function subChange(el) {
  * @param {HTMLElement} el 
  */
 function onInput(el) {
-    el.parentNode.querySelector('.btn-blue').classList.remove('hide');
-    el.classList.add('hide');
-    el.parentNode.querySelector('.input').removeAttribute('readonly');
+    el.parentNode.querySelector(".btn-blue").classList.remove("hide");
+    el.classList.add("hide");
+    el.parentNode.querySelector(".input").removeAttribute("readonly");
 }
 
 /**
@@ -238,7 +244,7 @@ function onInput(el) {
  * @param {HTMLElement} el 
  */
 function offInput(el) {
-    el.parentNode.querySelector('.btn-blue').classList.add('hide');
-    el.parentNode.querySelector('.btn-green').classList.remove('hide');
-    el.parentNode.querySelector('.input').setAttribute('readonly', 'readonly');
+    el.parentNode.querySelector(".btn-blue").classList.add("hide");
+    el.parentNode.querySelector(".btn-green").classList.remove("hide");
+    el.parentNode.querySelector(".input").setAttribute("readonly", "readonly");
 }   

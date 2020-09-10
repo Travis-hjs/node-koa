@@ -1,3 +1,23 @@
+const BASE_URL = "http://10.0.18.116:1995";
+
+const cache = window.sessionStorage;
+
+/**
+ * 本地储存用户数据
+ * @param {object} data 对应的数据
+ */
+export function saveUserInfo(data) {
+    cache.setItem("userInfo", JSON.stringify(data));
+}
+
+/**
+ * 获取用户数据
+ */
+export function fetchUserInfo() {
+    let data = cache.getItem("userInfo") ? JSON.parse(cache.getItem("userInfo")) : null;
+    return data;
+}
+
 /**
  * `XMLHttpRequest`请求 [MDN文档](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
  * @param {object} param 传参对象
@@ -94,18 +114,27 @@ function ajax(param) {
     XHR.send(payload);
 }
 
-const BASE_URL = 'http://10.0.18.116:1995';
+/**
+ * 请求成功函数类型提示
+ * @param {any} res 
+ */
+const successFn = function(res) {}
+/**
+ * 请求失败函数类型提示
+ * @param {{ message?: string }} error 
+ */
+const failFn = function(error) {}
 
 /**
  * 基础请求
- * @param {'GET'|'POST'} method post | get
+ * @param {"GET"|"POST"} method post | get
  * @param {string} url 请求接口
  * @param {object} data 请求数据 
- * @param {Function} success 成功回调
- * @param {Function} fail 失败回调
+ * @param {successFn} success 成功回调
+ * @param {failFn} fail 失败回调
  * @param {FormData} upload 上传图片 FormData
  */
-function baseRequest(method, url, data, success, fail, upload) {
+export function baseRequest(method, url, data, success, fail, upload) {
     ajax({
         url: BASE_URL + url,
         method: method,
@@ -113,48 +142,71 @@ function baseRequest(method, url, data, success, fail, upload) {
         file: upload,
         overtime: 5000,
         success(res) {
-            // console.log('请求成功', res);
+            // console.log("请求成功", res);
             if (res.code == 200) {
-                if (typeof success === 'function') success(res);
+                if (typeof success === "function") success(res);
             } else {
-                if (typeof fail === 'function') fail(res);
+                if (typeof fail === "function") fail(res);
             }
         },
         fail(err) {
-            // console.log('请求失败', err);
+            // console.log("请求失败", err);
             /** 返回错误消息 */
             let error = {
-                message: '接口报错'
+                message: "接口报错"
             };
-            if (err.response.charAt(0) == '{') {
+            if (err.response.charAt(0) == "{") {
                 error = JSON.parse(err.response);
             }
-            if (typeof fail === 'function') fail(error);
+            if (typeof fail === "function") fail(error);
         },
         timeout() {
-            console.warn('XMLHttpRequest 请求超时 !!!');
+            console.warn("XMLHttpRequest 请求超时 !!!");
             let error = {
-                message: '请求超时'
+                message: "请求超时"
             }
-            if (typeof fail === 'function') fail(error);
+            if (typeof fail === "function") fail(error);
         }
     });
 }
 
-const cache = window.sessionStorage;
-
 /**
- * 本地储存用户数据
- * @param {object} data 对应的数据
+ * 登录
+ * @param {object} info 注册传参
+ * @param {string} info.account 账户
+ * @param {string} info.password 密码 
+ * @param {successFn} success
+ * @param {failFn} fail
  */
-function saveUserInfo(data) {
-    cache.setItem('userInfo', JSON.stringify(data));
+export function login(info, success, fail) {
+    baseRequest('POST', '/login', info, res => {
+        if (res.code == 200) {
+            if (typeof success === 'function') success(res);
+        } else {
+            if (typeof fail === 'function') fail(res);
+        }
+    }, err => {
+        if (typeof fail === 'function') fail(err);
+    });
 }
 
 /**
- * 获取用户数据
+ * 注册
+ * @param {object} info 注册传参
+ * @param {string} info.account 账户
+ * @param {string} info.password 密码 
+ * @param {string} info.name 用户名 
+ * @param {successFn} success
+ * @param {failFn} fail
  */
-function fetchUserInfo() {
-    let data = cache.getItem('userInfo') ? JSON.parse(cache.getItem('userInfo')) : null;
-    return data;
+export function register(info, success, fail) {
+    baseRequest('POST', '/register', info, res => {
+        if (res.code == 200) {
+            if (typeof success === 'function') success(res);
+        } else {
+            if (typeof fail === 'function') fail(res);
+        }
+    }, err => {
+        if (typeof fail === 'function') fail(err);
+    });
 }

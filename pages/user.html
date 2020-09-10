@@ -18,34 +18,44 @@
         <div class="title">登录</div>
         <div class="input-item">
             <div class="input-tip">账号：</div>
-            <input class="input" id="login_account" type="text" placeholder="请输入账号">
+            <input class="input login_account" type="text" placeholder="请输入账号">
         </div>
         <div class="input-item">
             <div class="input-tip">密码：</div>
-            <input class="input" id="login_password" type="password" placeholder="请输入密码">
+            <input class="input login_password" type="password" placeholder="请输入密码">
         </div>
         <div class="sub-box">
-            <button class="button btn-blue" onclick="subLogin()">登录</button>
+            <button class="button button_blue btn_login">登录</button>
         </div>
         <div class="title">注册</div>
         <div class="input-item">
             <div class="input-tip">账号：</div>
-            <input class="input" id="register_account" type="text" placeholder="请输入账号">
+            <input class="input register_account" type="text" placeholder="请输入账号">
         </div>
         <div class="input-item">
             <div class="input-tip">密码：</div>
-            <input class="input" id="register_password" type="password" placeholder="请输入密码">
+            <input class="input register_password" type="password" placeholder="请输入密码">
         </div>
         <div class="input-item">
             <div class="input-tip">用户名（可选）：</div>
-            <input class="input" id="register_name" type="text" placeholder="请输入用户名">
+            <input class="input register_name" type="text" placeholder="请输入用户名">
         </div>
         <div class="sub-box">
-            <button class="button btn-blue" onclick="subRegister()">注册</button>
-            <button class="button btn-green" onclick="resetRegister()">重置</button>
+            <button class="button button_blue btn_register">注册</button>
+            <button class="button button_green btn_reset">重置</button>
         </div>
     </div>
-    <script src="./js/base.js"></script>
-    <script src="./js/user.js"></script>
+
+    <script>
+        var adopt = /^(https?:|http?:|mailto:|tel:)/.test(location.href);
+        if (adopt) {
+            var scriptLabel = document.createElement("script");
+            scriptLabel.type = "module";
+            scriptLabel.src = "./js/user.js";
+            document.body.appendChild(scriptLabel);
+        } else {
+            alert("请用服务端方式打开");
+        } 
+    </script>
 </body>
 </html>
