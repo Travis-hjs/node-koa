@@ -1,3 +1,7 @@
+import { 
+    toast 
+} from "./utils.js";
+
 const BASE_URL = "http://10.0.18.116:1995";
 
 const cache = window.sessionStorage;
@@ -98,7 +102,7 @@ function ajax(param) {
         XHR.setRequestHeader("Content-Type", "application/json");
         // 设置token
         const token = fetchUserInfo() ? fetchUserInfo().token : "";
-        XHR.setRequestHeader('Authorization', token);
+        XHR.setRequestHeader("Authorization", token);
     }
 
     // 在IE中，超时属性只能在调用 open() 方法之后且在调用 send() 方法之前设置。
@@ -159,6 +163,7 @@ export function baseRequest(method, url, data, success, fail, upload) {
                 error = JSON.parse(err.response);
             }
             if (typeof fail === "function") fail(error);
+            toast.showToast(error.message || "接口报错");
         },
         timeout() {
             console.warn("XMLHttpRequest 请求超时 !!!");
@@ -166,47 +171,148 @@ export function baseRequest(method, url, data, success, fail, upload) {
                 message: "请求超时"
             }
             if (typeof fail === "function") fail(error);
+            toast.showToast("请求超时");
         }
     });
 }
 
-/**
- * 登录
- * @param {object} info 注册传参
- * @param {string} info.account 账户
- * @param {string} info.password 密码 
- * @param {successFn} success
- * @param {failFn} fail
- */
-export function login(info, success, fail) {
-    baseRequest('POST', '/login', info, res => {
-        if (res.code == 200) {
-            if (typeof success === 'function') success(res);
-        } else {
-            if (typeof fail === 'function') fail(res);
-        }
-    }, err => {
-        if (typeof fail === 'function') fail(err);
-    });
+class ModuleApi {
+    /**
+     * 登录
+     * @param {object} info 注册传参
+     * @param {string} info.account 账户
+     * @param {string} info.password 密码 
+     * @param {successFn} success
+     * @param {failFn} fail
+     */
+    login(info, success, fail) {
+        baseRequest("POST", "/login", info, res => {
+            if (res.code == 200) {
+                if (typeof success === "function") success(res);
+            } else {
+                if (typeof fail === "function") fail(res);
+            }
+        }, fail);
+    }
+
+    /**
+     * 获取用户信息
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    logout(success, fail) {
+        baseRequest("GET", "/logout", {}, success, fail);
+    }
+
+    /**
+     * 注册
+     * @param {object} info 注册传参
+     * @param {string} info.account 账户
+     * @param {string} info.password 密码 
+     * @param {string} info.name 用户名 
+     * @param {successFn} success
+     * @param {failFn} fail
+     */
+    register(info, success, fail) {
+        baseRequest("POST", "/register", info, res => {
+            if (res.code == 200) {
+                if (typeof success === "function") success(res);
+            } else {
+                if (typeof fail === "function") fail(res);
+            }
+        }, fail);
+    }
+
+    /**
+     * 上传图片
+     * @param {FormData} formdata 
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    upload(formdata, success, fail) {
+        baseRequest("POST", "/uploadImg", {}, success, fail, formdata);
+    }
+
+    /**
+     * 测试`get`请求
+     * @param {string|number} id 
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    testGet(id = 12, success, fail) {
+        baseRequest("GET", "/getData", {
+            id
+        }, success, fail);
+    }
+
+    /**
+     * 测试`post`请求
+     * @param {{ name: string, age: string }} data 
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    testPost(data, success, fail) {
+        baseRequest("POST", "/postData", data, success, fail);
+    }
+
+    /**
+     * 获取用户信息
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    getUserInfo(success, fail) {
+        baseRequest("GET", "/getUserInfo", {}, success, fail);
+    }
+
+    /**
+     * 获取todo列表数据
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    getTodoList(success, fail) {
+        baseRequest("GET", "/getList", {}, success, fail);
+    }
+    
+    /**
+     * 修改todo列表item
+     * @param {{ content: string, id: string|number }} data
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    modifyListItem(data, success, fail) {
+        baseRequest("POST", "/modifyList", data, success, fail);
+    }
+
+    /**
+     * 删除一条列表
+     * @param {string} id
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    deleteListItem(id, success, fail) {
+        baseRequest("POST", "/deleteList", {
+            id
+        }, success, fail);
+    }
+
+    /**
+     * 添加一条列表
+     * @param {string} value
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    addListItem(value, success, fail) {
+        baseRequest("POST", "/addList", {
+            content: value
+        }, success, fail);
+    }
 }
 
-/**
- * 注册
- * @param {object} info 注册传参
- * @param {string} info.account 账户
- * @param {string} info.password 密码 
- * @param {string} info.name 用户名 
- * @param {successFn} success
- * @param {failFn} fail
- */
-export function register(info, success, fail) {
-    baseRequest('POST', '/register', info, res => {
-        if (res.code == 200) {
-            if (typeof success === 'function') success(res);
-        } else {
-            if (typeof fail === 'function') fail(res);
-        }
-    }, err => {
-        if (typeof fail === 'function') fail(err);
-    });
-}
+/** api模块 */
+const api = new ModuleApi();
+
+export default api;
+
+
+
+

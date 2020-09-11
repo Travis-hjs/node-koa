@@ -2,9 +2,7 @@ import {
     find, toast 
 } from "./utils.js";
 
-import { 
-    login, register 
-} from "./api.js";
+import api from "./api.js";
 
 /** 
  * @type {HTMLInputElement} 
@@ -29,7 +27,7 @@ const registerName = find(".register_name");
 
 /** 点击登录 */
 function clickLogin() {
-     login({
+    api.login({
          account: loginAccount.value,
          password: loginPassword.value
      }, res => {
@@ -38,13 +36,12 @@ function clickLogin() {
         window.location.href = "index.html";
      }, err => {
         console.log("登录失败", err);
-        toast.showToast(err.message || "登录失败");
      });
 }
 
 /** 点击注册 */
 function clickRegister() {
-    register({
+    api.register({
         account: registerAccount.value,
         password: registerPassword.value,
         name: registerName.value
@@ -56,7 +53,6 @@ function clickRegister() {
         toast.showToast("注册成功");
     }, err => {
         console.log("注册失败", err);
-        toast.showToast(err.message || "注册失败");
     });
 }
 

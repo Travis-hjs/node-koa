@@ -1,58 +1,21 @@
-import {
+import api, {
     fetchUserInfo,
-    baseRequest
 } from "./api.js";
 
 import { 
-    find 
+    find, 
+    showAlert, 
+    toast 
 } from "./utils.js";
 
 const userInfo = fetchUserInfo();
 
 if (!userInfo) {
-    window.location.href = "user.html";
+    // window.location.href = "user.html";
 }
 
 /** 页面整体 */
 const page = find(".page");
-
-function getData() {
-    baseRequest("GET", "/getData", {
-        id: 10
-    }, res => {
-        console.log("get 成功", res);
-
-    }, err => {
-        console.log("get 失败", err);
-    });
-}
-
-function postData() {
-    baseRequest("POST", "/postData", {
-        name: "hjs",
-        age: new Date().getFullYear() - 1995,
-    }, res => {
-        console.log("post 成功", res);
-
-    }, err => {
-        console.log("post 失败", err);
-
-    });
-}
-
-/**
- * 上传图片
- * @param {FormData} formdata 
- * @param {Function} success 
- * @param {Function} fail 
- */
-function upload(formdata, success, fail) {
-    baseRequest("POST", "/uploadImg", {}, res => {
-        if (typeof success === "function") success(res);
-    }, err => {
-        if (typeof fail === "function") fail(err);
-    }, formdata);
-}
 
 /**
  * 获取二进制路径（需要打开服务器调试）
@@ -80,16 +43,16 @@ function uploadImg(el) {
     /** 上传类型数组 */
     const types = ["image/jpg", "image/png", "image/jpeg", "image/gif"];
     // 判断文件类型
-    if (types.indexOf(file.type) < 0) return alert("文件格式只支持：jpg 和 png");
+    if (types.indexOf(file.type) < 0) return showAlert("文件格式只支持：jpg 和 png");
     // 判断大小
-    if (file.size > 2 * 1024 * 1024) return alert("上传的文件不能大于2M");
+    if (file.size > 2 * 1024 * 1024) return showAlert("上传的文件不能大于2M");
 
     const formData = new FormData();
     // formData.append("name", "hjs-img");
     formData.append("img", file);
     // console.log(formData);
     
-    upload(formData, res => {
+    api.upload(formData, res => {
         console.log("上传成功", res);
         const src = window.location.href.replace("pages/index.html", res.result.file) || getObjectURL(file);
         el.parentNode.classList.add("hide");
@@ -113,58 +76,45 @@ function removeImg(el) {
     el.parentNode.parentNode.querySelector(".upload").classList.remove("hide");
 }
 
-/** 获取用户信息 */
-function getUserInfo() {
-    baseRequest("GET", "/getUserInfo", {}, res => {
-        console.log("用户信息", res);
-
-    }, err => {
-        console.log("获取用户信息失败", err);
-    });
-}
-
-/** 退出登录 */
-function logout() {
-    baseRequest("GET", "/logout", {}, res => {
-        console.log("退出登录", res);
-        window.location.href = "user.html";
-    }, err => {
-        console.log("退出登录失败", err);
-    });
-}
-
 const listNode = find(".list");
 
 /**
  * 输出列表item
- * @param {object} info 
- * @param {string} info.list_text 
- * @param {number} info.list_id 
+ * @param {{ content: string, id: string|number }} info 
  */
 function ouputList(info) {
-    const itme = `<div class="card flex fvertical list-item" data-id="${info.list_id}">
-                    <input class="input f1" type="text" value="${info.list_text}" readonly="readonly">
-                    <button class="button btn-green center" onclick="onInput(this)">修改</button>
-                    <button class="button btn-blue center hide" onclick="subChange(this)">提交</button>
-                    <button class="button btn-red" onclick="removeList(this)">删除</button>
-                </div>`;
-    listNode.insertAdjacentHTML("beforeend", itme);
-}
+    const item = document.createElement("div");
+    const input = document.createElement("input");
+    const btnModify = document.createElement("button");
+    const btnSub = document.createElement("button");
+    const btnDelete = document.createElement("button");
 
-/** 初始化获取列表 */
-function initList() {
-    baseRequest("GET", "/getList", {}, res => {
-        console.log("获取列表", res);
-        if (res.result.list.length == 0) return;
-        res.result.list.forEach(item => {
-            ouputList(item);
-        })
-    }, err => {
-        console.log("获取列表失败", err);
-        
-    })
+    item.className = "card flex fvertical list-item";
+    item.dataset.id = info.id;
+
+    input.className = "input f1";
+    input.type = "text";
+    input.readOnly = true;
+    input.value = info.content;
+
+    btnModify.className = "button btn-green center";
+    btnModify.onclick = function() {
+        onInput(btnModify, input);
+    }
+
+    btnSub.className = "button btn-blue center hide";
+    btnSub.onclick = function() {
+        subChange(btnSub);
+    }
+
+    btnDelete.className = "button btn-red";
+    btnDelete.onclick = function() {
+        removeList(btnDelete);
+    }
+
+    item.append(input, btnModify, btnSub, btnDelete);
+    listNode.appendChild(item);
 }
-initList();
 
 /**
  * 增加一条列表
@@ -176,19 +126,15 @@ function addList(el) {
      */
     const input = el.parentNode.querySelector(".input");
     const text = input.value.trim();
-    if (!text) return alert("输入的内容不能为空~");
-    baseRequest("POST", "/addList", {
-        content: text
-    }, res => {
+    if (!text) return showAlert("输入的内容不能为空~");
+    api.addListItem(text, res => {
         console.log(res.result);
         ouputList({
-            list_text: text,
-            list_id: res.result.id
+            content: text,
+            id: res.result.id
         })
         input.value = null;
-    }, err => {
-        console.log("添加失败", err);
-    })
+    }) 
 }
 
 /**
@@ -197,14 +143,10 @@ function addList(el) {
  */
 function removeList(el) {
     // return console.log(el.parentNode.dataset["id"]);
-    baseRequest("POST", "/deleteList", {
-        id: el.parentNode.dataset["id"]
-    }, res => {
+    api.deleteListItem(el.parentNode.dataset["id"], res => {
         console.log("删除成功", res);
+        toast.showToast("删除成功");
         el.parentNode.parentNode.removeChild(el.parentNode);
-    }, err => {
-        console.log("删除失败", err);
-        
     })
 }
 
@@ -215,28 +157,26 @@ function removeList(el) {
 function subChange(el) {
     let id = el.parentNode.dataset["id"];
     let text = el.parentNode.querySelector(".input").value.trim();
-    if (!text) return alert("内容不能为空");
+    if (!text) return showAlert("内容不能为空");
     // console.log(text, id);
-    baseRequest("POST", "/modifyList", {
+    api.modifyListItem({
         content: text,
         id: id
     }, res => {
         console.log("修改成功", res);
         offInput(el);
-    }, err => {
-        console.log("修改失败", err);
-        
-    });
+    })
 }
 
 /**
  * 使输入框可以修改
  * @param {HTMLElement} el 
+ * @param {HTMLInputElement} input
  */
-function onInput(el) {
+function onInput(el, input) {
     el.parentNode.querySelector(".btn-blue").classList.remove("hide");
     el.classList.add("hide");
-    el.parentNode.querySelector(".input").removeAttribute("readonly");
+    input.removeAttribute("readonly");
 }
 
 /**
@@ -248,3 +188,53 @@ function offInput(el) {
     el.parentNode.querySelector(".btn-green").classList.remove("hide");
     el.parentNode.querySelector(".input").setAttribute("readonly", "readonly");
 }   
+
+api.getTodoList(res => {
+    console.log("获取列表", res);
+    if (res.result.list.length == 0) return;
+    res.result.list.forEach(item => {
+        ouputList(item);
+    })
+})
+
+find(".btn_get").onclick = function() {
+    api.testGet(10, res => {
+        console.log("get 成功", res);
+        toast.showToast("get 成功");
+    })
+} 
+
+find(".btn_post").onclick = function() {
+    api.testPost({
+        name: "Hjs",
+        age: new Date().getFullYear() - 1995,
+    }, res => {
+        console.log("post 成功", res);
+        toast.showToast("post 成功");
+    })
+} 
+
+find(".btn_userinfo").onclick = function() {
+    api.getUserInfo(res => {
+        console.log("用户信息", res);
+    })
+} 
+
+find(".btn_logout").onclick = function() {
+    api.logout(res => {
+        console.log("退出登录", res);
+        window.location.href = "user.html";
+    })
+} 
+
+find(".btn_addlist").onclick = function() {
+    addList(this);
+}
+
+find(".input_upload").onchange = function() {
+    uploadImg(this);
+}
+
+find(".remove").onclick = function () {
+    removeImg(this);
+}
