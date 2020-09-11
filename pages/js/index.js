@@ -40,9 +40,9 @@ function uploadImg(el) {
     /** 上传类型数组 */
     const types = ["image/jpg", "image/png", "image/jpeg", "image/gif"];
     // 判断文件类型
-    if (types.indexOf(file.type) < 0) return showAlert("文件格式只支持：jpg 和 png");
+    if (types.indexOf(file.type) < 0) return showAlert({ content: "文件格式只支持：jpg 和 png" });
     // 判断大小
-    if (file.size > 2 * 1024 * 1024) return showAlert("上传的文件不能大于2M");
+    if (file.size > 2 * 1024 * 1024) return showAlert({ content: "上传的文件不能大于2M" });
 
     const formData = new FormData();
     // formData.append("name", "hjs-img");
@@ -123,7 +123,7 @@ function addList(el) {
      */
     const input = el.parentNode.querySelector(".input");
     const text = input.value.trim();
-    if (!text) return showAlert("输入的内容不能为空~");
+    if (!text) return showAlert({ content: "输入的内容不能为空~" });
     api.addListItem(text, res => {
         console.log(res.result);
         ouputList({
@@ -154,7 +154,7 @@ function removeList(el) {
 function subChange(el) {
     let id = el.parentNode.dataset["id"];
     let text = el.parentNode.querySelector(".input").value.trim();
-    if (!text) return showAlert("内容不能为空");
+    if (!text) return showAlert({ content: "内容不能为空" });
     // console.log(text, id);
     api.modifyListItem({
         content: text,

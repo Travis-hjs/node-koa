@@ -22,44 +22,60 @@ export function findAll(name) {
     return nodes;
 }
 
+const showAlertOption = {
+    /** 标题 */
+    title: "",
+    /** 内容 */
+    content: "",
+    /** 确认文字 */
+    confirmText: "",
+    /** 点击回调 */
+    callback() {}
+}
+
 /**
- * 设置提示框
- * @param {string} content 内容
- * @param {string} confirmText 确认文字
- * @param {Function} callback 点击回调
+ * 显示提示框
+ * @param {showAlertOption} options 弹框内容 | 传参信息
  */
-export function showAlert(content, confirmText, callback) {
-    /** 弹框id */
-    const alertId = 'the-alert';
-    /** 弹框子节点变量名 */
-    const nodes = ['_box', '_content_box', '_confirm_box'];
+export function showAlert(options) {
     /** 弹出层整体 */
-    let alertBox = document.getElementById(alertId);
+    let alertBox = document.querySelector(".alert_component");
     if (!alertBox) {
-        alertBox = document.createElement('div');
-        alertBox.id = alertId;
-        alertBox[nodes[0]] = document.createElement('div');
-        alertBox[nodes[1]] = document.createElement('div');
-        alertBox[nodes[2]] = document.createElement('div');
-
-        alertBox.style.cssText = 'position: fixed; top: 0; left: 0; z-index: 999; width: 100%; height: 100vh; background-color: rgba(0,0,0,0.45)';
-        alertBox[nodes[0]].style.cssText = 'width: 84%; max-width: 375px; margin: auto; background-color: #fafafc; text-align: center; border-radius: 3px; font-family: arial; animation: alertMove 0.25s ease; box-shadow: 1px 1px 40px rgba(0,0,0,.25);';
-        alertBox[nodes[1]].style.cssText = 'padding: 20px 20px 30px; font-size: 16px; color: #000; word-wrap: break-word; word-break: break-all';
-        alertBox[nodes[2]].style.cssText = 'width: 100%; height: 50px; padding-bottom: 1px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; color: #1BBC9B; font-size: 16px; border-top: solid 1px #dadada; cursor: pointer;';
-
-        alertBox[nodes[0]].appendChild(alertBox[nodes[1]]);
-        alertBox[nodes[0]].appendChild(alertBox[nodes[2]]);
-        alertBox.appendChild(alertBox[nodes[0]]);
+        const css = `.alert_component{ position: fixed; top: 0; left: 0; z-index: 999; width: 100%; height: 100vh; display: flex; background-color: rgba(0,0,0,0.45); z-index: 99; transition: 0.3s all; }
+        .alert_box{ width: 80%; max-width: 375px; margin: auto; background-color: #fff; text-align: center; box-shadow: 1px 1px 40px rgba(0,0,0,.25); transition: 0.3s all; }
+        .alert_content{ padding: 10px; font-size: 16px; color: #333; }
+        .alert_title{ text-align: center; font-size: 18px; color: #333; line-height: 42px; }
+        .alert_btn{ width: 100%; background-color: #eee; height: 44px; color: #1BBC9B; font-size: 15px; border: none; outline: none; line-height: 1; cursor: pointer; }
+        .alert_hide{ visibility: hidden; opacity: 0; }
+        .alert_hide .alert_box{ transform: scale(0); }`;
+        const style = document.createElement("style");
+        style.appendChild(document.createTextNode(css));
+        document.head.appendChild(style);
+        // ============================================
+        alertBox = document.createElement("div");
+        alertBox.props = {
+            title: document.createElement("div"),
+            content: document.createElement("div"),
+            btn: document.createElement("button")
+        }
+        const box = document.createElement("div");
+        alertBox.className = "alert_component";
+        box.className = "alert_box";
+        alertBox.props.title.className = "alert_title";
+        alertBox.props.content.className = "alert_content";
+        alertBox.props.btn.className = "alert_btn";
+        box.append(alertBox.props.title, alertBox.props.content, alertBox.props.btn);
+        alertBox.appendChild(box);
         document.body.appendChild(alertBox);
     }
-    alertBox.style.display = 'flex';
-    alertBox[nodes[1]].innerHTML = content;
-    alertBox[nodes[2]].innerHTML = confirmText || '确定';
-    alertBox[nodes[2]].onclick = function () {
-        alertBox.style.display = 'none';
-        if (typeof callback === 'function') {
-            callback();
-        }
+    alertBox.classList.remove("alert_hide");
+    alertBox.props.title.textContent = options.title || "提示";
+    alertBox.props.content.innerHTML = options.content || "无内容";
+    alertBox.props.btn.textContent = options.confirmText || "确定";
+    
+    alertBox.props.btn.onclick = function () {
+        alertBox.classList.add("alert_hide");
+        typeof options.callback === "function" && options.callback();
     }
 }
 
