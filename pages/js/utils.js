@@ -22,20 +22,13 @@ export function findAll(name) {
     return nodes;
 }
 
-const showAlertOption = {
-    /** 标题 */
-    title: "",
-    /** 内容 */
-    content: "",
-    /** 确认文字 */
-    confirmText: "",
-    /** 点击回调 */
-    callback() {}
-}
-
 /**
  * 显示提示框
- * @param {showAlertOption} options 弹框内容 | 传参信息
+ * @param {object} options 传参信息
+ * @param {string} options.title 标题内容
+ * @param {string} options.content 提示内容
+ * @param {string} options.confirmText 确认文字
+ * @param {() => void} options.callback 点击回调
  */
 export function showAlert(options) {
     /** 弹出层整体 */
