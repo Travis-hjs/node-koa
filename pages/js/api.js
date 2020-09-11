@@ -2,7 +2,7 @@ import {
     toast 
 } from "./utils.js";
 
-const BASE_URL = "http://10.0.18.116:1995";
+const BASE_URL = "http://localhost:1995"; // 端口跟后台设置的一致
 
 const cache = window.sessionStorage;
 
@@ -151,6 +151,7 @@ export function baseRequest(method, url, data, success, fail, upload) {
                 if (typeof success === "function") success(res);
             } else {
                 if (typeof fail === "function") fail(res);
+                toast.showToast(res.message || "code 不为200");
             }
         },
         fail(err) {

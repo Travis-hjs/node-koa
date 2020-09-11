@@ -14,9 +14,6 @@ if (!userInfo) {
     window.location.href = "user.html";
 }
 
-/** 页面整体 */
-const page = find(".page");
-
 /**
  * 获取二进制路径（需要打开服务器调试）
  * @param {File} file 文件
