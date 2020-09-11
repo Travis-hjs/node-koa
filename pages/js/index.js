@@ -11,7 +11,7 @@ import {
 const userInfo = fetchUserInfo();
 
 if (!userInfo) {
-    // window.location.href = "user.html";
+    window.location.href = "user.html";
 }
 
 /** 页面整体 */
