@@ -14,11 +14,11 @@ npm install -g -force ts-node nodemon
 ```
 3. 运行
 ```
-npm watch-update
+npm run watch-update
 ```
 或者
 ```
-nodemon --watch 'src/**/*' -e ts,tsx --exec 'ts-node' ./src/index.ts
+nodemon --watch src/**/* -e ts,tsx --exec ts-node ./src/index.ts
 ```
 
 ### 项目创建
@@ -50,12 +50,12 @@ npm install -g -force ts-node nodemon
 ```json
 "scripts": {
     "start": "tsc && node dist/index.js",
-    "watch-update": "nodemon --watch 'src/**/*' -e ts,tsx --exec 'ts-node' ./src/index.ts"
+    "watch-update": "nodemon --watch src/**/* -e ts,tsx --exec ts-node ./src/index.ts"
 },
 ```
-如果执行不了 `npm watch-update` 那就执行 `nodemon --watch 'src/**/*' -e ts,tsx --exec 'ts-node' ./src/index.ts` 
+如果执行不了 `npm run watch-update` 那就执行 `nodemon --watch src/**/* -e ts,tsx --exec ts-node ./src/index.ts` 
 
-不确定是否 `window` 环境下的问题还是 `npm` 的问题，项目首次创建并执行的时候，所有依赖都可以本地安装并且 `npm watch-update` 也可以完美执行
+不确定是否 `window` 环境下的问题还是 `npm` 的问题，项目首次创建并执行的时候，所有依赖都可以本地安装并且 `npm run watch-update` 也可以完美执行
 但是再次打开项目的时候就出错了，目前还没找到原因，不过以上方法可以解决
 
 ##### 7. 最后选装的中间件 `koa-body` 中间件作为解析POST传参和上传图片用 
