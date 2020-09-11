@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "tsc && node dist/index.js",
-        "watch-update": "nodemon --watch 'src/**/*' -e ts,tsx --exec 'ts-node' ./src/index.ts"
+        "watch-update": "nodemon --watch src/**/* -e ts,tsx --exec ts-node ./src/index.ts"
     },
     "repository": {
         "type": "git",
