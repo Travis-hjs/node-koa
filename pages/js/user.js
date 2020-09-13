@@ -1,8 +1,11 @@
-import { 
-    find, toast 
+import {
+    find,
+    toast
 } from "./utils.js";
 
-import api from "./api.js";
+import api, {
+    saveUserInfo
+} from "./api.js";
 
 /** 
  * @type {HTMLInputElement} 
@@ -28,15 +31,15 @@ const registerName = find(".register_name");
 /** 点击登录 */
 function clickLogin() {
     api.login({
-         account: loginAccount.value,
-         password: loginPassword.value
-     }, res => {
+        account: loginAccount.value,
+        password: loginPassword.value
+    }, res => {
         console.log("登录成功", res);
         saveUserInfo(res.result);
         window.location.href = "index.html";
-     }, err => {
+    }, err => {
         console.log("登录失败", err);
-     });
+    });
 }
 
 /** 点击注册 */

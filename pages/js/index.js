@@ -77,7 +77,7 @@ const listNode = find(".list");
 
 /**
  * 输出列表item
- * @param {{ content: string, id: string|number }} info 
+ * @param {{ content: string, list_id: string|number }} info 
  */
 function ouputList(info) {
     const item = document.createElement("div");
@@ -87,24 +87,27 @@ function ouputList(info) {
     const btnDelete = document.createElement("button");
 
     item.className = "card flex fvertical list-item";
-    item.dataset.id = info.id;
+    item.dataset.id = info.list_id;
 
     input.className = "input f1";
     input.type = "text";
     input.readOnly = true;
     input.value = info.content;
 
-    btnModify.className = "button btn-green center";
+    btnModify.className = "button button_green center";
+    btnModify.textContent = "修改";
     btnModify.onclick = function() {
         onInput(btnModify, input);
     }
 
-    btnSub.className = "button btn-blue center hide";
+    btnSub.className = "button button_blue center hide";
+    btnSub.textContent = "确定修改";
     btnSub.onclick = function() {
         subChange(btnSub);
     }
 
-    btnDelete.className = "button btn-red";
+    btnDelete.className = "button button_red";
+    btnDelete.textContent = "删除";
     btnDelete.onclick = function() {
         removeList(btnDelete);
     }
@@ -128,7 +131,7 @@ function addList(el) {
         console.log(res.result);
         ouputList({
             content: text,
-            id: res.result.id
+            list_id: res.result.id
         })
         input.value = null;
     }) 
@@ -171,7 +174,7 @@ function subChange(el) {
  * @param {HTMLInputElement} input
  */
 function onInput(el, input) {
-    el.parentNode.querySelector(".btn-blue").classList.remove("hide");
+    el.parentNode.querySelector(".button_blue").classList.remove("hide");
     el.classList.add("hide");
     input.removeAttribute("readonly");
 }
@@ -181,8 +184,8 @@ function onInput(el, input) {
  * @param {HTMLElement} el 
  */
 function offInput(el) {
-    el.parentNode.querySelector(".btn-blue").classList.add("hide");
-    el.parentNode.querySelector(".btn-green").classList.remove("hide");
+    el.parentNode.querySelector(".button_blue").classList.add("hide");
+    el.parentNode.querySelector(".button_green").classList.remove("hide");
     el.parentNode.querySelector(".input").setAttribute("readonly", "readonly");
 }   
 

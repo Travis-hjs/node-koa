@@ -9,7 +9,7 @@ class ModuleConfig {
         user: "root",
         password: "root",
         /** 数据库名 */
-        database: "test",
+        database: "node_ts",
         /** 链接上限次数 */
         connection_limit: 10
     }

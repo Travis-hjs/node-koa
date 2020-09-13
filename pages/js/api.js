@@ -2,7 +2,7 @@ import {
     toast 
 } from "./utils.js";
 
-const BASE_URL = "http://localhost:1995"; // 端口跟后台设置的一致
+const BASE_URL = "http://192.168.1.105:1995"; // 本地的IP地址+端口；端口跟后台设置的一致
 
 const cache = window.sessionStorage;
 

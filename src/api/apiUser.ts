@@ -3,24 +3,30 @@ import query from "../modules/mysql";
 import stateInfo from "../modules/state";
 import session from "../modules/session";
 import config from "../modules/config";
-import { mysqlErrorType, userInfoType, theCtx } from "../modules/interfaces";
+import { 
+    mysqlErrorType, 
+    userInfoType, 
+    theCtx, 
+    failInfoType, 
+    successInfoType 
+} from "../modules/interfaces";
 
 // 注册
 router.post("/register", async (ctx) => {
     /** 接收参数 */
     const params: userInfoType = ctx.request.body;
     /** 返回结果 */
-    let bodyResult = null;
+    let bodyResult: failInfoType | successInfoType;
     /** 账号是否可用 */
     let validAccount = false;
     // console.log("注册传参", params);
 
     if (!/^[A-Za-z0-9]+$/.test(params.account)) {
-        return ctx.body = stateInfo.getFailData("注册失败！账号必须为6-12英文或数字组成");
+        return ctx.body = stateInfo.getFailData("注册失败！账号必须由英文或数字组成");
     }
 
     if (!/^[A-Za-z0-9]+$/.test(params.password)) {
-        return ctx.body = stateInfo.getFailData("注册失败！密码必须为6-12英文或数字组成");
+        return ctx.body = stateInfo.getFailData("注册失败！密码必须由英文或数字组成");
     }
 
     if (!params.name.trim()) {
@@ -42,7 +48,7 @@ router.post("/register", async (ctx) => {
 
     // 再写入表格
     if (validAccount) {
-        await query("insert into user(account, password, name) values(?,?,?)", [params.account, params.password, params.name]).then(res => {
+        await query("insert into user(account, password, username) values(?,?,?)", [params.account, params.password, params.name]).then(res => {
             // console.log("注册写入", res);
             bodyResult = stateInfo.getSuccessData(params, "注册成功");
         }).catch((error: mysqlErrorType) => {
@@ -59,7 +65,7 @@ router.post("/login", async (ctx) => {
     /** 接收参数 */
     const params: userInfoType = ctx.request.body;
     /** 返回结果 */
-    let bodyResult = null;
+    let bodyResult: failInfoType | successInfoType;
     // console.log("登录", ctx);
     if (params.account.trim() === "") {
         return ctx.body = stateInfo.getFailData("登录失败！账号不能为空");
@@ -77,12 +83,11 @@ router.post("/login", async (ctx) => {
             const data: userInfoType = res.results[0];
             // 最后判断密码是否正确
             if (data.password == params.password) {
-                const info: userInfoType = {
+                data.token = session.setRecord({
                     id: data.id,
                     account: data.account,
                     password: data.password
-                } 
-                data.token = session.setRecord(info);
+                });
                 bodyResult = stateInfo.getSuccessData(data ,"登录成功");
             } else {
                 bodyResult = stateInfo.getFailData("密码不正确");
@@ -94,17 +99,18 @@ router.post("/login", async (ctx) => {
         // console.log("登录查询错误", error);
         bodyResult = stateInfo.getFailData(error.message);
     })
-
+    console.log("返回结果 >>", bodyResult);
+    
     ctx.body = bodyResult;
 })
 
 // 获取用户信息
 router.get("/getUserInfo", async (ctx: theCtx) => {
     const state = ctx["the_state"];
-    /** 接收参数 */
-    const params = ctx.request.body;
+    // /** 接收参数 */
+    // const params = ctx.request.body;
     /** 返回结果 */
-    let bodyResult = null;
+    let bodyResult: failInfoType | successInfoType;
 
     // console.log("getUserInfo", params, state);
 
