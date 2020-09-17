@@ -99,7 +99,6 @@ router.post("/login", async (ctx) => {
         // console.log("登录查询错误", error);
         bodyResult = stateInfo.getFailData(error.message);
     })
-    console.log("返回结果 >>", bodyResult);
     
     ctx.body = bodyResult;
 })
