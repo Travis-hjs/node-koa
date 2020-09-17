@@ -1,12 +1,5 @@
-import api, {
-    fetchUserInfo,
-} from "./api.js";
-
-import { 
-    find, 
-    showAlert, 
-    toast 
-} from "./utils.js";
+// 类型提示用（运行时不会引用）
+/// <reference path="./api.js" />
 
 const userInfo = fetchUserInfo();
 
@@ -73,47 +66,23 @@ function removeImg(el) {
     el.parentNode.parentNode.querySelector(".upload").classList.remove("hide");
 }
 
-const listNode = find(".list");
+/** 列表节点 */
+const listEl = find(".list");
 
 /**
  * 输出列表item
  * @param {{ content: string, list_id: string|number }} info 
  */
 function ouputList(info) {
-    const item = document.createElement("div");
-    const input = document.createElement("input");
-    const btnModify = document.createElement("button");
-    const btnSub = document.createElement("button");
-    const btnDelete = document.createElement("button");
-
-    item.className = "card flex fvertical list-item";
-    item.dataset.id = info.list_id;
-
-    input.className = "input f1";
-    input.type = "text";
-    input.readOnly = true;
-    input.value = info.content;
-
-    btnModify.className = "button button_green center";
-    btnModify.textContent = "修改";
-    btnModify.onclick = function() {
-        onInput(btnModify, input);
-    }
-
-    btnSub.className = "button button_blue center hide";
-    btnSub.textContent = "确定修改";
-    btnSub.onclick = function() {
-        subChange(btnSub);
-    }
-
-    btnDelete.className = "button button_red";
-    btnDelete.textContent = "删除";
-    btnDelete.onclick = function() {
-        removeList(btnDelete);
-    }
-
-    item.append(input, btnModify, btnSub, btnDelete);
-    listNode.appendChild(item);
+    const html = `
+    <div class="card flex fvertical list_item" data-id="${info.list_id}">
+        <input class="input f1" type="text" readonly="readonly" value="${info.content}">
+        <button class="button button_green center" onclick="canInput(this)">修改</button>
+        <button class="button button_blue center hide" onclick="subChange(this)">确定修改</button>
+        <button class="button button_red" onclick="removeList(this)">删除</button>
+    </div>
+    `;
+    listEl.insertAdjacentHTML("beforeend", html);
 }
 
 /**
@@ -152,7 +121,7 @@ function removeList(el) {
 
 /**
  * 修改当前列表内容
- * @param {HTMLElement} el 
+ * @param {HTMLElement} el 自身节点
  */
 function subChange(el) {
     let id = el.parentNode.dataset["id"];
@@ -164,24 +133,24 @@ function subChange(el) {
         id: id
     }, res => {
         console.log("修改成功", res);
+        toast.showToast("修改成功");
         offInput(el);
     })
 }
 
 /**
  * 使输入框可以修改
- * @param {HTMLElement} el 
- * @param {HTMLInputElement} input
+ * @param {HTMLElement} el 自身节点
  */
-function onInput(el, input) {
+function canInput(el) {
     el.parentNode.querySelector(".button_blue").classList.remove("hide");
     el.classList.add("hide");
-    input.removeAttribute("readonly");
+    el.parentNode.querySelector(".input").removeAttribute("readonly");
 }
 
 /**
  * 使输入框不可以修改
- * @param {HTMLElement} el 
+ * @param {HTMLElement} el 自身节点
  */
 function offInput(el) {
     el.parentNode.querySelector(".button_blue").classList.add("hide");
@@ -197,14 +166,14 @@ api.getTodoList(res => {
     })
 })
 
-find(".btn_get").onclick = function() {
+function clickGet() {
     api.testGet(10, res => {
         console.log("get 成功", res);
         toast.showToast("get 成功");
     })
 } 
 
-find(".btn_post").onclick = function() {
+function clickPost() {
     api.testPost({
         name: "Hjs",
         age: new Date().getFullYear() - 1995,
@@ -214,27 +183,16 @@ find(".btn_post").onclick = function() {
     })
 } 
 
-find(".btn_userinfo").onclick = function() {
+function clickGetUserInfo() {
     api.getUserInfo(res => {
         console.log("用户信息", res);
     })
 } 
 
-find(".btn_logout").onclick = function() {
+function clickLogout() {
     api.logout(res => {
         console.log("退出登录", res);
         window.location.href = "user.html";
     })
 } 
 
-find(".btn_addlist").onclick = function() {
-    addList(this);
-}
-
-find(".input_upload").onchange = function() {
-    uploadImg(this);
-}
-
-find(".remove").onclick = function () {
-    removeImg(this);
-}

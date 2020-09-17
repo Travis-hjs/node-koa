@@ -11,7 +11,7 @@
         .upload-img{ width: 280px; min-height: 280px; margin: 0 auto 20px; }
         .upload-img .img-box{ position: relative; width: 100%; height: 100%; overflow: hidden; }
         .upload-img .img-box .image{ display: block; width: 100%; }
-        .upload-img .img-box .remove{ position: absolute; top: 2px; right: 2px; border-radius: 100%; cursor: pointer; width: 30px; height: 30px; background-color: rgba(0,0,0,0.5); text-align: center; line-height: 1; font-size: 28px; color: #fff; }
+        .upload-img .img-box .remove{ position: absolute; top: 2px; right: 2px; border-radius: 100%; cursor: pointer; width: 34px; height: 34px; background-color: rgba(0,0,0,0.5); font-size: 28px; color: #fff; }
         .upload-img .upload{ width: 100%; min-height: 280px; position: relative; }
         .upload-img .upload .add_icon{ position: relative; width: 50px; height: 50px; }
         .upload-img .upload .add_icon::after{ content: ""; position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background-color: #999; transform: translateX(-50%); }
@@ -22,8 +22,8 @@
         .todo input{ margin-bottom: 10px; }
 
         .list{ width: 100%; background-color: #f2f2f2; padding: 4px 8px; }
-        .list .list-item{ height: 60px; margin-bottom: 10px; padding: 10px; }
-        .list .list-item .center{ margin: 0 10px; }
+        .list .list_item{ height: 60px; margin-bottom: 10px; padding: 10px; }
+        .list .list_item .center{ margin: 0 10px; }
 
         .hide{ display: none; }
     </style>
@@ -31,47 +31,46 @@
 <body>
     <div class="page">
         <div class="item">
-            <button class="button button_blue btn_get">get 获取数据</button>
+            <button class="button button_blue" onclick="clickGet()">get 获取数据</button>
         </div>
         <div class="item">
-            <button class="button button_blue btn_post">post 获取数据</button>
+            <button class="button button_blue" onclick="clickPost()">post 获取数据</button>
         </div>
         <div class="item">
-            <button class="button button_blue btn_userinfo">获取用户信息</button>
+            <button class="button button_blue" onclick="clickGetUserInfo()">获取用户信息</button>
         </div>
         <div class="item">
-            <button class="button button_blue btn_logout">退出登录</button>
+            <button class="button button_blue" onclick="clickLogout()">退出登录</button>
         </div>
         <div class="card upload-img">
             <div class="img-box hide">
                 <img class="image" src="">
-                <div class="remove">×</div>
+                <div class="remove flex fvertical fcenter" onclick="removeImg(this)">×</div>
             </div>
             <div class="upload flex fvertical fcenter">
                 <div class="add_icon"></div>
-                <input class="upload_input input_upload" type="file" name="picture">
+                <input class="upload_input" type="file" name="picture" onchange="uploadImg(this)">
             </div>
         </div>
         <div class="todo">
             <h2>增删改查</h2>
             <input class="input" type="text" placeholder="输入增加内容">
-            <button class="button button_blue btn_addlist">增加一条</button>
+            <button class="button button_blue" onclick="addList(this)">增加一条</button>
         </div>
         <div class="list">
-            
+            <script type="text/template">
+                <div class="card flex fvertical list_item" data-id="${id}">
+                    <input class="input f1" type="text" readonly="readonly" value="${content}">
+                    <button class="button button_green center" onclick="canInput(this)">修改</button>
+                    <button class="button button_blue center hide" onclick="subChange(this)">确定修改</button>
+                    <button class="button button_red" onclick="removeList(this)">删除</button>
+                </div>
+            </script>
         </div>
     </div>
 
-    <script>
-        var adopt = /^(https?:|http?:|mailto:|tel:)/.test(location.href);
-        if (adopt) {
-            var scriptLabel = document.createElement("script");
-            scriptLabel.type = "module";
-            scriptLabel.src = "./js/index.js";
-            document.body.appendChild(scriptLabel);
-        } else {
-            alert("请用服务端方式打开");
-        } 
-    </script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/index.js"></script>
 </body>
 </html>

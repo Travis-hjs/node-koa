@@ -3,7 +3,7 @@
  * @param {string} name 
  * @returns {HTMLElement}
  */
-export function find(name) {
+function find(name) {
     return document.querySelector(name);
 }
 
@@ -12,7 +12,7 @@ export function find(name) {
  * @param {string} name class | id | label <div> <p>
  * @returns {Array<HTMLElement>}
  */
-export function findAll(name) {
+function findAll(name) {
     let nodes = document.querySelectorAll(name);
     if (Array.from) {
         nodes = Array.from(nodes);
@@ -30,7 +30,7 @@ export function findAll(name) {
  * @param {string} options.confirmText 确认文字
  * @param {() => void} options.callback 点击回调
  */
-export function showAlert(options) {
+function showAlert(options) {
     /** 弹出层整体 */
     let alertBox = document.querySelector(".alert_component");
     if (!alertBox) {
@@ -40,7 +40,7 @@ export function showAlert(options) {
         .alert_title{ text-align: center; font-size: 18px; color: #333; line-height: 42px; }
         .alert_btn{ width: 100%; background-color: #eee; height: 44px; color: #1BBC9B; font-size: 15px; border: none; outline: none; line-height: 1; cursor: pointer; }
         .alert_hide{ visibility: hidden; opacity: 0; }
-        .alert_hide .alert_box{ transform: scale(0); }`;
+        .alert_hide .alert_box{ transform: translateY(80px); }`;
         const style = document.createElement("style");
         style.appendChild(document.createTextNode(css));
         document.head.appendChild(style);
@@ -78,7 +78,7 @@ export function showAlert(options) {
  * @param {() => void} success 成功回调
  * @param {(error: string) => void} fail 出错回调
  */
-export function copyText(text, success = null, fail = null) {
+function copyText(text, success = null, fail = null) {
     text = text.replace(/(^\s*)|(\s*$)/g, "");
     if (!text) {
         typeof fail === "function" && fail("复制的内容不能为空！");
@@ -109,7 +109,7 @@ export function copyText(text, success = null, fail = null) {
  * @param {any} target 检测的目标
  * @returns {"string"|"number"|"array"|"object"|"function"|"null"|"undefined"} 只枚举一些常用的类型
  */
-export function checkType(target) {
+function checkType(target) {
     /** @type {string} */
     const value = Object.prototype.toString.call(target);
     const result = value.match(/\[object (\S*)\]/)[1];
@@ -197,4 +197,4 @@ function theToast() {
     }
 }
 
-export const toast = theToast();
+const toast = theToast();

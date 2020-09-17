@@ -1,6 +1,5 @@
-import { 
-    toast 
-} from "./utils.js";
+// 类型提示用（运行时不会引用）
+/// <reference path="./utils.js" />
 
 const BASE_URL = "http://192.168.1.105:1995"; // 本地的IP地址+端口；端口跟后台设置的一致
 
@@ -10,14 +9,14 @@ const cache = window.sessionStorage;
  * 本地储存用户数据
  * @param {object} data 对应的数据
  */
-export function saveUserInfo(data) {
+function saveUserInfo(data) {
     cache.setItem("userInfo", JSON.stringify(data));
 }
 
 /**
  * 获取用户数据
  */
-export function fetchUserInfo() {
+function fetchUserInfo() {
     let data = cache.getItem("userInfo") ? JSON.parse(cache.getItem("userInfo")) : null;
     return data;
 }
@@ -138,7 +137,7 @@ const failFn = function(error) {}
  * @param {failFn} fail 失败回调
  * @param {FormData} upload 上传图片 FormData
  */
-export function baseRequest(method, url, data, success, fail, upload) {
+function baseRequest(method, url, data, success, fail, upload) {
     ajax({
         url: BASE_URL + url,
         method: method,
@@ -311,8 +310,6 @@ class ModuleApi {
 
 /** api模块 */
 const api = new ModuleApi();
-
-export default api;
 
 
 

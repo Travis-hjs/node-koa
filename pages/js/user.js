@@ -1,11 +1,5 @@
-import {
-    find,
-    toast
-} from "./utils.js";
-
-import api, {
-    saveUserInfo
-} from "./api.js";
+// 类型提示用（运行时不会引用）
+/// <reference path="./api.js" />
 
 /** 
  * @type {HTMLInputElement} 
@@ -65,7 +59,3 @@ function resetRegister() {
     registerPassword.value = "";
     registerName.value = "";
 }
-
-find(".btn_login").addEventListener("click", clickLogin);
-find(".btn_register").addEventListener("click", clickRegister);
-find(".btn_reset").addEventListener("click", resetRegister);
