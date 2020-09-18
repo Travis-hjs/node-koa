@@ -47,7 +47,7 @@ function clickRegister() {
         loginAccount.value = registerAccount.value;
         loginPassword.value = registerPassword.value;
         resetRegister();
-        toast.showToast("注册成功");
+        utils.showToast("注册成功");
     }, err => {
         console.log("注册失败", err);
     });

@@ -67,22 +67,19 @@ function removeImg(el) {
 }
 
 /** 列表节点 */
-const listEl = find(".list");
+const listEl = utils.find(".list");
+/** 模板内容 */
+const template = listEl.children[0].innerHTML;
+// 清空列表
+listEl.innerHTML = null;
 
 /**
  * 输出列表item
- * @param {{ content: string, list_id: string|number }} info 
+ * @param {{ content: string, list_id: string|number }} item 
  */
-function ouputList(info) {
-    const html = `
-    <div class="card flex fvertical list_item" data-id="${info.list_id}">
-        <input class="input f1" type="text" readonly="readonly" value="${info.content}">
-        <button class="button button_green center" onclick="canInput(this)">修改</button>
-        <button class="button button_blue center hide" onclick="subChange(this)">确定修改</button>
-        <button class="button button_red" onclick="removeList(this)">删除</button>
-    </div>
-    `;
-    listEl.insertAdjacentHTML("beforeend", html);
+function ouputList(item) {
+    const itemHTML = template.replace("{{id}}", item.list_id).replace("{{content}}", item.content);
+    listEl.insertAdjacentHTML("beforeend", itemHTML);
 }
 
 /**
@@ -114,7 +111,7 @@ function removeList(el) {
     // return console.log(el.parentNode.dataset["id"]);
     api.deleteListItem(el.parentNode.dataset["id"], res => {
         console.log("删除成功", res);
-        toast.showToast("删除成功");
+        utils.showToast("删除成功");
         el.parentNode.parentNode.removeChild(el.parentNode);
     })
 }
@@ -126,14 +123,14 @@ function removeList(el) {
 function subChange(el) {
     let id = el.parentNode.dataset["id"];
     let text = el.parentNode.querySelector(".input").value.trim();
-    if (!text) return showAlert({ content: "内容不能为空" });
+    if (!text) return utils.showAlert({ content: "内容不能为空" });
     // console.log(text, id);
     api.modifyListItem({
         content: text,
         id: id
     }, res => {
         console.log("修改成功", res);
-        toast.showToast("修改成功");
+        utils.showToast("修改成功");
         offInput(el);
     })
 }
@@ -169,7 +166,7 @@ api.getTodoList(res => {
 function clickGet() {
     api.testGet(10, res => {
         console.log("get 成功", res);
-        toast.showToast("get 成功");
+        utils.showToast("get 成功");
     })
 } 
 
@@ -179,7 +176,7 @@ function clickPost() {
         age: new Date().getFullYear() - 1995,
     }, res => {
         console.log("post 成功", res);
-        toast.showToast("post 成功");
+        utils.showToast("post 成功");
     })
 } 
 

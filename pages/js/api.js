@@ -150,7 +150,7 @@ function baseRequest(method, url, data, success, fail, upload) {
                 if (typeof success === "function") success(res);
             } else {
                 if (typeof fail === "function") fail(res);
-                toast.showToast(res.message || "code 不为200");
+                utils.showToast(res.message || "code 不为200");
             }
         },
         fail(err) {
@@ -163,7 +163,7 @@ function baseRequest(method, url, data, success, fail, upload) {
                 error = JSON.parse(err.response);
             }
             if (typeof fail === "function") fail(error);
-            toast.showToast(error.message || "接口报错");
+            utils.showToast(error.message || "接口报错");
         },
         timeout() {
             console.warn("XMLHttpRequest 请求超时 !!!");
@@ -171,7 +171,7 @@ function baseRequest(method, url, data, success, fail, upload) {
                 message: "请求超时"
             }
             if (typeof fail === "function") fail(error);
-            toast.showToast("请求超时");
+            utils.showToast("请求超时");
         }
     });
 }
