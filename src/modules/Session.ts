@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import config from "./configs";
-import { userRecordType, userInfoType, sessionResultType } from "./interfaces";
+import config from "./Config";
+import { UserRecordType, UserInfoType, SessionResultType } from "./interfaces";
 
 class ModuleSession {
     constructor() {
@@ -14,13 +14,13 @@ class ModuleSession {
     private interval = 600000;
 
     /** 用户 token 纪录 */
-    private userRecord: userRecordType = {}; 
+    private userRecord: UserRecordType = {}; 
 
     /**
      * 写入文件
      * @param obj 要写入的对象
      */
-    private write(obj?: userRecordType) {
+    private write(obj?: UserRecordType) {
         const data = obj || this.userRecord;
         // 同步写入（貌似没必要）
         // fs.writeFileSync(config.user_file, JSON.stringify(data), { encoding: "utf8" });
@@ -86,7 +86,7 @@ class ModuleSession {
      * 设置纪录并返回 token
      * @param data 用户信息
      */
-    public setRecord(data: userInfoType) {
+    public setRecord(data: UserInfoType) {
         const token = this.getToken();
         data.online = Date.now();
         this.userRecord[token] = data;
@@ -99,7 +99,7 @@ class ModuleSession {
      * @param token 
      */
     public updateRecord(token: string) {
-        let result: sessionResultType = {
+        let result: SessionResultType = {
             message: "",
             success: false,
             info: null

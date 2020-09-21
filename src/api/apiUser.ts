@@ -1,22 +1,22 @@
 import router from "./main";
 import query from "../modules/mysql";
-import stateInfo from "../modules/states";
-import session from "../modules/sessions";
-import config from "../modules/configs";
+import stateInfo from "../modules/State";
+import session from "../modules/Session";
+import config from "../modules/Config";
 import { 
-    mysqlErrorType, 
-    userInfoType, 
+    MysqlErrorType, 
+    UserInfoType, 
     theCtx, 
-    failInfoType, 
-    successInfoType 
+    ResultFail, 
+    ResultSuccess 
 } from "../modules/interfaces";
 
 // 注册
 router.post("/register", async (ctx) => {
     /** 接收参数 */
-    const params: userInfoType = ctx.request.body;
+    const params: UserInfoType = ctx.request.body;
     /** 返回结果 */
-    let bodyResult: failInfoType | successInfoType;
+    let bodyResult: ResultFail | ResultSuccess;
     /** 账号是否可用 */
     let validAccount = false;
     // console.log("注册传参", params);
@@ -41,7 +41,7 @@ router.post("/register", async (ctx) => {
         } else {
             validAccount = true;
         }
-    }).catch((error: mysqlErrorType) => {
+    }).catch((error: MysqlErrorType) => {
         // console.log("注册查询错误", error);
         bodyResult = stateInfo.getFailData(error.message);
     })
@@ -51,7 +51,7 @@ router.post("/register", async (ctx) => {
         await query("insert into user(account, password, username) values(?,?,?)", [params.account, params.password, params.name]).then(res => {
             // console.log("注册写入", res);
             bodyResult = stateInfo.getSuccessData(params, "注册成功");
-        }).catch((error: mysqlErrorType) => {
+        }).catch((error: MysqlErrorType) => {
             // console.log("注册写入错误", error);
             bodyResult = stateInfo.getFailData(error.message);
         })
@@ -63,9 +63,9 @@ router.post("/register", async (ctx) => {
 // 登录
 router.post("/login", async (ctx) => {
     /** 接收参数 */
-    const params: userInfoType = ctx.request.body;
+    const params: UserInfoType = ctx.request.body;
     /** 返回结果 */
-    let bodyResult: failInfoType | successInfoType;
+    let bodyResult: ResultFail | ResultSuccess;
     // console.log("登录", ctx);
     if (params.account.trim() === "") {
         return ctx.body = stateInfo.getFailData("登录失败！账号不能为空");
@@ -80,7 +80,7 @@ router.post("/login", async (ctx) => {
         // console.log("登录查询", res.results);
         // 再判断账号是否可用
         if (res.results.length > 0) {
-            const data: userInfoType = res.results[0];
+            const data: UserInfoType = res.results[0];
             // 最后判断密码是否正确
             if (data.password == params.password) {
                 data.token = session.setRecord({
@@ -95,7 +95,7 @@ router.post("/login", async (ctx) => {
         } else {
             bodyResult = stateInfo.getFailData("该账号不存在，请先注册");
         }
-    }).catch((error: mysqlErrorType) => {
+    }).catch((error: MysqlErrorType) => {
         // console.log("登录查询错误", error);
         bodyResult = stateInfo.getFailData(error.message);
     })
@@ -109,19 +109,19 @@ router.get("/getUserInfo", async (ctx: theCtx) => {
     // /** 接收参数 */
     // const params = ctx.request.body;
     /** 返回结果 */
-    let bodyResult: failInfoType | successInfoType;
+    let bodyResult: ResultFail | ResultSuccess;
 
     // console.log("getUserInfo", params, state);
 
     await query(`select * from user where account = "${ state.info.account }"`).then(res => {
         // 判断账号是否可用
         if (res.results.length > 0) {
-            const data: userInfoType = res.results[0];
+            const data: UserInfoType = res.results[0];
             bodyResult = stateInfo.getSuccessData(data);
         } else {
             bodyResult = stateInfo.getFailData("该账号不存在，可能已经从数据库中删除");
         }
-    }).catch((error: mysqlErrorType) => {
+    }).catch((error: MysqlErrorType) => {
         bodyResult = stateInfo.getFailData(error.message);
     })
 

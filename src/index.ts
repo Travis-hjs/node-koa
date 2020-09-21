@@ -1,9 +1,9 @@
 import * as Koa from "koa";                     // learn: https://www.npmjs.com/package/koa
 import * as koaBody from "koa-body";            // learn: http://www.ptbird.cn/koa-body.html
-import config from "./modules/configs";
+import config from "./modules/Config";
 import router from "./api/main";
-import stateInfo from "./modules/states";
-import session from "./modules/sessions";
+import stateInfo from "./modules/State";
+import session from "./modules/Session";
 import "./api/apiUser";                         // 用户模块
 import "./api/apiUpload";                       // 上传文件模块
 import "./api/apiTest";                         // 基础测试模块

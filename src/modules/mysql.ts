@@ -1,6 +1,6 @@
 import * as mysql from "mysql";         // learn: https://www.npmjs.com/package/mysql
-import config from "./configs";
-import { mysqlErrorType } from "./interfaces";
+import config from "./Config";
+import { MysqlErrorType } from "./interfaces";
 
 interface queryResult {
     /** 结果数组 或 对象 */
@@ -31,7 +31,7 @@ const pool = mysql.createPool({
  */
 export default function query(command: string, value?: Array<any>) {
     /** 错误信息 */
-    let errorInfo: mysqlErrorType = null;
+    let errorInfo: MysqlErrorType = null;
 
     return new Promise<queryResult>((resolve, reject) => {
         pool.getConnection((error: any, connection) => {

@@ -1,24 +1,24 @@
 import * as Koa from "koa"; 
 
 /** 成功返回提示数据 */
-export interface successInfoType {
+export interface ResultSuccess {
     /** 状态提示 */
     message: string
     /** 状态成功码 */
     code: 200
     /** 成功返回数据 */
-    result: object | string | number
+    result: any
 }
 
 /** 失败返回提示数据 */
-export interface failInfoType {
+export interface ResultFail {
     /** 状态错误提示 */
     message: string
     /** 状态错误码 */
     code: number
 }
 
-interface mysqlErrorInfoType {
+interface MysqlErrorInfoType {
     code: string | number
     errno: number
     sqlMessage: string
@@ -28,15 +28,15 @@ interface mysqlErrorInfoType {
 }
 
 /** mysql错误数据类型 */
-export interface mysqlErrorType {
+export interface MysqlErrorType {
     /** 错误信息 */
-    info: mysqlErrorInfoType
+    info: MysqlErrorInfoType
     /** 信息描述 */
     message: string
 }
 
 /** 用户信息类型 */
-export interface userInfoType {
+export interface UserInfoType {
     /** 账号 */
     account: string
     /** 密码 */
@@ -54,19 +54,19 @@ export interface userInfoType {
 }
 
 /** 用户 token 纪录类型 */
-export interface userRecordType {
+export interface UserRecordType {
     /** token 信息对象 */
-    [key: string]: userInfoType
+    [key: string]: UserInfoType
 }
 
 /** session返回结果类型 */
-export interface sessionResultType {
+export interface SessionResultType {
     /** token 状态描述 */
     message: string
     /** token 是否可用 */
     success: boolean
     /** koken 信息 */
-    info: userInfoType
+    info: UserInfoType
 }
 
 /** JavaScript类型 */
@@ -78,5 +78,5 @@ export type symbols = "+" | "-"| "*" | "/";
 /** 自定义的请求上下文返回信息接口 */
 export interface theCtx extends Koa.ParameterizedContext {
     /** 请求时自定义设置的一个状态 (see)[src/index.ts] */
-    the_state?: sessionResultType
+    the_state?: SessionResultType
 }

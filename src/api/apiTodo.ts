@@ -1,7 +1,7 @@
 import router from "./main";
 import query from "../modules/mysql";
-import stateInfo from "../modules/states";
-import { mysqlErrorType, theCtx } from "../modules/interfaces";
+import stateInfo from "../modules/State";
+import { MysqlErrorType, theCtx } from "../modules/interfaces";
 
 // 获取所有列表
 router.get("/getList", async (ctx: theCtx) => {
@@ -17,7 +17,7 @@ router.get("/getList", async (ctx: theCtx) => {
         bodyResult = stateInfo.getSuccessData({
             list: res.results.length > 0 ? res.results : [] 
         });
-    }).catch((err: mysqlErrorType) => {
+    }).catch((err: MysqlErrorType) => {
         bodyResult = stateInfo.getFailData(err.message);
     })
 
@@ -42,7 +42,7 @@ router.post("/addList", async (ctx: theCtx) => {
         bodyResult = stateInfo.getSuccessData({
             id: res.results.insertId
         }, "添加成功");
-    }).catch((err: mysqlErrorType) => {
+    }).catch((err: MysqlErrorType) => {
         console.log("写入列表错误", err);
         bodyResult = stateInfo.getFailData(err.message);
     })
@@ -73,7 +73,7 @@ router.post("/modifyList", async (ctx) => {
         } else {
             bodyResult = stateInfo.getFailData("列表id不存在");
         }
-    }).catch((err: mysqlErrorType) => {
+    }).catch((err: MysqlErrorType) => {
         console.log("修改列表错误", err);
         bodyResult = stateInfo.getFailData(err.message);
     })
@@ -97,7 +97,7 @@ router.post("/deleteList", async (ctx: theCtx) => {
         } else {
             bodyResult = stateInfo.getFailData("当前列表id不存在或已删除");
         }
-    }).catch((err: mysqlErrorType) => {
+    }).catch((err: MysqlErrorType) => {
         console.log("从数据库中删除失败", err);
         bodyResult = stateInfo.getFailData(err.message);
     })

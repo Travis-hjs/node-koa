@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
-import config from "../modules/configs";
-import stateInfo from "../modules/states";
+import config from "../modules/Config";
+import stateInfo from "../modules/State";
 
 // 上传图片
 // learn: https://www.cnblogs.com/nicederen/p/10758000.html

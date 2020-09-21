@@ -1,16 +1,19 @@
-import { successInfoType, failInfoType } from "./interfaces";
+import { 
+    ResultSuccess,
+    ResultFail
+} from "./interfaces";
 
 class ModuleState {
 
     /** 成功提示 */
-    private success: successInfoType = {
+    private success: ResultSuccess = {
         message: "",
         code: 200,
         result: {}
     }
 
     /** 失败提示 */
-    private fail: failInfoType = {
+    private fail: ResultFail = {
         message: "",
         code: 500,
     }
