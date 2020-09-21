@@ -66,12 +66,12 @@ router.post("/login", async (ctx) => {
     const params: UserInfoType = ctx.request.body;
     /** 返回结果 */
     let bodyResult: ResultFail | ResultSuccess;
-    // console.log("登录", ctx);
-    if (params.account.trim() === "") {
+    // console.log("登录", params);
+    if (!params.account || params.account.trim() === "") {
         return ctx.body = stateInfo.getFailData("登录失败！账号不能为空");
     }
 
-    if (params.password.trim() === "") {
+    if (!params.password || params.password.trim() === "") {
         return ctx.body = stateInfo.getFailData("登录失败！密码不能为空");
     }
 

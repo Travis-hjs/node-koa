@@ -4,23 +4,23 @@
 /** 
  * @type {HTMLInputElement} 
 */
-const loginAccount = find(".login_account");
+const loginAccount = utils.find(".login_account");
 /** 
  * @type {HTMLInputElement} 
 */
-const loginPassword = find(".login_password");
+const loginPassword = utils.find(".login_password");
 /** 
  * @type {HTMLInputElement} 
 */
-const registerAccount = find(".register_account");
+const registerAccount = utils.find(".register_account");
 /** 
  * @type {HTMLInputElement} 
 */
-const registerPassword = find(".register_password");
+const registerPassword = utils.find(".register_password");
 /** 
  * @type {HTMLInputElement} 
 */
-const registerName = find(".register_name");
+const registerName = utils.find(".register_name");
 
 /** 点击登录 */
 function clickLogin() {
