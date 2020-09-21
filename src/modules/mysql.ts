@@ -1,6 +1,8 @@
 import * as mysql from "mysql";         // learn: https://www.npmjs.com/package/mysql
 import config from "./Config";
-import { MysqlErrorType } from "./interfaces";
+import { 
+    MysqlErrorType 
+} from "./interfaces";
 
 interface queryResult {
     /** 结果数组 或 对象 */

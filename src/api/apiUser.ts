@@ -6,7 +6,7 @@ import config from "../modules/Config";
 import { 
     MysqlErrorType, 
     UserInfoType, 
-    theCtx, 
+    TheContext, 
     ResultFail, 
     ResultSuccess 
 } from "../modules/interfaces";
@@ -104,7 +104,7 @@ router.post("/login", async (ctx) => {
 })
 
 // 获取用户信息
-router.get("/getUserInfo", async (ctx: theCtx) => {
+router.get("/getUserInfo", async (ctx: TheContext) => {
     const state = ctx["the_state"];
     // /** 接收参数 */
     // const params = ctx.request.body;

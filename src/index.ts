@@ -8,12 +8,14 @@ import "./api/apiUser";                         // 用户模块
 import "./api/apiUpload";                       // 上传文件模块
 import "./api/apiTest";                         // 基础测试模块
 import "./api/apiTodo";                         // 用户列表模块
-import { theCtx } from "./modules/interfaces";
+import { 
+    TheContext 
+} from "./modules/interfaces";
 
 const App = new Koa();
 
 // 先统一设置请求配置 => 跨域，请求头信息...
-App.use(async (ctx: theCtx, next) => {
+App.use(async (ctx: TheContext, next) => {
     /** 请求路径 */
     const path = ctx.request.path;
 

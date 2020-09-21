@@ -1,4 +1,7 @@
-import { javaScriptTypes, symbols } from "./interfaces";
+import { 
+    JavaScriptTypes, 
+    NumberSymbols 
+} from "./interfaces";
 
 class ModuleUtils {
     /**
@@ -79,10 +82,10 @@ class ModuleUtils {
      * 检测类型
      * @param target 检测的目标
      */
-    public checkType(target: any): javaScriptTypes {
+    public checkType(target: any): JavaScriptTypes {
         const value: string = Object.prototype.toString.call(target);
         const result = value.match(/\[object (\S*)\]/)[1];
-        return result.toLocaleLowerCase() as javaScriptTypes;
+        return result.toLocaleLowerCase() as JavaScriptTypes;
     }
 
     /**
@@ -96,7 +99,7 @@ class ModuleUtils {
      * const res = computeNumber(1.3, "-", 1.2).next("+", 1.5).next("*", 2.3).next("/", 0.2).result;
      * console.log(res);
      */
-    public computeNumber(a: number, type: symbols, b: number) {
+    public computeNumber(a: number, type: NumberSymbols, b: number) {
         const THAT = this;
         /**
          * 获取数字小数点的位数
@@ -137,7 +140,7 @@ class ModuleUtils {
              * @param nextType 继续计算方式
              * @param nextValue 继续计算的值
              */
-            next(nextType: symbols, nextValue: number) {
+            next(nextType: NumberSymbols, nextValue: number) {
                 return THAT.computeNumber(result, nextType, nextValue);
             }
         };

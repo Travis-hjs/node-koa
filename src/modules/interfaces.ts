@@ -70,13 +70,13 @@ export interface SessionResultType {
 }
 
 /** JavaScript类型 */
-export type javaScriptTypes = "string" | "number" | "array" | "object" | "function" | "null" | "undefined";
+export type JavaScriptTypes = "string" | "number" | "array" | "object" | "function" | "null" | "undefined";
 
 /** 运算符号 */
-export type symbols = "+" | "-"| "*" | "/";
+export type NumberSymbols = "+" | "-"| "*" | "/";
 
 /** 自定义的请求上下文返回信息接口 */
-export interface theCtx extends Koa.ParameterizedContext {
+export interface TheContext extends Koa.ParameterizedContext {
     /** 请求时自定义设置的一个状态 (see)[src/index.ts] */
     the_state?: SessionResultType
 }
