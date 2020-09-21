@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import config from "./config";
-import { userRecordType, userInfoType, sessionResultType } from "../modules/interfaces";
+import config from "./configs";
+import { userRecordType, userInfoType, sessionResultType } from "./interfaces";
 
 class ModuleSession {
     constructor() {

@@ -1,6 +1,6 @@
 import router from "./main";
 import html from "../modules/template";
-import stateInfo from "../modules/state";
+import stateInfo from "../modules/states";
 
 // "/*" 监听全部
 router.get("/", (ctx, next) => {

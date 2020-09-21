@@ -1,8 +1,8 @@
 import router from "./main";
 import query from "../modules/mysql";
-import stateInfo from "../modules/state";
-import session from "../modules/session";
-import config from "../modules/config";
+import stateInfo from "../modules/states";
+import session from "../modules/sessions";
+import config from "../modules/configs";
 import { 
     mysqlErrorType, 
     userInfoType, 

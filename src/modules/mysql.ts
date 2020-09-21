@@ -1,5 +1,5 @@
 import * as mysql from "mysql";         // learn: https://www.npmjs.com/package/mysql
-import config from "./config";
+import config from "./configs";
 import { mysqlErrorType } from "./interfaces";
 
 interface queryResult {

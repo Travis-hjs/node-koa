@@ -1,6 +1,6 @@
 import router from "./main";
 import query from "../modules/mysql";
-import stateInfo from "../modules/state";
+import stateInfo from "../modules/states";
 import { mysqlErrorType, theCtx } from "../modules/interfaces";
 
 // 获取所有列表
