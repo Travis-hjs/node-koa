@@ -20,20 +20,20 @@ class ModuleUtils {
      * @param string rgb(125, 125, 125)
      */
     public rgbToHex(string: string) {
-        var rgb = string.split(',');
-        var r = parseInt(rgb[0].split('(')[1]);
+        var rgb = string.split(",");
+        var r = parseInt(rgb[0].split("(")[1]);
         var g = parseInt(rgb[1]);
-        var b = parseInt(rgb[2].split(')')[0]);
-        var hex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        var b = parseInt(rgb[2].split(")")[0]);
+        var hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
         return hex;
     }
 
     /** 
     * hex16 进制颜色转 rgb(rgba)
-    * @param hex '#23ff45' 
+    * @param hex "#23ff45" 
     */
     public hexToRgb(hex: string) {
-        return 'rgb(' + parseInt('0x' + hex.slice(1, 3)) + ',' + parseInt('0x' + hex.slice(3, 5)) + ',' + parseInt('0x' + hex.slice(5, 7)) + ')';
+        return "rgb(" + parseInt("0x" + hex.slice(1, 3)) + "," + parseInt("0x" + hex.slice(3, 5)) + "," + parseInt("0x" + hex.slice(5, 7)) + ")";
     }
 
     /**
