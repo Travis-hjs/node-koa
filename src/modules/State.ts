@@ -6,16 +6,20 @@ import {
 class ModuleState {
 
     /** 成功提示 */
-    private success: ResultSuccess = {
-        message: "",
-        code: 200,
-        result: {}
+    private get success(): ResultSuccess {
+        return {
+            message: "",
+            code: 200,
+            result: {} 
+        }
     }
 
     /** 失败提示 */
-    private fail: ResultFail = {
-        message: "",
-        code: 500,
+    private get fail(): ResultFail {
+        return {
+            message: "",
+            code: 500,
+        }
     }
 
     /**
