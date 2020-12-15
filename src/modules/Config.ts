@@ -15,13 +15,13 @@ class ModuleConfig {
     }
 
     /** 接口前缀 */
-    public readonly api_prefix = "/api/v1/";
+    public readonly apiPrefix = "/api/v1/";
 
     /** 上传图片存放目录 */
-    public readonly upload_path = "public/upload/images/";
+    public readonly uploadPath = "public/upload/images/";
 
     /** 上传图片大小限制 */
-    public readonly upload_img_size = 5 * 1024 * 1024;
+    public readonly uploadImgSize = 5 * 1024 * 1024;
 
     /**
      * 前端上传图片时约定的字段
@@ -30,16 +30,17 @@ class ModuleConfig {
      * formData.append("img", file)
      * XHR.send(formData)
      */
-    public readonly upload_img_name = "img";    
+    public readonly uploadImgName = "img";  
 
     /** 用户临时表 */
-    public readonly user_file = "public/user.json";
+    public readonly userFile = "public/user.json";
 
-    /** token 长度 */
-    public readonly token_size = 28;
+    /** `token`长度 */
+    public readonly tokenSize = 28;
 
-    /** token 格式错误提示文字 */
-    public readonly token_tip = "无效的token";
+    /** `token`格式错误提示文字 */
+    public readonly tokenTip = "无效的token";
+
 }
 
 /** 项目配置 */

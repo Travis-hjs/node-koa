@@ -136,8 +136,8 @@ router.get("/logout", ctx => {
 
     console.log("logout", params, token);
 
-    if (token.length != config.token_size) {
-        return ctx.body = stateInfo.getFailData(config.token_tip);
+    if (token.length != config.tokenSize) {
+        return ctx.body = stateInfo.getFailData(config.tokenTip);
     }
 
     const state = session.removeRecord(token);

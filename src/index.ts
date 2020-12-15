@@ -60,8 +60,8 @@ App.use(async (ctx: TheContext, next) => {
                 return ctx.body = stateInfo.getFailData("缺少token");
             }
 
-            if (token.length != config.token_size) {
-                return ctx.body = stateInfo.getFailData(config.token_tip);
+            if (token.length != config.tokenSize) {
+                return ctx.body = stateInfo.getFailData(config.tokenTip);
             }
             
             const state = session.updateRecord(token);
@@ -88,7 +88,7 @@ App.use(async (ctx: TheContext, next) => {
 App.use(koaBody({
     multipart: true,
     formidable: {
-        maxFileSize: config.upload_img_size
+        maxFileSize: config.uploadImgSize
     }
 }));
 

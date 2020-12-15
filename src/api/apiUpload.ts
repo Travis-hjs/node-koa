@@ -8,14 +8,14 @@ import stateInfo from "../modules/State";
 // learn: https://www.cnblogs.com/nicederen/p/10758000.html
 // learn: https://blog.csdn.net/qq_24134853/article/details/81745104
 router.post("/uploadImg", async (ctx, next) => {
-    const file = ctx.request.files[config.upload_img_name];
+    const file = ctx.request.files[config.uploadImgName];
     let fileName = ctx.request.body.name || `img_${Date.now()}`;
     fileName = `${fileName}.${file.name.split(".")[1]}`;
 
     // 创建可读流
     const render = fs.createReadStream(file.path);
-    const filePath = path.join(config.upload_path, fileName);
-    const fileDir = path.join(config.upload_path);
+    const filePath = path.join(config.uploadPath, fileName);
+    const fileDir = path.join(config.uploadPath);
 
     if (!fs.existsSync(fileDir)) {
         fs.mkdirSync(fileDir);
@@ -38,8 +38,8 @@ router.post("/uploadImg", async (ctx, next) => {
         return new Promise(function (resolve, reject) {
             const delay = Math.floor(Math.random() * 5) * 100 + 500;
             setTimeout(() => {
-                result.image = `http://${ctx.headers.host}/${config.upload_path}${fileName}`;
-                result.file = `${config.upload_path}${fileName}`;
+                result.image = `http://${ctx.headers.host}/${config.uploadPath}${fileName}`;
+                result.file = `${config.uploadPath}${fileName}`;
                 resolve();
             }, delay);
         });

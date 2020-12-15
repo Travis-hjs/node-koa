@@ -18,7 +18,7 @@ class ModuleSession {
     private interval = 600000;
 
     /** 用户 token 纪录 */
-    private userRecord: UserRecordType = {}; 
+    private userRecord: UserRecordType = {};
 
     /**
      * 写入文件
@@ -27,9 +27,9 @@ class ModuleSession {
     private write(obj?: UserRecordType) {
         const data = obj || this.userRecord;
         // 同步写入（貌似没必要）
-        // fs.writeFileSync(config.user_file, JSON.stringify(data), { encoding: "utf8" });
+        // fs.writeFileSync(config.userFile, JSON.stringify(data), { encoding: "utf8" });
         // 异步写入
-        fs.writeFile(config.user_file, JSON.stringify(data), { encoding: "utf8" }, (err) => {
+        fs.writeFile(config.userFile, JSON.stringify(data), { encoding: "utf8" }, err => {
             if (err) {
                 console.log("session 写入失败", err);
             } else {
@@ -40,7 +40,7 @@ class ModuleSession {
 
     /** 从本地临时表里面初始化用户状态 */
     private init() {
-        const userFrom = fs.readFileSync(config.user_file).toString();
+        const userFrom = fs.readFileSync(config.userFile).toString();
         this.userRecord = userFrom ? JSON.parse(userFrom) : {};
         this.checkRecord();
         // console.log("token临时表", userFrom, this.userRecord);
@@ -59,7 +59,7 @@ class ModuleSession {
             }
             return code;
         }
-        const code = getCode(config.token_size);
+        const code = getCode(config.tokenSize);
         return code;
     }
     
