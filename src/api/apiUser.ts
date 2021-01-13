@@ -3,10 +3,9 @@ import query from "../utils/mysql";
 import session from "../modules/Session";
 import config from "../modules/Config";
 import {
-    UserInfoType, 
-    TheContext, 
-    ResultFail, 
-    ApiResult 
+    UserInfoType,
+    TheContext,
+    ApiResult
 } from "../utils/interfaces";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 
@@ -67,7 +66,7 @@ router.post("/login", async (ctx) => {
     /** 接收参数 */
     const params: UserInfoType = ctx.request.body;
     /** 返回结果 */
-    let bodyResult: ResultFail | ApiResult;
+    let bodyResult: ApiResult;
     // console.log("登录", params);
     if (!params.account || params.account.trim() === "") {
         return ctx.body = apiSuccess({}, "登录失败！账号不能为空", 400);
@@ -114,7 +113,7 @@ router.get("/getUserInfo", async (ctx: TheContext) => {
     // /** 接收参数 */
     // const params = ctx.request.body;
     /** 返回结果 */
-    let bodyResult: ResultFail | ApiResult;
+    let bodyResult: ApiResult;
 
     // console.log("getUserInfo", params, state);
 
