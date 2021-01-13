@@ -1,7 +1,8 @@
 // 类型提示用（运行时不会引用）
+/// <reference path="./index.d.ts" />
 /// <reference path="./utils.js" />
 
-const BASE_URL = "http://192.168.89.177:1995"; // 本地的IP地址+端口；端口跟后台设置的一致
+const BASE_URL = "http://192.168.1.105:1995"; // 本地的IP地址+端口；端口跟后台设置的一致
 
 const cache = window.sessionStorage;
 
@@ -116,17 +117,6 @@ function ajax(param) {
 
     XHR.send(payload);
 }
-
-/**
- * 请求成功函数类型提示
- * @param {any} res 
- */
-const successFn = function(res) {}
-/**
- * 请求失败函数类型提示
- * @param {{ message?: string }} error 
- */
-const failFn = function(error) {}
 
 /**
  * 基础请求

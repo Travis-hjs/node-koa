@@ -30,7 +30,7 @@ function clickLogin() {
     }, res => {
         console.log("登录成功", res);
         saveUserInfo(res.result);
-        window.location.href = "index.html";
+        location.href = "index.html";
     }, err => {
         console.log("登录失败", err);
     });

@@ -3,8 +3,12 @@
 
 const userInfo = fetchUserInfo();
 
+function openUserPage() {
+    location.href = "./user.html";
+}
+
 if (!userInfo) {
-    window.location.href = "user.html";
+    openUserPage();
 }
 
 /**
@@ -44,7 +48,7 @@ function uploadImg(el) {
     
     api.upload(formData, res => {
         console.log("上传成功", res);
-        const src = window.location.href.replace("pages/index.html", res.result.file) || getObjectURL(file);
+        const src = location.href.replace("pages/index.html", res.result.file) || getObjectURL(file);
         el.parentNode.classList.add("hide");
         el.parentNode.parentNode.querySelector(".img-box").classList.remove("hide");
         el.parentNode.parentNode.querySelector(".img-box .image").src = src;
@@ -189,7 +193,7 @@ function clickGetUserInfo() {
 function clickLogout() {
     api.logout(res => {
         console.log("退出登录", res);
-        window.location.href = "user.html";
+        openUserPage();
     })
 } 
 

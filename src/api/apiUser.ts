@@ -115,9 +115,11 @@ router.get("/getUserInfo", async (ctx: TheContext) => {
     /** 返回结果 */
     let bodyResult: ApiResult;
 
-    // console.log("getUserInfo", params, state);
+    // console.log("getUserInfo >>", state);
 
     const res = await query(`select * from user where account = "${ state.info.account }"`)
+    
+    console.log("获取用户信息 >>", res);
     
     if (res.state === 1) {
         // 判断账号是否可用
