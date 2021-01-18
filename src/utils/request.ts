@@ -56,10 +56,11 @@ export default function request(options: http.RequestOptions, params: object = {
             }
 
             output.on("data", function(chunk) {
-                console.log("----------> chunk >>");
+                console.log("----------> chunk >>", chunk);
                 // info.result += chunk;
                 // info.result = chunk;
-                info.result += chunk.toString("utf-8");
+                // info.result += chunk.toString("utf-8");
+                info.result += chunk.toString();
             });
             
             output.on("error", function(error) {
