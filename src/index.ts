@@ -1,13 +1,13 @@
 import * as Koa from "koa";                     // learn: https://www.npmjs.com/package/koa
 import * as koaBody from "koa-body";            // learn: http://www.ptbird.cn/koa-body.html
-import * as staticFiles from "koa-static";
+import * as staticFiles from "koa-static";      // 静态文件处理模块
 import * as path from "path";
 import config from "./modules/Config";
 import router from "./api/main";
 import session from "./modules/Session";
+import "./api/apiTest";                         // 基础测试模块
 import "./api/apiUser";                         // 用户模块
 import "./api/apiUpload";                       // 上传文件模块
-import "./api/apiTest";                         // 基础测试模块
 import "./api/apiTodo";                         // 用户列表模块
 import { TheContext } from "./utils/interfaces";
 import { apiSuccess } from "./utils/apiResult";
@@ -75,7 +75,7 @@ App.use(async (ctx: TheContext, next) => {
             if (!state.success) {
                 return ctx.body = apiSuccess({}, state.message, 403);
             }
-            
+
             // 设置 token 信息到上下文中给接口模块里面调用
             ctx["the_state"] = state;
         } 
