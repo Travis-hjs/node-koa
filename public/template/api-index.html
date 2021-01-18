@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>api - 测试</title>
+    <link rel="stylesheet" href="./css/base.css">
+    <style>
+        .page { padding: 8px 10px; }
+        .page .top { text-align: right; }
+        .mrb_16 { margin-bottom: 16px; }
+        .weather_box span { display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top mrb_16">
+            <button class="button button_orange"><a href="./api-user.html">跳转用户列表页</a></button>
+        </div>
+        <div class="options mrb_16">
+            <button class="button button_blue" onclick="clickGet()">get 获取数据</button>
+            <button class="button button_blue" onclick="clickPost()">post 获取数据</button>
+            <button class="button button_green" onclick="getWeatherInfo()">获取随机天气数据</button>
+        </div>
+        <div class="weather_box">
+            
+        </div>
+    </div>
+
+    <script src="./js/utils.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/index.js"></script>
+</body>
+</html>

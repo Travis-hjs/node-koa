@@ -2,7 +2,8 @@
 /// <reference path="./index.d.ts" />
 /// <reference path="./utils.js" />
 
-const BASE_URL = "http://192.168.1.105:1995"; // 本地的IP地址+端口；端口跟后台设置的一致
+/** 本地的IP地址+端口；端口跟后台设置的一致 */
+const BASE_URL = location.host ? location.origin : "http://192.168.89.177:1995";
 
 const cache = window.sessionStorage;
 
@@ -168,6 +169,38 @@ function baseRequest(method, url, data, success, fail, upload) {
 
 class ModuleApi {
     /**
+     * 测试`get`请求
+     * @param {string|number} id 
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    testGet(id = 12, success, fail) {
+        baseRequest("GET", "/getData", {
+            id
+        }, success, fail);
+    }
+
+    /**
+     * 测试`post`请求
+     * @param {{ name: string, age: string }} data 
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    testPost(data, success, fail) {
+        baseRequest("POST", "/postData", data, success, fail);
+    }
+
+    /**
+     * 获取天气信息
+     * @param {string} city 城市名
+     * @param {successFn} success 
+     * @param {failFn} fail 
+     */
+    getWeather(city,  success, fail) {
+        baseRequest("GET", "/getWeather", { city }, success, fail)
+    }
+
+    /**
      * 登录
      * @param {object} info 注册传参
      * @param {string} info.account 账户
@@ -221,28 +254,6 @@ class ModuleApi {
      */
     upload(formdata, success, fail) {
         baseRequest("POST", "/uploadImg", {}, success, fail, formdata);
-    }
-
-    /**
-     * 测试`get`请求
-     * @param {string|number} id 
-     * @param {successFn} success 
-     * @param {failFn} fail 
-     */
-    testGet(id = 12, success, fail) {
-        baseRequest("GET", "/getData", {
-            id
-        }, success, fail);
-    }
-
-    /**
-     * 测试`post`请求
-     * @param {{ name: string, age: string }} data 
-     * @param {successFn} success 
-     * @param {failFn} fail 
-     */
-    testPost(data, success, fail) {
-        baseRequest("POST", "/postData", data, success, fail);
     }
 
     /**

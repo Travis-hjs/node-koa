@@ -76,3 +76,13 @@ export interface UploadFile {
     hash?: string;
     toJSON(): Object;
 }
+
+/** 服务端请求响应结果 */
+export interface ServeRequestResult {
+    /** 状态标记 `state === 1`时为成功 */
+    state: number
+    /** 状态描述信息 */
+    msg: string
+    /** 结果对象 */
+    result: any
+}

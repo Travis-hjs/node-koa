@@ -15,7 +15,7 @@ html, body{
 ul, li{ list-style: none; }
 a{ text-decoration: none; color: inherit; background-color: transparent; }
 img{ display: block; width: 100%; }
-h1,h2,h3,h4,h5,h6,b,i{ font-weight: normal; font-style: normal; }
+i{ font-weight: normal; font-style: normal; }
 button, input, textarea{ outline: none; border: none; background-color: transparent; font-family: "Helvetica Neue", "Helvetica", "sans-serif"; }
 input::-webkit-input-placeholder { color: #999; }
 button::after, input::after{ border: none; }
@@ -41,7 +41,7 @@ textarea::-webkit-input-placeholder { color: #999; }
 .ellipsis_3{ display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
 
 /* 卡片 */
-.card{ 
+.card { 
     border-radius: 2px; 
     box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12); 
     background-color: #fff;
@@ -71,7 +71,7 @@ textarea::-webkit-input-placeholder { color: #999; }
     background-color: #eee;
     color: #555;
 }
-.button:active{ box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12); }
+.button:active { box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12); }
 .button_blue{ background-color: #409eff; color: #fff; }
 .button_green{ background-color: #4caf50; color: #fff; }
 .button_red{ background-color: #f44336; color: #fff; }
@@ -85,7 +85,37 @@ textarea::-webkit-input-placeholder { color: #999; }
 .text_purple{ color: #9e019e; }
 .text_grey{ color: grey; }
 
-.button a{ height: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
+.button a { height: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
 
 /* 页面结构处理 */
-.page{ width: 100%; min-height: 100vh; overflow: hidden; margin: 0 auto; max-width: 680px; }
+.page { width: 100%; min-height: 100vh; overflow: hidden; margin: 0 auto; max-width: 680px; }
+
+.page .input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    border: none;
+    background: none;
+    border-radius: 0 0 0 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    display: block;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 32px;
+    font-style: inherit;
+    font-variant: inherit;
+    font-weight: inherit;
+    font-stretch: inherit;
+    font-size: inherit;
+    color: rgba(0,0,0,.87);
+    font-family: inherit;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.2);
+    font-size: 15px;
+}
+
+.page .input:focus {
+    border-color: #2196f3;
+}

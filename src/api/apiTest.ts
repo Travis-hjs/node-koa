@@ -2,31 +2,32 @@ import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
 import utils from "../utils";
-import { apiSuccess } from "../utils/apiResult";
+import { apiSuccess, apiFail } from "../utils/apiResult";
 import config from "../modules/Config";
+import request from "../utils/request";
 
 /** 资源路径 */
-const resourcePath = path.resolve(__dirname, '../../public');
+const resourcePath = path.resolve(__dirname, '../../public/template');
 
-const template = fs.readFileSync(resourcePath + "/template/index.html", "utf-8");
+const template = fs.readFileSync(resourcePath + "/page.html", "utf-8");
 
 // "/*" 监听全部
 router.get("/", (ctx, next) => {
     // 指定返回类型
     // ctx.response.type = "html";
-    ctx.response.type = "text/html; charset=utf-8";
+    // ctx.response.type = "text/html; charset=utf-8";
 
-    const data = {
-        pageTitle: "serve-root",
-        jsLabel: "",
-        content: `<button class="button button_green"><a href="/home">go to home<a></button>`
-    }
+    // const data = {
+    //     pageTitle: "serve-root",
+    //     jsLabel: "",
+    //     content: `<button class="button button_green"><a href="/home">go to home<a></button>`
+    // }
 
-    ctx.body = utils.replaceText(template, data);
+    // ctx.body = utils.replaceText(template, data);
     // console.log("根目录");
 
     // 路由重定向
-    // ctx.redirect("/home");
+    ctx.redirect("/home");
 
     // 302 重定向到其他网站
     // ctx.status = 302;
@@ -34,12 +35,18 @@ router.get("/", (ctx, next) => {
 })
 
 router.get("/home", (ctx, next) => {
+    const userAgent = ctx.header["user-agent"];
+
     ctx.response.type = "text/html; charset=utf-8";
 
     const data = {
         pageTitle: "serve-root",
-        jsLabel: "",
-        content: `<h1 style="text-align: center; line-height: 40px; font-size: 24px; color: #007fff">Welcome to home</h1>`
+        jsLabel: `<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>`,
+        content: `
+        <div style="font-size: 24px; margin-bottom: 8px; font-weight: bold;">当前环境是微信</div>
+        <p style="font-size: 15px; margin-bottom: 10px; font-weight: 500;">${ userAgent }</p>
+        <button class="button button_purple"><a href="./test">open test</></button>
+        `
     }
 
     ctx.body = utils.replaceText(template, data);
@@ -72,4 +79,32 @@ router.post("/postData", (ctx, next) => {
     }
 
     ctx.body = apiSuccess(result, "post success")
+})
+
+// 请求第三方接口并把数据返回到前端
+router.get("/getWeather", async (ctx, next) => {
+    console.log("ctx.query >>", ctx.query);
+
+    if (!ctx.query.city) {
+        ctx.body = apiSuccess({}, "缺少传参字段 city", 400);
+        return;
+    }
+
+    const res = await request({
+        method: "GET",
+        hostname: "wthrcdn.etouch.cn",
+        path: "/weather_mini?city=" + encodeURIComponent(ctx.query.city)
+    })
+
+    // console.log("获取天气信息 >>", res);
+
+    if (res.state === 1) {
+        if (utils.checkType(res.result) === "string") {
+            res.result = JSON.parse(res.result);
+        }
+        ctx.body = apiSuccess(res.result)
+    } else {
+        ctx.body = apiFail(res.msg, 500, res.result)
+    }
+
 })

@@ -4,7 +4,7 @@
 const userInfo = fetchUserInfo();
 
 function openUserPage() {
-    location.href = "./user.html";
+    location.href = "./api-login.html";
 }
 
 if (!userInfo) {
@@ -166,23 +166,6 @@ api.getTodoList(res => {
         ouputList(item);
     })
 })
-
-function clickGet() {
-    api.testGet(10, res => {
-        console.log("get 成功", res);
-        utils.showToast("get 成功");
-    })
-} 
-
-function clickPost() {
-    api.testPost({
-        name: "Hjs",
-        age: new Date().getFullYear() - 1995,
-    }, res => {
-        console.log("post 成功", res);
-        utils.showToast("post 成功");
-    })
-} 
 
 function clickGetUserInfo() {
     api.getUserInfo(res => {

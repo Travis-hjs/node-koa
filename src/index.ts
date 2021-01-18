@@ -1,5 +1,7 @@
 import * as Koa from "koa";                     // learn: https://www.npmjs.com/package/koa
 import * as koaBody from "koa-body";            // learn: http://www.ptbird.cn/koa-body.html
+import * as staticFiles from "koa-static";
+import * as path from "path";
 import config from "./modules/Config";
 import router from "./api/main";
 import session from "./modules/Session";
@@ -11,6 +13,10 @@ import { TheContext } from "./utils/interfaces";
 import { apiSuccess } from "./utils/apiResult";
 
 const App = new Koa();
+
+// 指定 public目录为静态资源目录，用来存放 js css images 等
+// 注意：这里`template`目录下如果有`index.html`的话，会默认使用`index.html`代`router.get("/")`监听的
+App.use(staticFiles(path.resolve(__dirname, "../public/template")))
 
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx: TheContext, next) => {
@@ -46,9 +52,11 @@ App.use(async (ctx: TheContext, next) => {
     } else {
         /** 
          * 过滤掉不用 token 也可以请求的接口 
+         * 
          * 这里有个浏览器的机制 "/favicon.ico" 默认会引用这个导致以下代码报错（虽然不影响），所以这边也需要把它列入过滤名单
+         * 上面使用了koa-static，所以/favicon.ico去掉了
          */
-        const rule = /\/register|\/login|\/uploadImg|\/getData|\/postData|\/home|\/favicon.ico/;
+        const rule = /\/register|\/login|\/uploadImg|\/getData|\/postData|\/getWeather|\/home/;
 
         // 这里进行全局的 token 验证判断
         if (!rule.test(path) && path != "/") {
@@ -67,6 +75,7 @@ App.use(async (ctx: TheContext, next) => {
             if (!state.success) {
                 return ctx.body = apiSuccess({}, state.message, 403);
             }
+            
             // 设置 token 信息到上下文中给接口模块里面调用
             ctx["the_state"] = state;
         } 
