@@ -62,8 +62,8 @@ export type NumberSymbols = "+" | "-"| "*" | "/";
 
 /** 自定义的请求上下文返回信息接口 */
 export interface TheContext extends Koa.ParameterizedContext {
-    /** 请求时自定义设置的一个状态 (see)[src/index.ts] */
-    the_state?: SessionResultType
+    /** 请求时自定义设置的一个状态 (see)[src/module/Session.ts] */
+    theState?: SessionResultType
 }
 
 /** 上传文件类型 */

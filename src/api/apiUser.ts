@@ -115,7 +115,7 @@ router.get("/getUserInfo", async (ctx: TheContext) => {
         return ctx.body = checkInfo.info;
     }
 
-    const state = ctx["the_state"];
+    const state = ctx["theState"];
     // /** 接收参数 */
     // const params = ctx.request.body;
     /** 返回结果 */

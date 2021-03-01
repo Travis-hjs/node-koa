@@ -12,7 +12,7 @@ router.get("/getList", async (ctx: TheContext) => {
         return ctx.body = checkInfo.info;
     }
 
-    const state = ctx["the_state"];
+    const state = ctx["theState"];
     /** 返回结果 */
     let bodyResult = null;
     
@@ -42,7 +42,7 @@ router.post("/addList", async (ctx: TheContext) => {
         return ctx.body = checkInfo.info;
     }
 
-    const state = ctx["the_state"];
+    const state = ctx["theState"];
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */
@@ -117,7 +117,7 @@ router.post("/deleteList", async (ctx: TheContext) => {
         return ctx.body = checkInfo.info;
     }
     
-    const state = ctx["the_state"];
+    const state = ctx["theState"];
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */

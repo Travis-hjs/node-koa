@@ -182,7 +182,7 @@ class ModuleSession {
 
         // 设置 token 信息到上下文中给接口模块里面调用
         if (!fail) {
-            context["the_state"] = state;
+            context["theState"] = state;
         }
 
         return {
