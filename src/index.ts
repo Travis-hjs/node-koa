@@ -4,13 +4,11 @@ import * as staticFiles from "koa-static";      // 静态文件处理模块
 import * as path from "path";
 import config from "./modules/Config";
 import router from "./api/main";
-import session from "./modules/Session";
 import "./api/apiTest";                         // 基础测试模块
 import "./api/apiUser";                         // 用户模块
 import "./api/apiUpload";                       // 上传文件模块
 import "./api/apiTodo";                         // 用户列表模块
 import { TheContext } from "./utils/interfaces";
-import { apiSuccess } from "./utils/apiResult";
 
 const App = new Koa();
 
@@ -21,7 +19,7 @@ App.use(staticFiles(path.resolve(__dirname, "../public/template")))
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx: TheContext, next) => {
     /** 请求路径 */
-    const path = ctx.request.path;
+    // const path = ctx.request.path;
 
     console.log("--------------------------");
     console.count("request count");
@@ -49,36 +47,6 @@ App.use(async (ctx: TheContext, next) => {
     // console.log(ctx.request.method);
     if (ctx.request.method === "OPTIONS") {
         ctx.response.status = 200;
-    } else {
-        /** 
-         * 过滤掉不用 token 也可以请求的接口 
-         * 
-         * 这里有个浏览器的机制 "/favicon.ico" 默认会引用这个导致以下代码报错（虽然不影响），所以这边也需要把它列入过滤名单
-         * 上面使用了koa-static，所以/favicon.ico去掉了
-         */
-        const rule = /\/register|\/login|\/uploadImg|\/getData|\/postData|\/getWeather|\/home/;
-
-        // 这里进行全局的 token 验证判断
-        if (!rule.test(path) && path != "/") {
-            const token: string = ctx.header.authorization;
-            
-            if (!token) {
-                return ctx.body = apiSuccess({}, "缺少token", 400);
-            }
-
-            if (token.length != config.tokenSize) {
-                return ctx.body = apiSuccess({}, config.tokenTip, 400);
-            }
-            
-            const state = session.updateRecord(token);
-
-            if (!state.success) {
-                return ctx.body = apiSuccess({}, state.message, 403);
-            }
-
-            // 设置 token 信息到上下文中给接口模块里面调用
-            ctx["the_state"] = state;
-        } 
     }
     
     try {

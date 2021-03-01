@@ -1,9 +1,12 @@
 import * as fs from "fs";
 import config from "./Config";
+import { apiSuccess } from "../utils/apiResult";
 import { 
     UserRecordType, 
     UserInfoType, 
-    SessionResultType 
+    SessionResultType, 
+    TheContext,
+    ApiResult
 } from "../utils/interfaces";
 
 class ModuleSession {
@@ -90,7 +93,7 @@ class ModuleSession {
      * 设置纪录并返回 token
      * @param data 用户信息
      */
-    public setRecord(data: UserInfoType) {
+    setRecord(data: UserInfoType) {
         const token = this.getToken();
         data.online = Date.now();
         this.userRecord[token] = data;
@@ -102,7 +105,7 @@ class ModuleSession {
      * 更新并检测 token
      * @param token 
      */
-    public updateRecord(token: string) {
+    updateRecord(token: string) {
         let result: SessionResultType = {
             message: "",
             success: false,
@@ -141,13 +144,50 @@ class ModuleSession {
      * 从纪录中删除 token 纪录（退出登录时用）
      * @param token 
      */
-    public removeRecord(token: string) {
+    removeRecord(token: string) {
         if (this.userRecord.hasOwnProperty(token)) {
             delete this.userRecord[token];
             this.write();
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * 检测需要`token`的接口状态
+     * @param context 
+     */
+    checkToken(context: TheContext) {
+        const token: string = context.header.authorization;
+        let fail = false;
+        let info: ApiResult;
+
+        if (!token) {
+            fail = true;
+            info = apiSuccess({}, "缺少token", 400);
+        }
+
+        if (token.length != config.tokenSize) {
+            fail = true;
+            info = apiSuccess({}, config.tokenTip, 400);
+        }
+        
+        const state = session.updateRecord(token);
+
+        if (!state.success) {
+            fail = true;
+            info = apiSuccess({}, state.message, 403);
+        }
+
+        // 设置 token 信息到上下文中给接口模块里面调用
+        if (!fail) {
+            context["the_state"] = state;
+        }
+
+        return {
+            fail,
+            info
         }
     }
 

@@ -2,9 +2,16 @@ import router from "./main";
 import query from "../utils/mysql";
 import { TheContext } from "../utils/interfaces";
 import { apiSuccess, apiFail } from "../utils/apiResult";
+import session from "../modules/Session";
 
 // 获取所有列表
 router.get("/getList", async (ctx: TheContext) => {
+    const checkInfo = session.checkToken(ctx);
+
+    if (checkInfo.fail) {
+        return ctx.body = checkInfo.info;
+    }
+
     const state = ctx["the_state"];
     /** 返回结果 */
     let bodyResult = null;
@@ -29,6 +36,12 @@ router.get("/getList", async (ctx: TheContext) => {
 
 // 添加列表
 router.post("/addList", async (ctx: TheContext) => {
+    const checkInfo = session.checkToken(ctx);
+
+    if (checkInfo.fail) {
+        return ctx.body = checkInfo.info;
+    }
+
     const state = ctx["the_state"];
     /** 接收参数 */
     const params = ctx.request.body;
@@ -58,6 +71,12 @@ router.post("/addList", async (ctx: TheContext) => {
 
 // 修改列表
 router.post("/modifyList", async (ctx) => {
+    const checkInfo = session.checkToken(ctx);
+
+    if (checkInfo.fail) {
+        return ctx.body = checkInfo.info;
+    }
+
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */
@@ -92,6 +111,12 @@ router.post("/modifyList", async (ctx) => {
 
 // 删除列表
 router.post("/deleteList", async (ctx: TheContext) => {
+    const checkInfo = session.checkToken(ctx);
+
+    if (checkInfo.fail) {
+        return ctx.body = checkInfo.info;
+    }
+    
     const state = ctx["the_state"];
     /** 接收参数 */
     const params = ctx.request.body;

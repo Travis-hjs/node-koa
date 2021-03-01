@@ -109,6 +109,12 @@ router.post("/login", async (ctx) => {
 
 // 获取用户信息
 router.get("/getUserInfo", async (ctx: TheContext) => {
+    const checkInfo = session.checkToken(ctx);
+
+    if (checkInfo.fail) {
+        return ctx.body = checkInfo.info;
+    }
+
     const state = ctx["the_state"];
     // /** 接收参数 */
     // const params = ctx.request.body;
@@ -139,15 +145,17 @@ router.get("/getUserInfo", async (ctx: TheContext) => {
 
 // 退出登录
 router.get("/logout", ctx => {
+    const checkInfo = session.checkToken(ctx);
+
+    if (checkInfo.fail) {
+        return ctx.body = checkInfo.info;
+    }
+
     const token: string = ctx.header.authorization;
     /** 接收参数 */
     const params = ctx.request.body;
 
     console.log("logout", params, token);
-
-    if (token.length != config.tokenSize) {
-        return ctx.body = apiSuccess({}, config.tokenTip);
-    }
 
     const state = session.removeRecord(token);
 
