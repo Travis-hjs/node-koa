@@ -168,7 +168,7 @@ class ModuleSession {
             info = apiSuccess({}, "缺少token", 400);
         }
 
-        if (token.length != config.tokenSize) {
+        if (token && token.length != config.tokenSize) {
             fail = true;
             info = apiSuccess({}, config.tokenTip, 400);
         }
