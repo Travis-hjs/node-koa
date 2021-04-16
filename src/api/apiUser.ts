@@ -32,7 +32,7 @@ router.post("/register", async (ctx) => {
     }
 
     // 先查询是否有重复账号
-    const res = await query(`select account from user where account = "${ params.account }"`)
+    const res = await query(`select account from user where account='${ params.account }'`)
 
     // console.log("注册查询", res);
 
@@ -77,7 +77,7 @@ router.post("/login", async (ctx) => {
     }
 
     // 先查询是否有当前账号
-    const res = await query(`select * from user where account = "${ params.account }"`)
+    const res = await query(`select * from user where account='${ params.account }'`)
     
     console.log("登录查询", res);
 
@@ -123,7 +123,7 @@ router.get("/getUserInfo", async (ctx: TheContext) => {
 
     // console.log("getUserInfo >>", state);
 
-    const res = await query(`select * from user where account = "${ state.info.account }"`)
+    const res = await query(`select * from user where account='${ state.info.account }'`)
     
     console.log("获取用户信息 >>", res);
     

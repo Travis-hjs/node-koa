@@ -19,7 +19,7 @@ router.get("/getList", async (ctx: TheContext) => {
     // console.log("getList");
 
     // 这里要开始连表查询
-    const res = await query(`select * from todo_list where user_id = "${ state.info.id }"`)
+    const res = await query(`select * from todo_list where user_id='${state.info.id}'`)
 
     if (res.state === 1) {
         // console.log("/getList 查询", res.results);
@@ -91,7 +91,7 @@ router.post("/modifyList", async (ctx) => {
     }
 
     // 修改列表
-    const res = await query(`update todo_list set content="${params.content}", time="${new Date().toLocaleDateString()}" where list_id="${params.id}"`)
+    const res = await query(`update todo_list set content='${params.content}', time='${new Date().toLocaleDateString()}' where list_id='${params.id}'`)
 
     console.log("修改列表", res);
 
@@ -124,7 +124,7 @@ router.post("/deleteList", async (ctx: TheContext) => {
     let bodyResult = null;
 
     // 从数据库中删除
-    const res = await query(`delete from todo_list where list_id=${params.id} and user_id = ${state.info.id}`)
+    const res = await query(`delete from todo_list where list_id='${params.id}' and user_id='${state.info.id}'`)
     
     console.log("从数据库中删除", res);
 
