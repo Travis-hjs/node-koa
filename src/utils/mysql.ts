@@ -24,7 +24,7 @@ const pool = mysql.createPool({
 
 /**
  * 数据库增删改查
- * @param command 增删改查语句
+ * @param command 增删改查语句 [mysql语句参考](https://blog.csdn.net/gymaisyl/article/details/84777139)
  * @param value 对应的值
  */
 export default function query(command: string, value?: Array<any>) {
@@ -67,5 +67,3 @@ export default function query(command: string, value?: Array<any>) {
         });
     });
 }
-
-// learn: https://blog.csdn.net/gymaisyl/article/details/84777139
