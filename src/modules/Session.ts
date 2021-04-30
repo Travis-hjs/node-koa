@@ -34,9 +34,9 @@ class ModuleSession {
         // 异步写入
         fs.writeFile(config.userFile, JSON.stringify(data), { encoding: "utf8" }, err => {
             if (err) {
-                console.log("session 写入失败", err);
+                console.log(`\x1B[41m session 写入失败 \x1B[0m`, err);
             } else {
-                console.log("session 写入成功");
+                console.log(`\x1B[42m session 写入成功 \x1B[0m`);
             }
         })
     }

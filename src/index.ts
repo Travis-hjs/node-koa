@@ -2,6 +2,7 @@ import * as Koa from "koa";                     // learn: https://www.npmjs.com/
 import * as koaBody from "koa-body";            // learn: http://www.ptbird.cn/koa-body.html
 import * as staticFiles from "koa-static";      // 静态文件处理模块
 import * as path from "path";
+import * as os from "os";
 import config from "./modules/Config";
 import router from "./api/main";
 import "./api/apiTest";                         // 基础测试模块
@@ -77,11 +78,32 @@ App.use(router.routes())
 // });
 
 App.on("error", (err, ctx) => {
-    console.error("server error !!!!!!!!!!!!!", err, ctx);
+    console.log(`\x1B[91m server error !!!!!!!!!!!!! \x1B[0m`, err, ctx);
 })
 
+/**
+ * 获取本机`ip`地址
+ */
+function getIPAdress() {
+    const interfaces = os.networkInterfaces();
+    for (const key in interfaces) {
+        const iface = interfaces[key];
+        for (let i = 0; i < iface.length; i++) {
+            const alias = iface[i];
+            if (alias.family === "IPv4" && alias.address !== "127.0.0.1" && !alias.internal) {
+                return alias.address;
+            }
+        }
+    }
+}
+
 App.listen(config.port, () => {
-    console.log(`server is running at http://localhost:${ config.port }`);
+    // for (let i = 0; i < 100; i++) {
+    //     console.log(`\x1B[${i}m 颜色 \x1B[0m`, i);
+    // }
+    console.log("服务器启动:");
+    console.log(` - Local:   \x1B[36m http://localhost:\x1B[0m\x1B[96m${ config.port } \x1B[0m`);
+    console.log(` - Network: \x1B[36m http://${getIPAdress()}:\x1B[0m\x1B[96m${ config.port } \x1B[0m`);
 })
 
 // 参考项目配置连接: https://juejin.im/post/5ce25993f265da1baa1e464f

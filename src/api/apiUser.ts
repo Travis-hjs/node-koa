@@ -152,10 +152,10 @@ router.get("/logout", ctx => {
     }
 
     const token: string = ctx.header.authorization;
-    /** 接收参数 */
-    const params = ctx.request.body;
+    // /** 接收参数 */
+    // const params = ctx.request.body;
 
-    console.log("logout", params, token);
+    // console.log("logout", params, token);
 
     const state = session.removeRecord(token);
 
