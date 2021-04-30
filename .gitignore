@@ -20,3 +20,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# 忽略用户 token 表
+/public/user.json
