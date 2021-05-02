@@ -43,14 +43,9 @@ class ModuleSession {
 
     /** 从本地临时表里面初始化用户状态 */
     private init() {
-        try {
-            fs.accessSync(config.userFile);
-            // console.log("已存在" + config.userFile);
-        } catch (error) {
-            console.log(error);
-            console.log("--------------------------------------");
-            console.log(`不存在 ${config.userFile} 开始创建该文件`);
-            console.log("--------------------------------------");
+        // fs.accessSync(config.userFile)
+        if (!fs.existsSync(config.userFile)) {
+            console.log(`\x1B[42m ${config.userFile} 不存在，开始创建该文件 \x1B[0m`);
             fs.writeFileSync(config.userFile, "{}", { encoding: "utf8" });
         }
         const userFrom = fs.readFileSync(config.userFile).toString();

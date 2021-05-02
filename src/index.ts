@@ -101,7 +101,7 @@ App.listen(config.port, () => {
     // for (let i = 0; i < 100; i++) {
     //     console.log(`\x1B[${i}m 颜色 \x1B[0m`, i);
     // }
-    console.log("服务器启动:");
+    console.log("服务器启动完成:");
     console.log(` - Local:   \x1B[36m http://localhost:\x1B[0m\x1B[96m${ config.port } \x1B[0m`);
     console.log(` - Network: \x1B[36m http://${getIPAdress()}:\x1B[0m\x1B[96m${ config.port } \x1B[0m`);
 })
