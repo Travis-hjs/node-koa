@@ -24,7 +24,7 @@ class ModuleJWT {
     /** 更新 & 检测时间间隔（10分钟） */
     private interval = 600000;
 
-    /** 用户 token 纪录 */
+    /** 用户`token`纪录 */
     private userRecord: UserRecordType = {};
 
     /**
@@ -58,7 +58,7 @@ class ModuleJWT {
         // console.log("token临时表", userFrom, this.userRecord);
     }
 
-    /** 生成 token */
+    /** 生成`token` */
     private getToken() {
         const getCode = (n: number): string => {
             let codes = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
@@ -75,7 +75,7 @@ class ModuleJWT {
         return code;
     }
     
-    /** 定时检测过期的 token 并清理 */
+    /** 定时检测过期的`token`并清理 */
     private checkRecord() {
         const check = () => {
             const now = Date.now();
@@ -99,7 +99,7 @@ class ModuleJWT {
     }
 
     /**
-     * 设置纪录并返回 token
+     * 设置纪录并返回`token`
      * @param data 用户信息
      */
     setRecord(data: UserInfoType) {
@@ -111,8 +111,9 @@ class ModuleJWT {
     }
 
     /**
-     * 更新并检测 token
+     * 更新并检测`token`
      * @param token 
+     * @description 这里可以做单点登录的处理，自行修改一下规则判断即可
      */
     updateRecord(token: string) {
         const result: JwtResultType = {
@@ -150,8 +151,9 @@ class ModuleJWT {
     }
 
     /**
-     * 从纪录中删除 token 纪录（退出登录时用）
+     * 从纪录中删除`token`纪录
      * @param token 
+     * @description 主要是退出登录时用
      */
     removeRecord(token: string) {
         if (this.userRecord.hasOwnProperty(token)) {
