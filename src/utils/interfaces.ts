@@ -44,8 +44,8 @@ export interface UserRecordType {
     [key: string]: UserInfoType
 }
 
-/** session返回结果类型 */
-export interface SessionResultType {
+/** `token`返回结果类型 */
+export interface JwtResultType {
     /** token 状态描述 */
     message: string
     /** token 是否可用 */
@@ -63,7 +63,7 @@ export type NumberSymbols = "+" | "-"| "*" | "/";
 /** 自定义的请求上下文返回信息接口 */
 export interface TheContext extends Koa.ParameterizedContext {
     /** 请求时自定义设置的一个状态 (see)[src/module/Session.ts] */
-    theState?: SessionResultType
+    theState?: JwtResultType
 }
 
 /** 上传文件类型 */

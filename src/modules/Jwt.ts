@@ -4,7 +4,7 @@ import { apiSuccess } from "../utils/apiResult";
 import { 
     UserRecordType, 
     UserInfoType, 
-    SessionResultType, 
+    JwtResultType, 
     TheContext,
     ApiResult
 } from "../utils/interfaces";
@@ -115,7 +115,7 @@ class ModuleJWT {
      * @param token 
      */
     updateRecord(token: string) {
-        const result: SessionResultType = {
+        const result: JwtResultType = {
             message: "",
             success: false,
             info: null
