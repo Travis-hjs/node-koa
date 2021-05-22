@@ -14,7 +14,7 @@ interface queryResult {
     msg: string
 }
 
-/** 数据库 */
+/** 数据库链接池 */
 const pool = mysql.createPool({
     host: config.db.host,
     user: config.db.user,
@@ -43,7 +43,7 @@ export default function query(command: string, value?: Array<any>) {
                 resolve(result);
             } else {
                 const callback: mysql.queryCallback = (error: any, results, fields) => {
-                    // pool.end(); 
+                    // pool.end();
                     connection.release();
                     if (error) {
                         result.error = error;

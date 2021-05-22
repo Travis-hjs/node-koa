@@ -9,7 +9,11 @@ import {
     ApiResult
 } from "../utils/interfaces";
 
-class ModuleSession {
+/**
+ * 自定义`jwt-token`验证模块，区别于[koa-jwt](https://www.npmjs.com/package/koa-jwt)
+ * @author [Hjs](https://github.com/Hansen-hjs)
+ */
+class ModuleJWT {
     constructor() {
         this.init();
     }
@@ -34,9 +38,9 @@ class ModuleSession {
         // 异步写入
         fs.writeFile(config.userFile, JSON.stringify(data), { encoding: "utf8" }, err => {
             if (err) {
-                console.log(`\x1B[41m session 写入失败 \x1B[0m`, err);
+                console.log(`\x1B[41m jwt-token 写入失败 \x1B[0m`, err);
             } else {
-                console.log(`\x1B[42m session 写入成功 \x1B[0m`);
+                console.log(`\x1B[42m jwt-token 写入成功 \x1B[0m`);
             }
         })
     }
@@ -89,7 +93,7 @@ class ModuleSession {
                 this.write();
             }
         }
-        // 10分钟检测一次
+        // 定时检测
         setInterval(check, this.interval);
         check();
     }
@@ -111,7 +115,7 @@ class ModuleSession {
      * @param token 
      */
     updateRecord(token: string) {
-        let result: SessionResultType = {
+        const result: SessionResultType = {
             message: "",
             success: false,
             info: null
@@ -178,11 +182,11 @@ class ModuleSession {
             info = apiSuccess({}, config.tokenTip, 400);
         }
         
-        const state = session.updateRecord(token);
+        const state = this.updateRecord(token);
 
         if (!state.success) {
             fail = true;
-            info = apiSuccess({}, state.message, 403);
+            info = apiSuccess({}, state.message, 401);
         }
 
         // 设置 token 信息到上下文中给接口模块里面调用
@@ -198,7 +202,7 @@ class ModuleSession {
 
 }
 
-/** session 模块 */
-const session = new ModuleSession();
+/** `jwt-token`模块 */
+const jwt = new ModuleJWT();
 
-export default session;
+export default jwt;

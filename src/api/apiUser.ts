@@ -1,7 +1,7 @@
 import router from "./main";
 import query from "../utils/mysql";
-import session from "../modules/Session";
-import config from "../modules/Config";
+import jwt from "../modules/Jwt";
+// import config from "../modules/Config";
 import {
     UserInfoType,
     TheContext,
@@ -87,7 +87,7 @@ router.post("/login", async (ctx) => {
             const data: UserInfoType = res.results[0];
             // 最后判断密码是否正确
             if (data.password == params.password) {
-                data.token = session.setRecord({
+                data.token = jwt.setRecord({
                     id: data.id,
                     account: data.account,
                     password: data.password
@@ -109,7 +109,7 @@ router.post("/login", async (ctx) => {
 
 // 获取用户信息
 router.get("/getUserInfo", async (ctx: TheContext) => {
-    const checkInfo = session.checkToken(ctx);
+    const checkInfo = jwt.checkToken(ctx);
 
     if (checkInfo.fail) {
         return ctx.body = checkInfo.info;
@@ -145,7 +145,7 @@ router.get("/getUserInfo", async (ctx: TheContext) => {
 
 // 退出登录
 router.get("/logout", ctx => {
-    const checkInfo = session.checkToken(ctx);
+    const checkInfo = jwt.checkToken(ctx);
 
     if (checkInfo.fail) {
         return ctx.body = checkInfo.info;
@@ -157,7 +157,7 @@ router.get("/logout", ctx => {
 
     // console.log("logout", params, token);
 
-    const state = session.removeRecord(token);
+    const state = jwt.removeRecord(token);
 
     if (state) {
         return ctx.body = apiSuccess({}, "退出登录成功");

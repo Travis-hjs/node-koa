@@ -34,7 +34,7 @@ class ModuleConfig {
 
     /**
      * 用户临时表
-     * @description `.gitignore`忽略文件也要添加该路径，因为`session`模块中做了动态创建处理，所以不需要代码同步该文件
+     * @description `.gitignore`忽略文件也要添加该路径，因为`jwt`模块中做了动态创建处理，所以不需要代码同步该文件
     */
     public readonly userFile = "public/user.json";
 
