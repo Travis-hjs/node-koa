@@ -46,11 +46,11 @@ export interface UserRecordType {
 
 /** `token`返回结果类型 */
 export interface JwtResultType {
-    /** token 状态描述 */
+    /** `token`状态描述 */
     message: string
-    /** token 是否可用 */
+    /** `token`是否可用 */
     success: boolean
-    /** koken 信息 */
+    /** `token`信息 */
     info: UserInfoType
 }
 
