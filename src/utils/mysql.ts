@@ -1,8 +1,9 @@
 import * as mysql from "mysql";         // learn: https://www.npmjs.com/package/mysql
 import config from "../modules/Config";
 
-interface queryResult {
-    /** `state===1`时为成功 */
+/** `mysql`查询结果 */
+interface MsqlResult {
+    /** `state === 1`时为成功 */
     state: number
     /** 结果数组 或 对象 */
     results: any
@@ -28,14 +29,14 @@ const pool = mysql.createPool({
  * @param value 对应的值
  */
 export default function query(command: string, value?: Array<any>) {
-    const result: queryResult = {
+    const result: MsqlResult = {
         state: 0,
         results: null,
         fields: null,
         error: null,
         msg: ""
     }
-    return new Promise<queryResult>((resolve, reject) => {
+    return new Promise<MsqlResult>((resolve, reject) => {
         pool.getConnection((error: any, connection) => {
             if (error) {
                 result.error = error;
