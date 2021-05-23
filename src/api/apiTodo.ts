@@ -1,22 +1,17 @@
 import router from "./main";
 import query from "../utils/mysql";
-import { TheContext } from "../utils/interfaces";
+import { ApiResult, TheContext } from "../utils/interfaces";
 import { apiSuccess, apiFail } from "../utils/apiResult";
-import jwt from "../modules/Jwt";
+import { handleToken } from "./apiMiddleware";
 
 // 获取所有列表
-router.get("/getList", async (ctx: TheContext) => {
-    const checkInfo = jwt.checkToken(ctx);
-
-    if (checkInfo.fail) {
-        return ctx.body = checkInfo.info;
-    }
+router.get("/getList", handleToken, async (ctx: TheContext) => {
 
     const state = ctx["theState"];
     /** 返回结果 */
-    let bodyResult = null;
+    let bodyResult: ApiResult<any>;
     
-    // console.log("getList");
+    // console.log("getList >>", state);
 
     // 这里要开始连表查询
     const res = await query(`select * from todo_list where user_id='${state.info.id}'`)
@@ -30,17 +25,12 @@ router.get("/getList", async (ctx: TheContext) => {
         ctx.response.status = 500;
         bodyResult = apiFail(res.msg, 500, res.error);
     }
-    
+
     ctx.body = bodyResult;
 })
 
 // 添加列表
-router.post("/addList", async (ctx: TheContext) => {
-    const checkInfo = jwt.checkToken(ctx);
-
-    if (checkInfo.fail) {
-        return ctx.body = checkInfo.info;
-    }
+router.post("/addList", handleToken, async (ctx: TheContext) => {
 
     const state = ctx["theState"];
     /** 接收参数 */
@@ -70,12 +60,7 @@ router.post("/addList", async (ctx: TheContext) => {
 })
 
 // 修改列表
-router.post("/modifyList", async (ctx) => {
-    const checkInfo = jwt.checkToken(ctx);
-
-    if (checkInfo.fail) {
-        return ctx.body = checkInfo.info;
-    }
+router.post("/modifyList", handleToken, async (ctx) => {
 
     /** 接收参数 */
     const params = ctx.request.body;
@@ -110,12 +95,7 @@ router.post("/modifyList", async (ctx) => {
 })
 
 // 删除列表
-router.post("/deleteList", async (ctx: TheContext) => {
-    const checkInfo = jwt.checkToken(ctx);
-
-    if (checkInfo.fail) {
-        return ctx.body = checkInfo.info;
-    }
+router.post("/deleteList", handleToken, async (ctx: TheContext) => {
     
     const state = ctx["theState"];
     /** 接收参数 */

@@ -2,12 +2,13 @@ import router from "./main";
 import query from "../utils/mysql";
 import jwt from "../modules/Jwt";
 // import config from "../modules/Config";
+import { handleToken } from "./apiMiddleware";
+import { apiSuccess, apiFail } from "../utils/apiResult";
 import {
     UserInfoType,
     TheContext,
     ApiResult
 } from "../utils/interfaces";
-import { apiSuccess, apiFail } from "../utils/apiResult";
 
 // 注册
 router.post("/register", async (ctx) => {
@@ -108,12 +109,7 @@ router.post("/login", async (ctx) => {
 })
 
 // 获取用户信息
-router.get("/getUserInfo", async (ctx: TheContext) => {
-    const checkInfo = jwt.checkToken(ctx);
-
-    if (checkInfo.fail) {
-        return ctx.body = checkInfo.info;
-    }
+router.get("/getUserInfo", handleToken, async (ctx: TheContext) => {
 
     const state = ctx["theState"];
     // /** 接收参数 */
@@ -144,12 +140,7 @@ router.get("/getUserInfo", async (ctx: TheContext) => {
 })
 
 // 退出登录
-router.get("/logout", ctx => {
-    const checkInfo = jwt.checkToken(ctx);
-
-    if (checkInfo.fail) {
-        return ctx.body = checkInfo.info;
-    }
+router.get("/logout", handleToken, ctx => {
 
     const token: string = ctx.header.authorization;
     // /** 接收参数 */
