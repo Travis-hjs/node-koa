@@ -32,15 +32,15 @@ export interface UserInfoType {
     online?: number
     /** 请求域名 */
     host?: string
-    /** token */
+    /** 登录时`token` */
     token?: string
     /** 用户id */
     id?: number
 }
 
-/** 用户 token 纪录类型 */
+/** 用户`token`纪录类型 */
 export interface UserRecordType {
-    /** token 信息对象 */
+    /** `token`信息对象 */
     [key: string]: UserInfoType
 }
 
