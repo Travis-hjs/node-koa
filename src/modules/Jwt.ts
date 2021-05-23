@@ -172,7 +172,7 @@ class ModuleJWT {
     checkToken(context: TheContext) {
         const token: string = context.header.authorization;
         let fail = false;
-        let info: ApiResult;
+        let info: ApiResult<{}>;
 
         if (!token) {
             fail = true;

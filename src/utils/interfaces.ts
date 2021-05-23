@@ -1,13 +1,13 @@
 import * as Koa from "koa"; 
 
 /** 接口返回数据 */
-export interface ApiResult {
+export interface ApiResult<T> {
     /** 状态提示 */
     message: string
     /** 状态码 */
     code: number
     /** 返回数据 */
-    result: any
+    result: T
 }
 
 /** 失败返回提示数据 */
@@ -62,7 +62,10 @@ export type NumberSymbols = "+" | "-"| "*" | "/";
 
 /** 自定义的请求上下文返回信息接口 */
 export interface TheContext extends Koa.ParameterizedContext {
-    /** 请求时自定义设置的一个状态 (see)[src/module/Session.ts] */
+    /**
+     * 请求时自定义设置的一个状态 
+     * @description 具体看: src/module/Jwt.ts
+    */
     theState?: JwtResultType
 }
 

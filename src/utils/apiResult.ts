@@ -6,7 +6,7 @@ import { ApiResult } from "./interfaces";
  * @param tip 提示内容
  * @param code 状态码
  */
-export function apiSuccess(data: object, tip?: string, code = 200): ApiResult {
+export function apiSuccess<T>(data: T, tip?: string, code = 200): ApiResult<T> {
     return {
         message: tip || "success",
         code: code,
@@ -20,7 +20,7 @@ export function apiSuccess(data: object, tip?: string, code = 200): ApiResult {
  * @param code 错误码
  * @param error 错误信息
  */
-export function apiFail(tip: string, code = 500, error: any = null): ApiResult {
+export function apiFail(tip: string, code = 500, error: any = null): ApiResult<any> {
     return {
         message: tip || "fail",
         code: code,

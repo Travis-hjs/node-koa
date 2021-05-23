@@ -14,7 +14,7 @@ router.post("/register", async (ctx) => {
     /** 接收参数 */
     const params: UserInfoType = ctx.request.body;
     /** 返回结果 */
-    let bodyResult: ApiResult;
+    let bodyResult: ApiResult<any>;
     /** 账号是否可用 */
     let validAccount = false;
     // console.log("注册传参", params);
@@ -66,7 +66,7 @@ router.post("/login", async (ctx) => {
     /** 接收参数 */
     const params: UserInfoType = ctx.request.body;
     /** 返回结果 */
-    let bodyResult: ApiResult;
+    let bodyResult: ApiResult<any>;
     // console.log("登录", params);
     if (!params.account || params.account.trim() === "") {
         return ctx.body = apiSuccess({}, "登录失败！账号不能为空", 400);
@@ -119,7 +119,7 @@ router.get("/getUserInfo", async (ctx: TheContext) => {
     // /** 接收参数 */
     // const params = ctx.request.body;
     /** 返回结果 */
-    let bodyResult: ApiResult;
+    let bodyResult: ApiResult<any>;
 
     // console.log("getUserInfo >>", state);
 
