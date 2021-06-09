@@ -93,7 +93,7 @@ router.get("/getWeather", async (ctx, next) => {
     const res = await request({
         method: "GET",
         hostname: "wthrcdn.etouch.cn",
-        path: "/weather_mini?city=" + encodeURIComponent(ctx.query.city)
+        path: "/weather_mini?city=" + encodeURIComponent(ctx.query.city as string)
     })
 
     // console.log("获取天气信息 >>", res);
