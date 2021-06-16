@@ -1,9 +1,9 @@
 import router from "./main";
 import query from "../utils/mysql";
 import jwt from "../modules/Jwt";
-// import config from "../modules/Config";
-import { handleToken } from "./apiMiddleware";
+import { handleToken } from "./middleware";
 import { apiSuccess, apiFail } from "../utils/apiResult";
+import utils from "../utils";
 import {
     UserInfoType,
     TheContext,
@@ -33,7 +33,7 @@ router.post("/register", async (ctx) => {
     }
 
     // 先查询是否有重复账号
-    const res = await query(`select account from user where account='${ params.account }'`)
+    const res = await query(`select account from user_form where account='${params.account}'`)
 
     // console.log("注册查询", res);
 
@@ -50,7 +50,16 @@ router.post("/register", async (ctx) => {
 
     // 再写入表格
     if (validAccount) {
-        const res = await query("insert into user(account, password, username) values(?,?,?)", [params.account, params.password, params.name])
+        const mysqlInfo = utils.mysqlFormatParams({
+            "account": params.account,
+            "password": params.password,
+            "user_name": params.name,
+            "create_time": utils.formatDate()
+        })
+        
+        // const res = await query(`insert into user_form(${mysqlInfo.keys}) values(${mysqlInfo.values})`) 这样也可以，不过 mysqlInfo.values 每个值都必须用单引号括起来，下面的方式就不用
+        const res = await query(`insert into user_form(${mysqlInfo.keys}) values(${mysqlInfo.symbols})`, mysqlInfo.values)
+
         if (res.state === 1) {
             bodyResult = apiSuccess(params, "注册成功");
         } else {
@@ -78,9 +87,9 @@ router.post("/login", async (ctx) => {
     }
 
     // 先查询是否有当前账号
-    const res = await query(`select * from user where account='${ params.account }'`)
+    const res = await query(`select * from user_form where account='${params.account}'`)
     
-    console.log("登录查询", res);
+    // console.log("登录查询", res);
 
     if (res.state === 1) {
         // 再判断账号是否可用
@@ -119,15 +128,15 @@ router.get("/getUserInfo", handleToken, async (ctx: TheContext) => {
 
     // console.log("getUserInfo >>", state);
 
-    const res = await query(`select * from user where account='${ state.info.account }'`)
+    const res = await query(`select * from user_form where account='${state.info.account}'`)
     
-    console.log("获取用户信息 >>", res);
+    // console.log("获取用户信息 >>", res);
     
     if (res.state === 1) {
         // 判断账号是否可用
         if (res.results.length > 0) {
             const data: UserInfoType = res.results[0];
-            bodyResult = apiSuccess(data);
+            bodyResult = apiSuccess(utils.objectToHump(data));
         } else {
             bodyResult = apiSuccess({}, "该账号不存在，可能已经从数据库中删除", 400);
         }

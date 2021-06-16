@@ -43,9 +43,9 @@ router.get("/home", (ctx, next) => {
         pageTitle: "serve-root",
         jsLabel: `<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>`,
         content: `
-        <div style="font-size: 24px; margin-bottom: 8px; font-weight: bold;">当前环境是微信</div>
+        <div style="font-size: 24px; margin-bottom: 8px; font-weight: bold;">当前环境信息：</div>
         <p style="font-size: 15px; margin-bottom: 10px; font-weight: 500;">${ userAgent }</p>
-        <button class="button button_purple"><a href="./test">open test</></button>
+        <button class="button button_purple"><a href="./api-index.html">open test</></button>
         `
     }
 
@@ -83,9 +83,10 @@ router.post("/postData", (ctx, next) => {
 
 // 请求第三方接口并把数据返回到前端
 router.get("/getWeather", async (ctx, next) => {
-    console.log("ctx.query >>", ctx.query);
+    // console.log("ctx.query >>", ctx.query);
+    const city = ctx.query.city as string;
 
-    if (!ctx.query.city) {
+    if (!city) {
         ctx.body = apiSuccess({}, "缺少传参字段 city", 400);
         return;
     }
@@ -93,7 +94,7 @@ router.get("/getWeather", async (ctx, next) => {
     const res = await request({
         method: "GET",
         hostname: "wthrcdn.etouch.cn",
-        path: "/weather_mini?city=" + encodeURIComponent(ctx.query.city as string)
+        path: "/weather_mini?city=" + encodeURIComponent(city)
     })
 
     // console.log("获取天气信息 >>", res);

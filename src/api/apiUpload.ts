@@ -33,16 +33,14 @@ router.post("/uploadImg", async (ctx, next) => {
     // console.log(fileName, file);
 
     /** 模拟上传到七牛云 */
-    function uploadApi(): Promise<{ image: string, file: string }> {
+    function uploadApi(): Promise<{ image: string }> {
         const result = {
-            image: "",
-            file: ""
+            image: ""
         }
         return new Promise(function (resolve) {
             const delay = Math.floor(Math.random() * 5) * 100 + 500;
             setTimeout(() => {
-                result.image = `http://${ctx.headers.host}/${config.uploadPath}${fileName}`;
-                result.file = `${config.uploadPath}${fileName}`;
+                result.image = `http://${config.ip}:${config.port}/images/${fileName}`;
                 resolve(result);
             }, delay);
         });

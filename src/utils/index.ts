@@ -1,6 +1,5 @@
 import { 
-    JavaScriptTypes, 
-    NumberSymbols 
+    JavaScriptTypes 
 } from "./interfaces";
 
 class ModuleUtils {
@@ -10,7 +9,7 @@ class ModuleUtils {
      * @param min 最小数
      * @param max 最大数
      */
-    public ranInt(min: number, max: number) {
+    ranInt(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
@@ -18,7 +17,7 @@ class ModuleUtils {
      * 随机打乱数组
      * @param array
      */
-    public shuffleArray<T>(array: Array<T>) {
+    shuffleArray<T>(array: Array<T>) {
         for (let i = array.length - 1; i >= 0; i--) {
             let randomIndex = Math.floor(Math.random() * (i + 1));
             let itemAtIndex = array[randomIndex];
@@ -33,7 +32,7 @@ class ModuleUtils {
      * @param array 数组
      * @param count 元素个数
      */
-    public getRandomArrayElements<T>(array: Array<T>, count: number) {
+    getRandomArrayElements<T>(array: Array<T>, count: number) {
         let length = array.length;
         let min = length - count;
         let index = 0;
@@ -51,88 +50,10 @@ class ModuleUtils {
      * 检测类型
      * @param target 检测的目标
      */
-    public checkType(target: any): JavaScriptTypes {
+    checkType(target: any): JavaScriptTypes {
         const value: string = Object.prototype.toString.call(target);
         const result = value.match(/\[object (\S*)\]/)[1];
         return result.toLocaleLowerCase() as JavaScriptTypes;
-    }
-
-    /**
-     * 数字运算（主要用于小数点精度问题）
-     * [see](https://juejin.im/post/6844904066418491406#heading-12)
-     * @param a 前面的值
-     * @param type 计算方式
-     * @param b 后面的值
-     * @example 
-     * // 可链式调用
-     * const res = computeNumber(1.3, "-", 1.2).next("+", 1.5).next("*", 2.3).next("/", 0.2).result;
-     * console.log(res);
-     */
-    computeNumber(a: number, type: NumberSymbols, b: number) {
-        const THAT = this;
-        /**
-         * 获取数字小数点的长度
-         * @param n 数字
-         */
-        function getDecimalLength(n: number) {
-            const decimal = n.toString().split(".")[1];
-            return decimal ? decimal.length : 0;
-        }
-        /**
-         * 修正小数点
-         * @description 防止出现 `33.33333*100000 = 3333332.9999999995` && `33.33*10 = 333.29999999999995` 这类情况做的处理
-         * @param n 数字
-         */
-        const amend = (n: number, precision = 15) => parseFloat(Number(n).toPrecision(precision));
-        const power = Math.pow(10, Math.max(getDecimalLength(a), getDecimalLength(b)));
-        let result = 0;
-
-        a = amend(a * power);
-        b = amend(b * power);
-
-        switch (type) {
-            case "+":
-                result = (a + b) / power;
-                break;
-            case "-":
-                result = (a - b) / power;
-                break;
-            case "*":
-                result = (a * b) / (power * power);
-                break;
-            case "/":
-                result = a / b;
-                break;
-        }
-
-        result = amend(result);
-
-        return {
-            /** 计算结果 */
-            result,
-            /**
-             * 继续计算
-             * @param nextType 继续计算方式
-             * @param nextValue 继续计算的值
-             */
-            next(nextType: NumberSymbols, nextValue: number) {
-                return THAT.computeNumber(result, nextType, nextValue);
-            },
-            /** 
-             * 小数点进位 
-             * @param n 小数点后的位数
-            */
-            toHex(n: number) {
-                const strings = result.toString().split(".");
-                if (n > 0 && strings[1] && strings[1].length > n) {
-                    const decimal = strings[1].slice(0, n);
-                    const value = Number(`${strings[0]}.${decimal}`);
-                    const difference = 1 / Math.pow(10, decimal.length);
-                    result = THAT.computeNumber(value, "+", difference).result;
-                }
-                return result;
-            }
-        };
     }
 
     /**
@@ -181,6 +102,123 @@ class ModuleUtils {
         return format;
     }
     
+    /**
+     * 判断是否为空值
+     * @param value 
+     * @param isEmptyString 是否可以为空字符串
+     * @description `null`|`undefined`|`""`均为`true`
+     */
+    isEmpty(value: any, isEmptyString = false) {
+        const condition = isEmptyString ? (value !== null && value !== undefined) : (value !== "" && value !== null && value !== undefined);
+        return condition;
+    }
+
+    /**
+     * 下划线转换驼峰
+     * @param value 
+     */
+    toHump(value: string) {
+        return value.replace(/\_(\w)/g, function(all, letter){
+            return letter.toUpperCase();
+        });
+    }
+
+    /**
+     * 驼峰转换下划线
+     * @param value 
+     */
+    toLine(value: string) {
+        return value.replace(/([A-Z])/g,"_$1").toLowerCase();
+    }
+
+    /**
+     * 数组项全部转成驼峰
+     * @param list 目标数组
+     */
+     arrayItemToHump<T>(list: Array<T>) {
+        const result = [];
+        for (let i = 0; i < list.length; i++) {
+            const item = list[i];
+            result.push(this.objectToHump(item));
+        }
+        return result;
+    }
+
+    /**
+     * 对象值全部转成驼峰
+     * @param tatget 目标对象
+     */
+    objectToHump(tatget: any) {
+        const result: { [key: string]: any } = {};
+        for (const key in tatget) {
+            result[this.toHump(key)] = tatget[key];
+        }
+        return result;
+    }
+
+    /**
+     * 数据库语句格式化
+     * @param params 
+     * @param isEmptyString 是否可以为空字符串
+     * @description 数据库写入的时候用
+     */
+    mysqlFormatParams(params: { [key: string]: any }, isEmptyString = false) {
+        const keys = [];
+        const values = [];
+        for (const key in params) {
+            const condition = this.isEmpty(params[key], isEmptyString);
+            if (condition) {
+                keys.push("`"+ key +"`");
+                values.push(params[key]);
+            }
+        }
+        return {
+            keys,
+            values,
+            symbols: keys.map(_ => "?").toString()
+        }
+    }
+
+    /**
+     * 数据库更新参数语句格式化
+     * @param params 
+     * @param isEmptyString 是否可以为空字符串
+     * @description 修改（更新用）
+     */
+    mysqlSetParams(params: { [key: string]: any }, isEmptyString = false) {
+        const values = [];
+        let result = "";
+        for (const key in params) {
+            const condition = this.isEmpty(params[key], isEmptyString);
+            if (condition) {
+                values.push("`"+ key +"`='" + params[key]  +"'");
+            }
+        }
+        if (values.length > 0) {
+            result = "set " + values.toString();
+        }
+        return result;
+    }
+
+    /**
+     * 数据库查询参数格式化
+     * @param params 
+     * @description 查询用
+     */
+    mysqlSearchParams(params: { [key: string]: any }) {
+        let result = "";
+        for (const key in params) {
+            const condition = this.isEmpty(params[key]);
+            if (condition) {
+                result += (" and `"+ key +"`='" + params[key]  +"'");
+            }
+        }
+        if (result) {
+            result = "where" + result.slice(4);
+        }
+        return result;
+    }
+
 }
 
 /** 工具模块 */

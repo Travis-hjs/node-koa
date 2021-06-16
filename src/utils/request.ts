@@ -30,8 +30,8 @@ export default function request(options: http.RequestOptions, params: object = {
     return new Promise((resolve, reject) => {
         const clientRequest = http.request(options, res => {
             // console.log("http.get >>", res);
-            console.log(`http.request.statusCode: ${res.statusCode}`);
-            console.log(`http.request.headers: ${JSON.stringify(res.headers)}`);
+            // console.log(`http.request.statusCode: ${res.statusCode}`);
+            // console.log(`http.request.headers: ${JSON.stringify(res.headers)}`);
 
             // 因为现在自己解码，所以就不设置编码了。
             // res.setEncoding("utf-8");

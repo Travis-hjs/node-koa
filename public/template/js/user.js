@@ -48,10 +48,9 @@ function uploadImg(el) {
     
     api.upload(formData, res => {
         console.log("上传成功", res);
-        const src = location.href.replace("pages/index.html", res.result.file) || getObjectURL(file);
         el.parentNode.classList.add("hide");
         el.parentNode.parentNode.querySelector(".img-box").classList.remove("hide");
-        el.parentNode.parentNode.querySelector(".img-box .image").src = src;
+        el.parentNode.parentNode.querySelector(".img-box .image").src = res.result.image;
     }, err => {
         console.log("上传失败", err);
         
@@ -79,10 +78,10 @@ listEl.innerHTML = null;
 
 /**
  * 输出列表item
- * @param {{ content: string, list_id: string|number }} item 
+ * @param {{ content: string, id: number }} item 
  */
 function ouputList(item) {
-    const itemHTML = template.replace("{{id}}", item.list_id).replace("{{content}}", item.content);
+    const itemHTML = template.replace("{{id}}", item.id).replace("{{content}}", item.content);
     listEl.insertAdjacentHTML("beforeend", itemHTML);
 }
 
@@ -101,7 +100,7 @@ function addList(el) {
         console.log(res.result);
         ouputList({
             content: text,
-            list_id: res.result.id
+            id: res.result.id
         })
         input.value = null;
     }) 

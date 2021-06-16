@@ -55,7 +55,7 @@ export interface JwtResultType {
 }
 
 /** JavaScript类型 */
-export type JavaScriptTypes = "string" | "number" | "array" | "object" | "function" | "null" | "undefined";
+export type JavaScriptTypes = "string" | "number" | "array" | "object" | "function" | "null" | "undefined" | "regexp";
 
 /** 运算符号 */
 export type NumberSymbols = "+" | "-"| "*" | "/";

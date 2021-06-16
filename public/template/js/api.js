@@ -3,7 +3,7 @@
 /// <reference path="./utils.js" />
 
 /** 本地的IP地址+端口；端口跟后台设置的一致 */
-const BASE_URL = location.host ? location.origin : "http://192.168.89.177:1995";
+const BASE_URL = location.host ? location.origin : "http://192.168.0.24:1995";
 
 const cache = window.sessionStorage;
 
