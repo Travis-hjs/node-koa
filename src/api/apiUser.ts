@@ -1,7 +1,7 @@
 import router from "./main";
 import query from "../utils/mysql";
 import jwt from "../modules/Jwt";
-import { handleToken } from "./middleware";
+import { handleToken } from "../middleware";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 import utils from "../utils";
 import {

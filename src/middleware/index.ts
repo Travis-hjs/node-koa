@@ -1,8 +1,6 @@
-import jwt from "../modules/Jwt";
 import { Next } from "koa";
+import jwt from "../modules/Jwt";
 import { TheContext } from "../utils/interfaces";
-
-// =================================== 接口中间件模块 ===================================
 
 /**
  * 中间件-处理`token`验证
