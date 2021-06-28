@@ -23,6 +23,11 @@ function fetchUserInfo() {
     return data;
 }
 
+/** 移除用户缓存信息 */
+function removeUserInfo() {
+    cache.removeItem("userInfo");
+}
+
 /**
  * `XMLHttpRequest`请求 [MDN文档](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
  * @param {object} param 传参对象
