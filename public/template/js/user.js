@@ -173,10 +173,12 @@ function clickGetUserInfo() {
 } 
 
 function clickLogout() {
-    removeUserInfo();
     api.logout(res => {
         console.log("退出登录", res);
+        removeUserInfo();
         openUserPage();
+    }, () => {
+        removeUserInfo();
     })
 } 
 
