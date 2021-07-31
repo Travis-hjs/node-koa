@@ -28,7 +28,7 @@
         "mysql": "^2.18.1"
     },
     "devDependencies": {
-        "@types/koa": "^2.11.6",
+        "@types/koa": "^2.13.1",
         "@types/koa-router": "^7.4.1",
         "@types/koa-static": "^4.0.1",
         "@types/mysql": "^2.15.17",
