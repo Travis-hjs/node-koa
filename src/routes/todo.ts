@@ -15,7 +15,7 @@ router.get("/getList", handleToken, async (ctx: TheContext) => {
     // console.log("getList >>", state);
 
     // 这里要开始连表查询
-    const res = await query(`select * from todo_form where user_id='${state.info.id}'`)
+    const res = await query(`select * from todo_table where user_id = '${state.info.id}'`)
 
     if (res.state === 1) {
         // console.log("/getList 查询", res.results);
@@ -51,7 +51,7 @@ router.post("/addList", handleToken, async (ctx: TheContext) => {
     })
 
     // 写入列表
-    const res = await query(`insert into todo_form(${mysqlInfo.keys}) values(${mysqlInfo.symbols})`, mysqlInfo.values)
+    const res = await query(`insert into todo_table(${mysqlInfo.keys}) values(${mysqlInfo.symbols})`, mysqlInfo.values)
 
     // console.log("写入列表", res);
 
@@ -89,7 +89,7 @@ router.post("/modifyList", handleToken, async (ctx) => {
     })
 
     // 修改列表
-    const res = await query(`update todo_form ${setData} where id='${params.id}'`)
+    const res = await query(`update todo_table ${setData} where id = '${params.id}'`)
 
     // console.log("修改列表", res);
 
@@ -117,9 +117,9 @@ router.post("/deleteList", handleToken, async (ctx: TheContext) => {
     let bodyResult = null;
 
     // 从数据库中删除
-    // const res = await query(`delete from todo_form where id='${params.id}' and user_id='${state.info.id}'`)
-    const res = await query(`delete from todo_form where id='${params.id}'`)
-    // const res = await query(`delete from todo_form where id in(${params.ids.toString()})`) // 批量删除
+    // const res = await query(`delete from todo_table where id='${params.id}' and user_id='${state.info.id}'`)
+    const res = await query(`delete from todo_table where id = '${params.id}'`)
+    // const res = await query(`delete from todo_table where id in(${params.ids.toString()})`) // 批量删除
     
     // console.log("从数据库中删除", res);
 

@@ -33,7 +33,7 @@ router.post("/register", async (ctx) => {
     }
 
     // 先查询是否有重复账号
-    const res = await query(`select account from user_form where account='${params.account}'`)
+    const res = await query(`select account from user_table where account='${params.account}'`)
 
     // console.log("注册查询", res);
 
@@ -53,12 +53,12 @@ router.post("/register", async (ctx) => {
         const mysqlInfo = utils.mysqlFormatParams({
             "account": params.account,
             "password": params.password,
-            "user_name": params.name,
+            "name": params.name,
             "create_time": utils.formatDate()
         })
         
-        // const res = await query(`insert into user_form(${mysqlInfo.keys}) values(${mysqlInfo.values})`) 这样也可以，不过 mysqlInfo.values 每个值都必须用单引号括起来，下面的方式就不用
-        const res = await query(`insert into user_form(${mysqlInfo.keys}) values(${mysqlInfo.symbols})`, mysqlInfo.values)
+        // const res = await query(`insert into user_table(${mysqlInfo.keys}) values(${mysqlInfo.values})`) 这样也可以，不过 mysqlInfo.values 每个值都必须用单引号括起来，下面的方式就不用
+        const res = await query(`insert into user_table(${mysqlInfo.keys}) values(${mysqlInfo.symbols})`, mysqlInfo.values)
 
         if (res.state === 1) {
             bodyResult = apiSuccess(params, "注册成功");
@@ -87,7 +87,7 @@ router.post("/login", async (ctx) => {
     }
 
     // 先查询是否有当前账号
-    const res = await query(`select * from user_form where account='${params.account}'`)
+    const res = await query(`select * from user_table where account='${params.account}'`)
     
     // console.log("登录查询", res);
 
@@ -128,7 +128,7 @@ router.get("/getUserInfo", handleToken, async (ctx: TheContext) => {
 
     // console.log("getUserInfo >>", state);
 
-    const res = await query(`select * from user_form where account='${state.info.account}'`)
+    const res = await query(`select * from user_table where account='${state.info.account}'`)
     
     // console.log("获取用户信息 >>", res);
     
