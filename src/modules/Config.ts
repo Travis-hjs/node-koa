@@ -49,7 +49,7 @@ class ModuleConfig {
         /** 数据库名 */
         database: "node_ts",
         /** 链接上限次数 */
-        connection_limit: 10
+        maxLimit: 10
     }
 
     /** 接口前缀 */
