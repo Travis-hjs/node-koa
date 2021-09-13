@@ -7,7 +7,7 @@ import config from "../modules/Config";
 import request from "../utils/request";
 
 /** 资源路径 */
-const resourcePath = path.resolve(__dirname, '../../public/template');
+const resourcePath = path.resolve(__dirname, "../../public/template");
 
 const template = fs.readFileSync(resourcePath + "/page.html", "utf-8");
 

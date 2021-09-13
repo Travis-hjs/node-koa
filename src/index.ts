@@ -3,11 +3,11 @@ import * as koaBody from "koa-body";            // learn: http://www.ptbird.cn/k
 import * as staticFiles from "koa-static";      // 静态文件处理模块
 import * as path from "path";
 import config from "./modules/Config";
-import router from "./api/main";
-import "./api/apiTest";                         // 基础测试模块
-import "./api/apiUser";                         // 用户模块
-import "./api/apiUpload";                       // 上传文件模块
-import "./api/apiTodo";                         // 用户列表模块
+import router from "./routes/main";
+import "./routes/test";                         // 基础测试模块
+import "./routes/user";                         // 用户模块
+import "./routes/upload";                       // 上传文件模块
+import "./routes/todo";                         // 用户列表模块
 import { TheContext } from "./utils/interfaces";
 
 const App = new Koa();

@@ -53,7 +53,7 @@ class ModuleConfig {
     }
 
     /** 接口前缀 */
-    readonly apiPrefix = "/api/v1/";
+    readonly apiPrefix = ""; // "/api";
 
     /** 上传图片存放目录 */
     readonly uploadPath = "public/upload/images/";
