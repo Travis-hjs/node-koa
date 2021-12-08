@@ -105,11 +105,11 @@ class ModuleUtils {
     /**
      * 判断是否为空值
      * @param value 
-     * @param isEmptyString 是否可以为空字符串
+     * @param hasEmptyString 是否可以为空字符串
      * @description `null`|`undefined`|`""`均为`true`
      */
-    isEmpty(value: any, isEmptyString = false) {
-        const condition = isEmptyString ? (value !== null && value !== undefined) : (value !== "" && value !== null && value !== undefined);
+    isEmpty(value: any, hasEmptyString = false) {
+        const condition = hasEmptyString ? (value === null || value === undefined) : (value === "" || value === null || value === undefined);
         return condition;
     }
 
@@ -244,6 +244,23 @@ class ModuleUtils {
         return result;
     }
 
+    /**
+     * 获取域名
+     * @param val 
+     * @param prefix 是否需要带上前缀：`https`或者`http`，默认`true`
+     */
+    getDomain(val: string, prefix = true) {
+        const https = "https://";
+        const http = "http://";
+        if (val.includes(https)) {
+            val = val.replace(https, "").split("/")[0];
+            prefix && (val = https + val);
+        } else if (val.includes(http)) {
+            val = val.replace(http, "").split("/")[0];
+            prefix && (val = http + val);
+        }
+        return val;
+    }
 }
 
 /** 工具模块 */
