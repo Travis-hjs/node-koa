@@ -89,3 +89,15 @@ export interface ServeRequestResult {
     /** 结果对象 */
     result: any
 }
+
+/** `mysql`数据操作类型 */
+export interface MysqlOption {
+    /** 创建时间 */
+    createTime: string
+    /** 创建用户`id` */
+    createUserId: number
+    /** 更新时间 */
+    updateTime: string
+    /** 更新用户`id` */
+    updateUserId: number
+}

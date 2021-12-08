@@ -114,6 +114,25 @@ class ModuleUtils {
     }
 
     /**
+     * 修改属性值-只修改之前存在的值
+     * @param target 修改的目标
+     * @param value 修改的内容
+     */
+    modifyData<T>(target: T, value: T) {
+        for (const key in value) {
+            if (Object.prototype.hasOwnProperty.call(target, key)) {
+                // target[key] = value[key];
+                // 需要的话，深层逐个赋值
+                if (this.checkType(target[key]) === "object") {
+                    this.modifyData(target[key], value[key]);
+                } else {
+                    target[key] = value[key];
+                }
+            }
+        }
+    }
+
+    /**
      * 下划线转换驼峰
      * @param value 
      */
@@ -135,7 +154,7 @@ class ModuleUtils {
      * 数组项全部转成驼峰
      * @param list 目标数组
      */
-     arrayItemToHump<T>(list: Array<T>) {
+    arrayItemToHump<T>(list: Array<T>) {
         const result = [];
         for (let i = 0; i < list.length; i++) {
             const item = list[i];
@@ -189,8 +208,8 @@ class ModuleUtils {
         const values = [];
         let result = "";
         for (const key in params) {
-            const condition = this.isEmpty(params[key], isEmptyString);
-            if (condition) {
+            const empty = this.isEmpty(params[key], isEmptyString);
+            if (!empty) {
                 values.push("`"+ key +"`='" + params[key]  +"'");
             }
         }
@@ -203,18 +222,24 @@ class ModuleUtils {
     /**
      * 数据库查询参数格式化
      * @param params 
+     * @param isVague 是否模糊查询
      * @description 查询用
      */
-    mysqlSearchParams(params: { [key: string]: any }) {
+    mysqlSearchParams(params: { [key: string]: any }, isVague = false) {
         let result = "";
         for (const key in params) {
-            const condition = this.isEmpty(params[key]);
-            if (condition) {
-                result += (" and `"+ key +"`='" + params[key]  +"'");
+            const empty = this.isEmpty(params[key]);
+            if (!empty) {
+                const prefix = key.includes(".") ? ` and ${key} ` : " and `"+ key +"` ";
+                if (isVague) {
+                    result += `${prefix} like '%${params[key]}%'`;
+                } else {
+                    result += `${prefix} = '${params[key]}'`;
+                }
             }
         }
         if (result) {
-            result = "where" + result.slice(4);
+            result = result.slice(4);
         }
         return result;
     }
