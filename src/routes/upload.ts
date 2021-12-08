@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
 import config from "../modules/Config";
-import { UploadFile } from "../utils/interfaces";
+import { UploadFile } from "../types/base";
 import { apiSuccess } from "../utils/apiResult";
 
 // 上传图片

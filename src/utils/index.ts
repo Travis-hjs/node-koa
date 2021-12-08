@@ -1,6 +1,6 @@
 import { 
     JavaScriptTypes 
-} from "./interfaces";
+} from "../types/base";
 
 class ModuleUtils {
 

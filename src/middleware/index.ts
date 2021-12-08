@@ -1,6 +1,6 @@
 import { Next } from "koa";
 import jwt from "../modules/Jwt";
-import { TheContext } from "../utils/interfaces";
+import { TheContext } from "../types/base";
 
 /**
  * 中间件-处理`token`验证

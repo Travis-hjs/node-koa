@@ -8,7 +8,7 @@ import "./routes/test";                         // 基础测试模块
 import "./routes/user";                         // 用户模块
 import "./routes/upload";                       // 上传文件模块
 import "./routes/todo";                         // 用户列表模块
-import { TheContext } from "./utils/interfaces";
+import { TheContext } from "./types/base";
 
 const App = new Koa();
 

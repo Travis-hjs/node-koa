@@ -1,4 +1,4 @@
-import { ApiResult } from "./interfaces";
+import { ApiResult } from "../types/base";
 
 /**
  * 接口成功响应返回数据

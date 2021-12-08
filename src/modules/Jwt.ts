@@ -7,7 +7,7 @@ import {
     JwtResultType, 
     TheContext,
     ApiResult
-} from "../utils/interfaces";
+} from "../types/base";
 
 /**
  * 自定义`jwt-token`验证模块，区别于[koa-jwt](https://www.npmjs.com/package/koa-jwt)

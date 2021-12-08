@@ -8,7 +8,7 @@ import {
     UserInfoType,
     TheContext,
     ApiResult
-} from "../utils/interfaces";
+} from "../types/base";
 
 // 注册
 router.post("/register", async (ctx) => {

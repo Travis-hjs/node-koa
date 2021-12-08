@@ -1,7 +1,7 @@
 import * as http from "http";
 import * as querystring from "querystring"
 import * as zlib from "zlib"
-import { ServeRequestResult } from "./interfaces";
+import { ServeRequestResult } from "../types/base";
 
 /**
  * 服务端请求
