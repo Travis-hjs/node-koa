@@ -4,16 +4,17 @@ import jwt from "../modules/Jwt";
 import { handleToken } from "../middleware";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 import utils from "../utils";
+import tableUser from "../modules/TableUser";
 import {
-    UserInfoType,
     TheContext,
     ApiResult
 } from "../types/base";
+import { UserInfo } from "../types/user";
 
 // 注册
 router.post("/register", async (ctx) => {
     /** 接收参数 */
-    const params: UserInfoType = ctx.request.body;
+    const params: UserInfo = ctx.request.body;
     /** 返回结果 */
     let bodyResult: ApiResult<any>;
     /** 账号是否可用 */
@@ -74,7 +75,7 @@ router.post("/register", async (ctx) => {
 // 登录
 router.post("/login", async (ctx) => {
     /** 接收参数 */
-    const params: UserInfoType = ctx.request.body;
+    const params: UserInfo = ctx.request.body;
     /** 返回结果 */
     let bodyResult: ApiResult<any>;
     // console.log("登录", params);
@@ -94,14 +95,16 @@ router.post("/login", async (ctx) => {
     if (res.state === 1) {
         // 再判断账号是否可用
         if (res.results.length > 0) {
-            const data: UserInfoType = res.results[0];
+            const data: UserInfo = res.results[0];
             // 最后判断密码是否正确
             if (data.password == params.password) {
-                data.token = jwt.setRecord({
+                data.token = jwt.createToken({
                     id: data.id,
                     account: data.account,
-                    password: data.password
-                });
+                    password: data.password,
+                    type: data.type,
+                    groupId: data.groupId,
+                })
                 bodyResult = apiSuccess(data ,"登录成功");
             } else {
                 bodyResult = apiSuccess({}, "密码不正确", 400);
@@ -120,25 +123,251 @@ router.post("/login", async (ctx) => {
 // 获取用户信息
 router.get("/getUserInfo", handleToken, async (ctx: TheContext) => {
 
-    const state = ctx["theState"];
+    const tokenInfo = ctx["theToken"];
     // /** 接收参数 */
     // const params = ctx.request.body;
     /** 返回结果 */
     let bodyResult: ApiResult<any>;
 
-    // console.log("getUserInfo >>", state);
+    // console.log("getUserInfo >>", tokenInfo);
 
-    const res = await query(`select * from user_table where account='${state.info.account}'`)
+    const res = await query(`select * from user_table where account='${tokenInfo.account}'`)
     
     // console.log("获取用户信息 >>", res);
     
     if (res.state === 1) {
         // 判断账号是否可用
         if (res.results.length > 0) {
-            const data: UserInfoType = res.results[0];
+            const data: UserInfo = res.results[0];
             bodyResult = apiSuccess(utils.objectToHump(data));
         } else {
             bodyResult = apiSuccess({}, "该账号不存在，可能已经从数据库中删除", 400);
+        }
+    } else {
+        ctx.response.status = 500;
+        bodyResult = apiFail(res.msg, 500, res.error);
+    }
+
+    ctx.body = bodyResult;
+})
+
+// 编辑用户信息
+router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
+    const tokenInfo = ctx["theToken"];
+    /** 接收参数 */
+    const params: UserInfo = ctx.request.body;
+    /** 返回结果 */
+    let bodyResult: ApiResult<any>;
+    /** 账号是否可用 */
+    let validAccount = false;
+    // console.log("注册传参", params);
+
+    if (!params.id) {
+        ctx.response.status = 400;
+        return ctx.body = apiSuccess({}, "编辑失败！用户id不正确", 400);
+    }
+
+    if (!params.account || !/^[A-Za-z0-9]+$/.test(params.account)) {
+        ctx.response.status = 400;
+        return ctx.body = apiSuccess({}, "编辑失败！账号必须由英文或数字组成", 400);
+    }
+
+    if (!params.password || !/^[A-Za-z0-9]+$/.test(params.password)) {
+        ctx.response.status = 400;
+        return ctx.body = apiSuccess({}, "编辑失败！密码必须由英文或数字组成", 400);
+    }
+
+    if (utils.checkType(params.groupId) !== "number") {
+        ctx.response.status = 400;
+        return ctx.body = apiSuccess({}, "编辑失败！分组不正确", 400);
+    }
+
+    if (!params.name.trim()) {
+        params.name = "用户-" + utils.formatDate(Date.now(), "YMDhms");
+    }
+
+    if (tableUser.table[params.id]) {
+        validAccount = true;
+        for (const key in tableUser.table) {
+            if (Object.prototype.hasOwnProperty.call(tableUser.table, key)) {
+                const item = tableUser.table[key];
+                if (item.account == params.account && item.id != params.id) {
+                    validAccount = false;
+                    bodyResult = apiSuccess({}, "当前账户已存在", -1);
+                    break;
+                }
+            }
+        }
+    } else {
+        bodyResult = apiSuccess({}, "当前用户 id 不存在", -1);
+    }
+
+    // 再写入表格
+    if (validAccount) {
+        const setData = utils.mysqlSetParams({
+            "account": params.account,
+            "password": params.password,
+            "name": params.name,
+            "type": params.type,
+            "group_id": params.groupId
+        })
+
+        // console.log("修改用户信息语句 >>", `update user_table ${setData} where id = '${params.id}'`);
+        const res = await query(`update user_table ${setData} where id = '${params.id}'`)
+        // console.log("再写入表格 >>", res);
+        
+        if (res.state === 1) {
+            const data: { token?: string } = {};
+            tableUser.updateById(params.id, {
+                password: params.password,
+                name: params.name,
+                type: params.type,
+                groupId: params.groupId,
+            })
+            // 判断是否修改自己信息
+            if (params.id == tokenInfo.id) {
+                data.token = jwt.createToken({
+                    id: params.id,
+                    account: params.account,
+                    password: params.password,
+                    type: params.type,
+                    groupId: params.groupId,
+                })
+            }
+            bodyResult = apiSuccess(data, "编辑成功");
+        } else {
+            ctx.response.status = 500;
+            bodyResult = apiFail(res.msg, 500, res.error);
+        }
+    }
+    
+    ctx.body = bodyResult;
+})
+
+// // 获取用户列表
+// router.get("/getUserList", handleToken, async (ctx: TheContext) => {
+    
+//     const tokenInfo = ctx["theToken"];
+//     // console.log("tokenInfo >>", tokenInfo);
+//     const params: UserListParams = ctx.request.query as any;
+    
+//     const size = Number(params.pageSize) || 10;
+
+//     const page = Number(params.currentPage) || 1;
+    
+//     /** 精确查询 */
+//     const accuracyText = utils.mysqlSearchParams({
+//         "type": params.type
+//     });
+    
+//     /** 模糊查询 */
+//     const vagueText = utils.mysqlSearchParams({
+//         "name": params.name
+//     }, true)
+    
+//     /** 查询语句 */
+//     const searchText = (function() {
+//         let result = "";
+
+//         if (params.groupId) {
+//             result += utils.mysqlFindInSet("group_ids", [params.groupId]);
+//         } else {
+//             if ((tokenInfo.type >= 5)) {
+//                 result += utils.mysqlFindInSet("group_ids", tokenInfo.groupIds.split(","));
+//             }
+//         }
+
+//         if (accuracyText) {
+//             result += `${result ? " and " : ""}${accuracyText}`;
+//         }
+
+//         if (vagueText) {
+//             result += `${result ? " and " : ""}${vagueText}`;
+//         }
+
+//         if (result) {
+//             result = `where ${result}`;
+//         }
+
+//         return result;
+//     })();
+
+//     /** 结果语句 */
+//     const resultText = `${searchText} order by create_time desc limit ${size * (page - 1)}, ${size}`;
+//     // const res = await query(`select * from user_table`)
+//     const resultCountText = `select count(*) from user_table ${searchText.replace(/t2./g, "")}`;
+
+//     const countRes = await query(resultCountText)
+
+//     // console.log(selectUserTable + resultText);
+//     // "select * from user_table" + resultText
+//     // selectUserTable + resultText
+//     // console.log("用户查询语句 >>", `select * from user_table ${resultText}`);
+//     const res = await query(`select * from user_table ${resultText}`)
+//     // console.log("获取用户列表 >>", res);
+    
+//     /** 返回结果 */
+//     let bodyResult: ApiResult<any>;
+
+//     if (res.state === 1) {
+//         const list: Array<UserInfo> = res.results || [];
+//         const result = [];
+//         for (let i = 0; i < list.length; i++) {
+//             const item = list[i];
+//             if (item.type < tokenInfo.type) {
+//                 item.password = "******";
+//             }
+//             // 这里可以做分组名设置
+//             group.matchGroupIds(item);
+//             result.push(user.matchName(item as any));
+//         }
+//         bodyResult = apiSuccess({
+//             pageSize: size,
+//             currentPage: page,
+//             total: countRes.results[0][`count(*)`],
+//             list: result,
+//             time: Date.now()
+//         });
+//     } else {
+//         ctx.response.status = 500;
+//         bodyResult = apiFail(res.msg, 500, res.error);
+//     }
+
+//     ctx.body = bodyResult;
+// })
+
+// 删除用户
+router.post("/deleteUser", handleToken, async (ctx: TheContext) => {
+    const tokenInfo = ctx["theToken"];
+
+    /** 接收参数 */
+    const params = ctx.request.body;
+    // console.log(params);
+    
+    if (tokenInfo && tokenInfo.type != 0) {
+        return ctx.body = apiSuccess({}, "当前账号没有权限删除用户", -1);
+    }
+
+    if (!params.id) {
+        ctx.response.status = 400;
+        return ctx.body = apiSuccess({}, "编辑失败！用户id不正确", 400);
+    }
+
+    /** 返回结果 */
+    let bodyResult: ApiResult<any>;
+    
+    // 从数据库中删除
+    const res = await query(`delete from user_table where id = '${params.id}'`)
+    // console.log("获取用户列表 >>", res);
+    
+    if (res.state === 1) {
+        if (res.results.affectedRows > 0) {
+            bodyResult = apiSuccess({}, "删除成功");
+            tableUser.remove(params.id);
+            // 异步删除所有关联到的表单数据即可，不需要等待响应
+            // query(`delete from street_shop_table where user_id='${params.id}'`)
+        } else {
+            bodyResult = apiSuccess({}, "当前列表id不存在或已删除", 400);
         }
     } else {
         ctx.response.status = 500;
@@ -152,14 +381,8 @@ router.get("/getUserInfo", handleToken, async (ctx: TheContext) => {
 router.get("/logout", handleToken, ctx => {
 
     const token: string = ctx.header.authorization;
-    // /** 接收参数 */
-    // const params = ctx.request.body;
 
-    // console.log("logout", params, token);
-
-    const state = jwt.removeRecord(token);
-
-    if (state) {
+    if (token) {
         return ctx.body = apiSuccess({}, "退出登录成功");
     } else {
         return ctx.body = apiSuccess({}, "token 不存在", 400);

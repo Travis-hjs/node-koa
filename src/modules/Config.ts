@@ -51,6 +51,14 @@ class ModuleConfig {
         /** 链接上限次数 */
         maxLimit: 10
     }
+    
+    /** 允许访问的域名源 */
+    readonly origins = [
+        `http://${this.publicIp}`,
+        "http://huangjingsheng.gitee.io",
+        "http://192.168.0.24:5050",
+        "http://192.168.0.24:6060",
+    ]
 
     /** 接口前缀 */
     readonly apiPrefix = ""; // "/api";

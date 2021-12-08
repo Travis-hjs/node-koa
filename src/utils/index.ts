@@ -103,10 +103,9 @@ class ModuleUtils {
     }
     
     /**
-     * 判断是否为空值
+     * 判断是否为空值，`null`|`undefined`|`""`均为`true`
      * @param value 
      * @param hasEmptyString 是否可以为空字符串
-     * @description `null`|`undefined`|`""`均为`true`
      */
     isEmpty(value: any, hasEmptyString = false) {
         const condition = hasEmptyString ? (value === null || value === undefined) : (value === "" || value === null || value === undefined);
@@ -185,8 +184,8 @@ class ModuleUtils {
         const keys = [];
         const values = [];
         for (const key in params) {
-            const condition = this.isEmpty(params[key], isEmptyString);
-            if (condition) {
+            const empty = this.isEmpty(params[key], isEmptyString);
+            if (!empty) {
                 keys.push("`"+ key +"`");
                 values.push(params[key]);
             }

@@ -1,4 +1,5 @@
 import * as Koa from "koa"; 
+import { TableUserInfo } from "user";
 
 /** 接口返回数据 */
 export interface ApiResult<T> {
@@ -63,10 +64,10 @@ export type NumberSymbols = "+" | "-"| "*" | "/";
 /** 自定义的请求上下文返回信息接口 */
 export interface TheContext extends Koa.ParameterizedContext {
     /**
-     * 请求时自定义设置的一个状态 
+     * 请求时自定义设置的一个`token`信息
      * @description 具体看: src/module/Jwt.ts
-    */
-    theState?: JwtResultType
+     */
+    theToken?: TableUserInfo
 }
 
 /** 上传文件类型 */

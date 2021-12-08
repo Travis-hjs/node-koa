@@ -8,14 +8,14 @@ import utils from "../utils";
 // 获取所有列表
 router.get("/getList", handleToken, async (ctx: TheContext) => {
 
-    const state = ctx["theState"];
+    const tokenInfo = ctx["theToken"];
     /** 返回结果 */
     let bodyResult: ApiResult<any>;
     
-    // console.log("getList >>", state);
+    // console.log("getList >>", tokenInfo);
 
     // 这里要开始连表查询
-    const res = await query(`select * from todo_table where user_id = '${state.info.id}'`)
+    const res = await query(`select * from todo_table where user_id = '${tokenInfo.id}'`)
 
     if (res.state === 1) {
         // console.log("/getList 查询", res.results);
@@ -33,7 +33,7 @@ router.get("/getList", handleToken, async (ctx: TheContext) => {
 // 添加列表
 router.post("/addList", handleToken, async (ctx: TheContext) => {
 
-    const state = ctx["theState"];
+    const tokenInfo = ctx["theToken"];
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */
@@ -45,7 +45,7 @@ router.post("/addList", handleToken, async (ctx: TheContext) => {
     
     const mysqlInfo = utils.mysqlFormatParams({
         "content": params.content,
-        "user_id": state.info.id,
+        "user_id": tokenInfo.id,
         "update_time": utils.formatDate(),
         "create_time": utils.formatDate()
     })
@@ -110,7 +110,7 @@ router.post("/modifyList", handleToken, async (ctx) => {
 // 删除列表
 router.post("/deleteList", handleToken, async (ctx: TheContext) => {
     
-    // const state = ctx["theState"];
+    // const state = ctx["theToken"];
     /** 接收参数 */
     const params = ctx.request.body;
     /** 返回结果 */

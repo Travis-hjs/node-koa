@@ -1,199 +1,107 @@
-import * as fs from "fs";
-import config from "./Config";
 import { apiSuccess } from "../utils/apiResult";
-import { 
-    UserRecordType, 
-    UserInfoType, 
-    JwtResultType, 
+import tableUser from "./TableUser";
+import {
     TheContext,
-    ApiResult
+    ApiResult,
 } from "../types/base";
+import {
+    UserInfoToken,
+    UserInfo
+} from "../types/user";
 
-/**
- * 自定义`jwt-token`验证模块，区别于[koa-jwt](https://www.npmjs.com/package/koa-jwt)
- * @author [Hjs](https://github.com/Hansen-hjs)
- */
 class ModuleJWT {
     constructor() {
-        this.init();
+        // tableUser.update();
     }
 
     /** 效期（小时） */
-    private maxAge = 12;
+    private maxAge = 24 * 7;
 
-    /** 更新 & 检测时间间隔（10分钟） */
-    private interval = 600000;
-
-    /** 用户`token`纪录 */
-    private userRecord: UserRecordType = {};
+    /** 前缀长度 */
+    private prefixSize = 8;
 
     /**
-     * 写入文件
-     * @param obj 要写入的对象
+     * 通过用户信息创建`token`
+     * @param info 用户信息 
      */
-    private write(obj?: UserRecordType) {
-        const data = obj || this.userRecord;
-        // 同步写入（貌似没必要）
-        // fs.writeFileSync(config.userFile, JSON.stringify(data), { encoding: "utf8" });
-        // 异步写入
-        fs.writeFile(config.userFile, JSON.stringify(data), { encoding: "utf8" }, err => {
-            if (err) {
-                console.log(`\x1B[41m jwt-token 写入失败 \x1B[0m`, err);
-            } else {
-                console.log(`\x1B[42m jwt-token 写入成功 \x1B[0m`);
-            }
-        })
-    }
-
-    /** 从本地临时表里面初始化用户状态 */
-    private init() {
-        // fs.accessSync(config.userFile)
-        if (!fs.existsSync(config.userFile)) {
-            console.log(`\x1B[42m ${config.userFile} 不存在，开始创建该文件 \x1B[0m`);
-            fs.writeFileSync(config.userFile, "{}", { encoding: "utf8" });
-        }
-        const userFrom = fs.readFileSync(config.userFile).toString();
-        this.userRecord = userFrom ? JSON.parse(userFrom) : {};
-        this.checkRecord();
-        // console.log("token临时表", userFrom, this.userRecord);
-    }
-
-    /** 生成`token` */
-    private getToken() {
-        const getCode = (n: number): string => {
-            let codes = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
-            let code = "";
-            for (let i = 0; i < n; i++) {
-                code += codes.charAt(Math.floor(Math.random() * codes.length));
-            }
-            if (this.userRecord[code]) {
-                return getCode(n);
-            }
-            return code;
-        }
-        const code = getCode(config.tokenSize);
-        return code;
-    }
-    
-    /** 定时检测过期的`token`并清理 */
-    private checkRecord() {
-        const check = () => {
-            const now = Date.now();
-            let isChange = false;
-            for (const key in this.userRecord) {
-                if (this.userRecord.hasOwnProperty(key)) {
-                    const item = this.userRecord[key];
-                    if (now - item.online > this.maxAge * 3600000) {
-                        isChange = true;
-                        delete this.userRecord[key];
-                    }
-                }
-            }
-            if (isChange) {
-                this.write();
-            }
-        }
-        // 定时检测
-        setInterval(check, this.interval);
-        check();
-    }
-
-    /**
-     * 设置纪录并返回`token`
-     * @param data 用户信息
-     */
-    setRecord(data: UserInfoType) {
-        const token = this.getToken();
-        data.online = Date.now();
-        this.userRecord[token] = data;
-        this.write();
-        return token;
-    }
-
-    /**
-     * 更新并检测`token`
-     * @param token 
-     * @description 这里可以做单点登录的处理，自行修改一下规则判断即可
-     */
-    updateRecord(token: string) {
-        const result: JwtResultType = {
-            message: "",
-            success: false,
-            info: null
-        }
-
-        if (!this.userRecord.hasOwnProperty(token)) {
-            result.message = "token 已过期或不存在";
-            return result;
-        } 
-        
-        const userInfo = this.userRecord[token];
-
-        const now = Date.now();
-
-        if (now - userInfo.online > this.maxAge * 3600000) {
-            result.message = "token 已过期";
-            return result;
-        }
-
-        result.message = "token 通过验证";
-        result.success = true;
-        result.info = userInfo;
-
-        // 更新在线时间并写入临时表
-        // 这里优化一下，写入和更新的时间间隔为10分钟，避免频繁写入
-        if (now - userInfo.online > this.interval) {
-            this.userRecord[token].online = now;
-            this.write();
-        }
-        
-        return result;
-    }
-
-    /**
-     * 从纪录中删除`token`纪录
-     * @param token 
-     * @description 主要是退出登录时用
-     */
-    removeRecord(token: string) {
-        if (this.userRecord.hasOwnProperty(token)) {
-            delete this.userRecord[token];
-            this.write();
-            return true;
-        } else {
-            return false;
-        }
+    createToken(info: Omit<UserInfo, "name">) {
+        const decode = JSON.stringify({
+            i: info.id,
+            a: info.account,
+            p: info.password,
+            t: info.type,
+            g: info.groupId,
+            o: Date.now()
+        } as UserInfoToken);
+        // const decode = encodeURI(JSON.stringify(info))
+        const base64 = Buffer.from(decode, "utf-8").toString("base64");
+        const secret = Math.random().toString(36).slice(2).slice(0, this.prefixSize);
+        return secret + base64;
     }
 
     /**
      * 检测需要`token`的接口状态
-     * @param context 
+     * @param ctx `http`上下文
      */
-    checkToken(context: TheContext) {
-        const token: string = context.header.authorization;
+    checkToken(ctx: TheContext) {
+        const token: string = ctx.header.authorization;
+        /** 是否失败的`token` */
         let fail = false;
+        /** 检测结果信息 */
         let info: ApiResult<{}>;
+        /**
+         * 设置失败信息
+         * @param msg 
+         */
+        function setFail(msg: string) {
+            fail = true;
+            ctx.response.status = 401;
+            info = apiSuccess({}, msg, -1);
+        }
 
         if (!token) {
-            fail = true;
-            info = apiSuccess({}, "缺少token", 400);
+            setFail("缺少 token");
         }
 
-        if (token && token.length != config.tokenSize) {
-            fail = true;
-            info = apiSuccess({}, config.tokenTip, 400);
+        if (token && token.length < this.prefixSize * 2) {
+            setFail("token 错误");
         }
         
-        const state = this.updateRecord(token);
-
-        if (!state.success) {
-            fail = true;
-            info = apiSuccess({}, state.message, 401);
-        }
-
-        // 设置 token 信息到上下文中给接口模块里面调用
         if (!fail) {
-            context["theState"] = state;
+            /** 准备解析的字符串 */
+            const str = Buffer.from(token.slice(this.prefixSize), "base64").toString("utf-8");
+            
+            /** 解析出来的结果 */
+            let result: UserInfoToken;
+
+            try {
+                result = JSON.parse(str);
+            } catch (error) {
+                console.log("错误的 token 解析", error);
+                setFail("token 错误");
+            }
+
+            if (!fail) {
+                if (result.o && Date.now() - result.o < this.maxAge * 3600000) {
+                    const info = tableUser.table[result.i];
+                    // console.log("userInfo >>", info);
+                    // console.log("token 解析 >>", result);
+                    if (info) {
+                        // 设置`token`信息到上下文中给接口模块里面调用
+                        // 1. 严格判断账号、密码、用户权限等是否相同
+                        // 2. 后台管理修改个人信息之后需要重新返回`token`
+                        if (info.password == result.p && info.groupId == result.g && info.type == result.t) {
+                            ctx["theToken"] = info;
+                        } else {
+                            setFail("token 已失效");
+                        }
+                    } else {
+                        setFail("token 不存在");
+                    }
+                } else {
+                    setFail("token 过期");
+                }
+            }
         }
 
         return {

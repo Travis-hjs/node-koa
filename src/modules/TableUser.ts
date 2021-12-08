@@ -106,6 +106,6 @@ class ModuleUser {
  * 用户表数据
  * @description 缓存一份到程序里面，方便读取使用
  */
-const user = new ModuleUser();
+const tableUser = new ModuleUser();
 
-export default user;
+export default tableUser;
