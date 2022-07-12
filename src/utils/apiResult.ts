@@ -7,11 +7,11 @@ import { ApiResult } from "../types/base";
  * @param code 状态码
  */
 export function apiSuccess<T>(data: T, tip?: string, code = 200): ApiResult<T> {
-    return {
-        message: tip || "success",
-        code: code,
-        result: data
-    }
+  return {
+    message: tip || "success",
+    code: code,
+    result: data
+  }
 }
 
 /**
@@ -21,9 +21,9 @@ export function apiSuccess<T>(data: T, tip?: string, code = 200): ApiResult<T> {
  * @param error 错误信息
  */
 export function apiFail(tip: string, code = 500, error: any = null): ApiResult<any> {
-    return {
-        message: tip || "fail",
-        code: code,
-        result: error
-    }
+  return {
+    message: tip || "fail",
+    code: code,
+    result: error
+  }
 }

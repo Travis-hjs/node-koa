@@ -4,11 +4,11 @@
 const userInfo = fetchUserInfo();
 
 function openUserPage() {
-    location.href = "./api-login.html";
+  location.href = "./api-login.html";
 }
 
 if (!userInfo) {
-    openUserPage();
+  openUserPage();
 }
 
 /**
@@ -16,15 +16,15 @@ if (!userInfo) {
  * @param {File} file 文件
  */
 function getObjectURL(file) {
-    let url = null;
-    if (window.createObjectURL) {
-        url = window.createObjectURL(file);
-    } else if (window.URL) {
-        url = window.URL.createObjectURL(file);
-    } else if (window.webkitURL) {
-        url = window.webkitURL.createObjectURL(file);
-    }
-    return url;
+  let url = null;
+  if (window.createObjectURL) {
+    url = window.createObjectURL(file);
+  } else if (window.URL) {
+    url = window.URL.createObjectURL(file);
+  } else if (window.webkitURL) {
+    url = window.webkitURL.createObjectURL(file);
+  }
+  return url;
 }
 
 /**
@@ -32,31 +32,31 @@ function getObjectURL(file) {
  * @param {HTMLInputElement} el 
  */
 function uploadImg(el) {
-    /** 上传文件 */
-    const file = el.files[0];
-    /** 上传类型数组 */
-    const types = ["image/jpg", "image/png", "image/jpeg", "image/gif"];
-    // 判断文件类型
-    if (types.indexOf(file.type) < 0) return utils.showAlert({ content: "文件格式只支持：jpg 和 png" });
-    // 判断大小
-    if (file.size > 2 * 1024 * 1024) return utils.showAlert({ content: "上传的文件不能大于2M" });
+  /** 上传文件 */
+  const file = el.files[0];
+  /** 上传类型数组 */
+  const types = ["image/jpg", "image/png", "image/jpeg", "image/gif"];
+  // 判断文件类型
+  if (types.indexOf(file.type) < 0) return utils.showAlert({ content: "文件格式只支持：jpg 和 png" });
+  // 判断大小
+  if (file.size > 2 * 1024 * 1024) return utils.showAlert({ content: "上传的文件不能大于2M" });
 
-    const formData = new FormData();
-    // formData.append("name", "hjs-img");
-    formData.append("img", file);
-    // console.log(formData);
-    
-    api.upload(formData, res => {
-        console.log("上传成功", res);
-        el.parentNode.classList.add("hide");
-        el.parentNode.parentNode.querySelector(".img-box").classList.remove("hide");
-        el.parentNode.parentNode.querySelector(".img-box .image").src = res.result.image;
-    }, err => {
-        console.log("上传失败", err);
-        
-    })
+  const formData = new FormData();
+  // formData.append("name", "hjs-img");
+  formData.append("img", file);
+  // console.log(formData);
 
-    el.value = null;
+  api.upload(formData, res => {
+    console.log("上传成功", res);
+    el.parentNode.classList.add("hide");
+    el.parentNode.parentNode.querySelector(".img-box").classList.remove("hide");
+    el.parentNode.parentNode.querySelector(".img-box .image").src = res.result.image;
+  }, err => {
+    console.log("上传失败", err);
+
+  })
+
+  el.value = null;
 }
 
 /**
@@ -64,9 +64,9 @@ function uploadImg(el) {
  * @param {HTMLElement} el 
  */
 function removeImg(el) {
-    el.parentNode.classList.add("hide");
-    el.parentNode.querySelector(".image").src = "";
-    el.parentNode.parentNode.querySelector(".upload").classList.remove("hide");
+  el.parentNode.classList.add("hide");
+  el.parentNode.querySelector(".image").src = "";
+  el.parentNode.parentNode.querySelector(".upload").classList.remove("hide");
 }
 
 /** 列表节点 */
@@ -81,8 +81,8 @@ listEl.innerHTML = null;
  * @param {{ content: string, id: number }} item 
  */
 function ouputList(item) {
-    const itemHTML = template.replace("{{id}}", item.id).replace("{{content}}", item.content);
-    listEl.insertAdjacentHTML("beforeend", itemHTML);
+  const itemHTML = template.replace("{{id}}", item.id).replace("{{content}}", item.content);
+  listEl.insertAdjacentHTML("beforeend", itemHTML);
 }
 
 /**
@@ -90,20 +90,20 @@ function ouputList(item) {
  * @param {HTMLElement} el 
  */
 function addList(el) {
-    /**
-     * @type {HTMLInputElement}
-     */
-    const input = el.parentNode.querySelector(".input");
-    const text = input.value.trim();
-    if (!text) return utils.showAlert({ content: "输入的内容不能为空~" });
-    api.addListItem(text, res => {
-        console.log(res.result);
-        ouputList({
-            content: text,
-            id: res.result.id
-        })
-        input.value = null;
-    }) 
+  /**
+   * @type {HTMLInputElement}
+   */
+  const input = el.parentNode.querySelector(".input");
+  const text = input.value.trim();
+  if (!text) return utils.showAlert({ content: "输入的内容不能为空~" });
+  api.addListItem(text, res => {
+    console.log(res.result);
+    ouputList({
+      content: text,
+      id: res.result.id
+    })
+    input.value = null;
+  })
 }
 
 /**
@@ -111,12 +111,12 @@ function addList(el) {
  * @param {HTMLElement} el 
  */
 function removeList(el) {
-    // return console.log(el.parentNode.dataset["id"]);
-    api.deleteListItem(el.parentNode.dataset["id"], res => {
-        console.log("删除成功", res);
-        utils.showToast("删除成功");
-        el.parentNode.parentNode.removeChild(el.parentNode);
-    })
+  // return console.log(el.parentNode.dataset["id"]);
+  api.deleteListItem(el.parentNode.dataset["id"], res => {
+    console.log("删除成功", res);
+    utils.showToast("删除成功");
+    el.parentNode.parentNode.removeChild(el.parentNode);
+  })
 }
 
 /**
@@ -124,18 +124,18 @@ function removeList(el) {
  * @param {HTMLElement} el 自身节点
  */
 function subChange(el) {
-    let id = el.parentNode.dataset["id"];
-    let text = el.parentNode.querySelector(".input").value.trim();
-    if (!text) return utils.showAlert({ content: "内容不能为空" });
-    // console.log(text, id);
-    api.modifyListItem({
-        content: text,
-        id: id
-    }, res => {
-        console.log("修改成功", res);
-        utils.showToast("修改成功");
-        offInput(el);
-    })
+  let id = el.parentNode.dataset["id"];
+  let text = el.parentNode.querySelector(".input").value.trim();
+  if (!text) return utils.showAlert({ content: "内容不能为空" });
+  // console.log(text, id);
+  api.modifyListItem({
+    content: text,
+    id: id
+  }, res => {
+    console.log("修改成功", res);
+    utils.showToast("修改成功");
+    offInput(el);
+  })
 }
 
 /**
@@ -143,9 +143,9 @@ function subChange(el) {
  * @param {HTMLElement} el 自身节点
  */
 function canInput(el) {
-    el.parentNode.querySelector(".button_blue").classList.remove("hide");
-    el.classList.add("hide");
-    el.parentNode.querySelector(".input").removeAttribute("readonly");
+  el.parentNode.querySelector(".button_blue").classList.remove("hide");
+  el.classList.add("hide");
+  el.parentNode.querySelector(".input").removeAttribute("readonly");
 }
 
 /**
@@ -153,32 +153,32 @@ function canInput(el) {
  * @param {HTMLElement} el 自身节点
  */
 function offInput(el) {
-    el.parentNode.querySelector(".button_blue").classList.add("hide");
-    el.parentNode.querySelector(".button_green").classList.remove("hide");
-    el.parentNode.querySelector(".input").setAttribute("readonly", "readonly");
-}   
+  el.parentNode.querySelector(".button_blue").classList.add("hide");
+  el.parentNode.querySelector(".button_green").classList.remove("hide");
+  el.parentNode.querySelector(".input").setAttribute("readonly", "readonly");
+}
 
 api.getTodoList(res => {
-    console.log("获取列表", res);
-    if (res.result.list.length == 0) return;
-    res.result.list.forEach(item => {
-        ouputList(item);
-    })
+  console.log("获取列表", res);
+  if (res.result.list.length == 0) return;
+  res.result.list.forEach(item => {
+    ouputList(item);
+  })
 })
 
 function clickGetUserInfo() {
-    api.getUserInfo(res => {
-        console.log("用户信息", res);
-    })
-} 
+  api.getUserInfo(res => {
+    console.log("用户信息", res);
+  })
+}
 
 function clickLogout() {
-    api.logout(res => {
-        console.log("退出登录", res);
-        removeUserInfo();
-        openUserPage();
-    }, () => {
-        removeUserInfo();
-    })
-} 
+  api.logout(res => {
+    console.log("退出登录", res);
+    removeUserInfo();
+    openUserPage();
+  }, () => {
+    removeUserInfo();
+  })
+}
 

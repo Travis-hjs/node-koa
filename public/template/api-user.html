@@ -1,70 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
-    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
-    <title>接口调试</title>
-    <link rel="stylesheet" href="./css/base.css">
-    <style>
-        .item{ margin: 0 auto 22px; text-align: center; }
-        .upload-img{ width: 280px; min-height: 280px; margin: 0 auto 20px; }
-        .upload-img .img-box{ position: relative; width: 100%; height: 100%; overflow: hidden; }
-        .upload-img .img-box .image{ display: block; width: 100%; }
-        .upload-img .img-box .remove{ position: absolute; top: 2px; right: 2px; border-radius: 100%; cursor: pointer; width: 34px; height: 34px; background-color: rgba(0,0,0,0.5); font-size: 28px; color: #fff; }
-        .upload-img .upload{ width: 100%; min-height: 280px; position: relative; }
-        .upload-img .upload .add_icon{ position: relative; width: 50px; height: 50px; }
-        .upload-img .upload .add_icon::after{ content: ""; position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background-color: #999; transform: translateX(-50%); }
-        .upload-img .upload .add_icon::before{ content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background-color: #999; transform: translateY(-50%); }
-        .upload-img .upload .upload_input{ width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2; opacity: 0; cursor: pointer; }
-        .todo{ width: 100%; background-color: #f2f2f2; padding: 4px 8px 8px; margin-bottom: 10px; }
-        .todo h2{ font-size: 24px; font-weight: inherit; }
-        .todo input{ margin-bottom: 10px; }
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>接口调试</title>
+  <link rel="stylesheet" href="./css/base.css">
+  <style>
+    .item{ margin: 0 auto 22px; text-align: center; }
+    .upload-img{ width: 280px; min-height: 280px; margin: 0 auto 20px; }
+    .upload-img .img-box{ position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .upload-img .img-box .image{ display: block; width: 100%; }
+    .upload-img .img-box .remove{ position: absolute; top: 2px; right: 2px; border-radius: 100%; cursor: pointer; width: 34px; height: 34px; background-color: rgba(0,0,0,0.5); font-size: 28px; color: #fff; }
+    .upload-img .upload{ width: 100%; min-height: 280px; position: relative; }
+    .upload-img .upload .add_icon{ position: relative; width: 50px; height: 50px; }
+    .upload-img .upload .add_icon::after{ content: ""; position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background-color: #999; transform: translateX(-50%); }
+    .upload-img .upload .add_icon::before{ content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background-color: #999; transform: translateY(-50%); }
+    .upload-img .upload .upload_input{ width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2; opacity: 0; cursor: pointer; }
+    .todo{ width: 100%; background-color: #f2f2f2; padding: 4px 8px 8px; margin-bottom: 10px; }
+    .todo h2{ font-size: 24px; font-weight: inherit; }
+    .todo input{ margin-bottom: 10px; }
 
-        .list{ width: 100%; background-color: #f2f2f2; padding: 4px 8px; }
-        .list .list_item{ height: 60px; margin-bottom: 10px; padding: 10px; }
-        .list .list_item .center{ margin: 0 10px; }
+    .list{ width: 100%; background-color: #f2f2f2; padding: 4px 8px; }
+    .list .list_item{ height: 60px; margin-bottom: 10px; padding: 10px; }
+    .list .list_item .center{ margin: 0 10px; }
 
-        .hide{ display: none; }
-    </style>
+    .hide{ display: none; }
+  </style>
 </head>
-<body>
-    <div class="page">
-        <div class="item">
-            <button class="button button_blue" onclick="clickGetUserInfo()">获取用户信息</button>
-        </div>
-        <div class="item">
-            <button class="button button_blue" onclick="clickLogout()">退出登录</button>
-        </div>
-        <div class="card upload-img">
-            <div class="img-box hide">
-                <img class="image" src="">
-                <div class="remove flex fvertical fcenter" onclick="removeImg(this)">×</div>
-            </div>
-            <div class="upload flex fvertical fcenter">
-                <div class="add_icon"></div>
-                <input class="upload_input" type="file" name="picture" onchange="uploadImg(this)">
-            </div>
-        </div>
-        <div class="todo">
-            <h2>增删改查</h2>
-            <input class="input" type="text" placeholder="输入增加内容">
-            <button class="button button_blue" onclick="addList(this)">增加一条</button>
-        </div>
-        <div class="list">
-            <script type="text/template">
-                <div class="card flex fvertical list_item" data-id="{{id}}">
-                    <input class="input f1" type="text" readonly="readonly" value="{{content}}">
-                    <button class="button button_green center" onclick="canInput(this)">修改</button>
-                    <button class="button button_blue center hide" onclick="subChange(this)">确定修改</button>
-                    <button class="button button_red" onclick="removeList(this)">删除</button>
-                </div>
-            </script>
-        </div>
-    </div>
 
-    <script src="./js/utils.js"></script>
-    <script src="./js/api.js"></script>
-    <script src="./js/user.js"></script>
+<body>
+  <div class="page">
+    <div class="item">
+      <button class="button button_blue" onclick="clickGetUserInfo()">获取用户信息</button>
+    </div>
+    <div class="item">
+      <button class="button button_blue" onclick="clickLogout()">退出登录</button>
+    </div>
+    <div class="card upload-img">
+      <div class="img-box hide">
+        <img class="image" src="">
+        <div class="remove flex fvertical fcenter" onclick="removeImg(this)">×</div>
+      </div>
+      <div class="upload flex fvertical fcenter">
+        <div class="add_icon"></div>
+        <input class="upload_input" type="file" name="picture" onchange="uploadImg(this)">
+      </div>
+    </div>
+    <div class="todo">
+      <h2>增删改查</h2>
+      <input class="input" type="text" placeholder="输入增加内容">
+      <button class="button button_blue" onclick="addList(this)">增加一条</button>
+    </div>
+    <div class="list">
+      <script type="text/template">
+        <div class="card flex fvertical list_item" data-id="{{id}}">
+          <input class="input f1" type="text" readonly="readonly" value="{{content}}">
+          <button class="button button_green center" onclick="canInput(this)">修改</button>
+          <button class="button button_blue center hide" onclick="subChange(this)">确定修改</button>
+          <button class="button button_red" onclick="removeList(this)">删除</button>
+        </div>
+      </script>
+    </div>
+  </div>
+
+  <script src="./js/utils.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/user.js"></script>
 </body>
+
 </html>

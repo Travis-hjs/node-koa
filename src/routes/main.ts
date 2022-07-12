@@ -5,7 +5,7 @@ import config from "../modules/Config";
  * api路由模块
  */
 const router = new Router({
-    prefix: config.apiPrefix
+  prefix: config.apiPrefix
 });
 
 export default router;
