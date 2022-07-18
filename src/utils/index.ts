@@ -86,6 +86,11 @@ class ModuleUtils {
    * ```
    */
   formatDate(value: string | number | Date = Date.now(), format = "Y-M-D h:m:s") {
+    if (["null", null, "undefined", undefined, ""].includes(value as any)) return "";
+    // ios 和 mac 系统中，带横杆的字符串日期是格式不了的，这里做一下判断处理
+    if (typeof value === "string" && new Date(value).toString() === "Invalid Date") {
+      value = value.replace(/-/g, "/");
+    }
     const formatNumber = (n: number) => `0${n}`.slice(-2);
     const date = new Date(value);
     const formatList = ["Y", "M", "D", "h", "m", "s"];
@@ -103,13 +108,22 @@ class ModuleUtils {
   }
 
   /**
-   * 判断是否为空值，`null`|`undefined`|`""`均为`true`
-   * @param value 
-   * @param hasEmptyString 是否可以为空字符串
+   * 获取两个日期之间的天数
+   * @param date1 
+   * @param date2 
+   * @returns 
    */
-  isEmpty(value: any, hasEmptyString = false) {
-    const condition = hasEmptyString ? (value === null || value === undefined) : (value === "" || value === null || value === undefined);
-    return condition;
+  daysBetween(date1: Date|string|number, date2: Date|string|number) {
+    return Math.ceil(Math.abs(new Date(date1).getTime() - new Date(date2).getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  /**
+   * 判断是否为空值
+   * @param target 
+   * @param rules 传入的规则
+   */
+  isEmpty(target: any, rules = ["null", "undefined", "", null, undefined]) {
+    return rules.includes(target);
   }
 
   /**
@@ -183,8 +197,9 @@ class ModuleUtils {
   mysqlFormatParams(params: { [key: string]: any }, isEmptyString = false) {
     const keys = [];
     const values = [];
+    const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
     for (const key in params) {
-      const empty = this.isEmpty(params[key], isEmptyString);
+      const empty = this.isEmpty(params[key], rules);
       if (!empty) {
         keys.push("`" + key + "`");
         values.push(params[key]);
@@ -204,10 +219,11 @@ class ModuleUtils {
    * @description 修改（更新用）
    */
   mysqlSetParams(params: { [key: string]: any }, isEmptyString = false) {
+    const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
     const values = [];
     let result = "";
     for (const key in params) {
-      const empty = this.isEmpty(params[key], isEmptyString);
+      const empty = this.isEmpty(params[key], rules);
       if (!empty) {
         values.push("`" + key + "`='" + params[key] + "'");
       }

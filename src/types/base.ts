@@ -1,58 +1,14 @@
 import * as Koa from "koa";
-import { TableUserInfo } from "user";
+import { TableUserInfo } from "./user";
 
 /** 接口返回数据 */
-export interface ApiResult<T> {
+export interface ApiResult<T = any> {
   /** 状态提示 */
   message: string
   /** 状态码 */
   code: number
   /** 返回数据 */
   result: T
-}
-
-/** 失败返回提示数据 */
-export interface ResultFail {
-  /** 状态错误提示 */
-  message: string
-  /** 状态错误码 */
-  code: number
-  /** 返回数据 */
-  result: any
-}
-
-/** 用户信息类型 */
-export interface UserInfoType {
-  /** 账号 */
-  account: string
-  /** 密码 */
-  password: string
-  /** 用户名 */
-  name?: string
-  /** 在线时间（毫秒） */
-  online?: number
-  /** 请求域名 */
-  host?: string
-  /** 登录时`token` */
-  token?: string
-  /** 用户id */
-  id?: number
-}
-
-/** 用户`token`纪录类型 */
-export interface UserRecordType {
-  /** `token`信息对象 */
-  [key: string]: UserInfoType
-}
-
-/** `token`返回结果类型 */
-export interface JwtResultType {
-  /** `token`状态描述 */
-  message: string
-  /** `token`是否可用 */
-  success: boolean
-  /** `token`信息 */
-  info: UserInfoType
 }
 
 /** JavaScript类型 */

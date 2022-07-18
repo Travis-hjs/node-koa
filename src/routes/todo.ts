@@ -10,7 +10,7 @@ router.get("/getList", handleToken, async (ctx: TheContext) => {
 
   const tokenInfo = ctx["theToken"];
   /** 返回结果 */
-  let bodyResult: ApiResult<any>;
+  let bodyResult: ApiResult;
 
   // console.log("getList >>", tokenInfo);
 
@@ -20,7 +20,7 @@ router.get("/getList", handleToken, async (ctx: TheContext) => {
   if (res.state === 1) {
     // console.log("/getList 查询", res.results);
     bodyResult = apiSuccess({
-      list: res.results.length > 0 ? res.results : []
+      list: res.results.length > 0 ? utils.arrayItemToHump(res.results) : []
     });
   } else {
     ctx.response.status = 500;

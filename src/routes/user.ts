@@ -16,7 +16,7 @@ router.post("/register", async (ctx) => {
   /** 接收参数 */
   const params: UserInfo = ctx.request.body;
   /** 返回结果 */
-  let bodyResult: ApiResult<any>;
+  let bodyResult: ApiResult;
   /** 账号是否可用 */
   let validAccount = false;
   // console.log("注册传参", params);
@@ -77,7 +77,7 @@ router.post("/login", async (ctx) => {
   /** 接收参数 */
   const params: UserInfo = ctx.request.body;
   /** 返回结果 */
-  let bodyResult: ApiResult<any>;
+  let bodyResult: ApiResult;
   // console.log("登录", params);
   if (!params.account || params.account.trim() === "") {
     return ctx.body = apiSuccess({}, "登录失败！账号不能为空", 400);
@@ -127,7 +127,7 @@ router.get("/getUserInfo", handleToken, async (ctx: TheContext) => {
   // /** 接收参数 */
   // const params = ctx.request.body;
   /** 返回结果 */
-  let bodyResult: ApiResult<any>;
+  let bodyResult: ApiResult;
 
   // console.log("getUserInfo >>", tokenInfo);
 
@@ -157,7 +157,7 @@ router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
   /** 接收参数 */
   const params: UserInfo = ctx.request.body;
   /** 返回结果 */
-  let bodyResult: ApiResult<any>;
+  let bodyResult: ApiResult;
   /** 账号是否可用 */
   let validAccount = false;
   // console.log("注册传参", params);
@@ -307,7 +307,7 @@ router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
 //     // console.log("获取用户列表 >>", res);
 
 //     /** 返回结果 */
-//     let bodyResult: ApiResult<any>;
+//     let bodyResult: ApiResult;
 
 //     if (res.state === 1) {
 //         const list: Array<UserInfo> = res.results || [];
@@ -354,7 +354,7 @@ router.post("/deleteUser", handleToken, async (ctx: TheContext) => {
   }
 
   /** 返回结果 */
-  let bodyResult: ApiResult<any>;
+  let bodyResult: ApiResult;
 
   // 从数据库中删除
   const res = await query(`delete from user_table where id = '${params.id}'`)

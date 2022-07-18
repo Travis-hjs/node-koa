@@ -20,7 +20,7 @@ export function apiSuccess<T>(data: T, tip?: string, code = 200): ApiResult<T> {
  * @param code 错误码
  * @param error 错误信息
  */
-export function apiFail(tip: string, code = 500, error: any = null): ApiResult<any> {
+export function apiFail<T>(tip: string, code = 500, error?: T): ApiResult<T> {
   return {
     message: tip || "fail",
     code: code,
