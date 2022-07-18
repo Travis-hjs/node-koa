@@ -33,7 +33,7 @@ export async function handleDoMain(ctx: TheContext, next: Next) {
 
   const domain = utils.getDomain(referer || "");
 
-  const list = [...config.origins, `http://${config.ip}:${config.port}`];
+  const list = config.origins.concat([`http://${config.ip}:${config.port}`]);
 
   // 严格判断当前请求域名是否在白名单内
   if (domain && list.indexOf(domain) > -1) {
