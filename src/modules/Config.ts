@@ -16,6 +16,8 @@ function getIPAdress() {
 class ModuleConfig {
   constructor() {
     this._ip = getIPAdress();
+    const devDomain = `http://${this._ip}`;
+    this.origins.push(devDomain);
   }
 
   private _ip = "";
@@ -55,9 +57,7 @@ class ModuleConfig {
   /** 允许访问的域名源 */
   readonly origins = [
     `http://${this.publicIp}`,
-    "http://huangjingsheng.gitee.io",
-    "http://192.168.0.24:5050",
-    "http://192.168.0.24:6060",
+    "http://huangjingsheng.gitee.io"
   ]
 
   /** 接口前缀 */

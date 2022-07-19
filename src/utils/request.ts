@@ -1,7 +1,7 @@
 import * as http from "http";
 import * as querystring from "querystring"
 import * as zlib from "zlib"
-import { ServeRequestResult } from "../types/base";
+import { BaseObj, ServeRequestResult } from "../types/base";
 
 /**
  * 服务端请求
@@ -12,7 +12,7 @@ import { ServeRequestResult } from "../types/base";
  * @param options 请求配置
  * @param params 请求传参数据
  */
-export default function request(options: http.RequestOptions, params: object = {}): Promise<ServeRequestResult> {
+export default function request(options: http.RequestOptions, params: BaseObj<any> = {}) {
   /** 返回结果 */
   const info: ServeRequestResult = {
     msg: "",
@@ -21,13 +21,13 @@ export default function request(options: http.RequestOptions, params: object = {
   }
 
   /** 传参字段 */
-  const data = querystring.stringify(params as any);
+  const data = querystring.stringify(params);
 
   if (data && options.method == "GET") {
     options.path += `?${data}`;
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<ServeRequestResult>((resolve, reject) => {
     const clientRequest = http.request(options, res => {
       // console.log("http.get >>", res);
       // console.log(`http.request.statusCode: ${res.statusCode}`);
@@ -56,7 +56,7 @@ export default function request(options: http.RequestOptions, params: object = {
       }
 
       output.on("data", function (chunk) {
-        console.log("----------> chunk >>", chunk);
+        // console.log("----------> chunk >>", chunk);
         // info.result += chunk;
         // info.result = chunk;
         // info.result += chunk.toString("utf-8");
@@ -70,7 +70,7 @@ export default function request(options: http.RequestOptions, params: object = {
       })
 
       output.on("end", function () {
-        console.log("---------- end ----------");
+        // console.log("---------- end ----------");
         if (res.complete) {
           info.msg = "ok";
           info.state = 1;

@@ -5,6 +5,7 @@ import utils from "../utils";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 import config from "../modules/Config";
 import request from "../utils/request";
+import { BaseObj } from "../types/base";
 
 /** 资源路径 */
 const resourcePath = path.resolve(__dirname, "../../public/template");
@@ -56,7 +57,7 @@ router.get("/home", (ctx, next) => {
 // get 请求
 router.get("/getData", (ctx, next) => {
   /** 接收参数 */
-  const params: object | string = ctx.query || ctx.querystring;
+  const params = ctx.query || ctx.querystring;
 
   console.log("/getData", params);
 
@@ -70,7 +71,7 @@ router.get("/getData", (ctx, next) => {
 // post 请求
 router.post("/postData", (ctx, next) => {
   /** 接收参数 */
-  const params: object = ctx.request.body || ctx.params;
+  const params: BaseObj = ctx.request.body || ctx.params;
 
   console.log("/postData", params);
 

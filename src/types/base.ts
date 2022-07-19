@@ -17,6 +17,11 @@ export type JavaScriptTypes = "string" | "number" | "array" | "object" | "functi
 /** 运算符号 */
 export type NumberSymbols = "+" | "-" | "*" | "/";
 
+/** 基础对象 */
+export interface BaseObj<T = string | number> {
+  [key: string]: T
+}
+
 /** 自定义的请求上下文返回信息接口 */
 export interface TheContext extends Koa.ParameterizedContext {
   /**

@@ -4,6 +4,7 @@ import * as staticFiles from "koa-static";      // 静态文件处理模块
 import * as path from "path";
 import config from "./modules/Config";
 import router from "./routes/main";
+import utils from "./utils";
 import "./routes/test";                         // 基础测试模块
 import "./routes/user";                         // 用户模块
 import "./routes/upload";                       // 上传文件模块
@@ -26,15 +27,23 @@ App.use(async (ctx: TheContext, next) => {
   console.log("--------------------------");
   console.count("request count");
 
-  ctx.set({
-    "Access-Control-Allow-Origin": "*", // 开启跨域，一般用于调试环境，正式环境设置指定 ip 或者指定域名
-    // "Content-Type": "application/json",
-    // "Access-Control-Allow-Credentials": "true",
-    // "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE",
-    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-    // "X-Powered-By": "3.2.1",
-    // "Content-Security-Policy": `script-src "self"` // 只允许页面`script`引入自身域名的地址
-  });
+  const { origin, referer } = ctx.headers;
+
+  const domain = utils.getDomain(referer || "");
+  // console.log("referer domain >>", domain);
+  // 如果是 允许访问的域名源 ，则给它设置跨域访问和正常的请求头配置
+  if (domain && config.origins.includes(domain)) {
+    ctx.set({
+      "Access-Control-Allow-Origin": domain,
+      // "Access-Control-Allow-Origin": "*", // 开启跨域，一般用于调试环境，正式环境设置指定 ip 或者指定域名
+      // "Content-Type": "application/json",
+      // "Access-Control-Allow-Credentials": "true",
+      // "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE",
+      "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+      // "X-Powered-By": "3.2.1",
+      // "Content-Security-Policy": `script-src "self"` // 只允许页面`script`引入自身域名的地址
+    });
+  }
 
   // 如果前端设置了 XHR.setRequestHeader("Content-Type", "application/json")
   // ctx.set 就必须携带 "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization" 
