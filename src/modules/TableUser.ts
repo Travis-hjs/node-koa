@@ -1,8 +1,7 @@
 import utils from "../utils";
 import query from "../utils/mysql";
-import {
-  TableUserInfo,
-} from "../types/user";
+import { TableUserInfo } from "../types/user";
+import { BaseObj } from "../types/base";
 
 class ModuleUser {
   constructor() {
@@ -75,28 +74,31 @@ class ModuleUser {
   }
 
   /**
-   * 【单个对象】匹配用户名，包括：创建用户名、编辑用户名；并返回驼峰数据对象
+   * 【单个对象】匹配用户名，包括：创建用户名、编辑用户名
+   * - 并返回新的驼峰数据对象
    * @param item 
    */
-  matchName(item: any) {
-    item["create_user_name"] = this.table[item["create_user_id"]].name;
-    if (item["update_user_id"]) {
-      item["update_user_name"] = this.table[item["update_user_id"]].name || "";
+  matchName(item: BaseObj) {
+    const createId = item["create_user_id"] as number;
+    const updateId = item["update_user_id"] as number;
+    item["create_user_name"] = this.table[createId].name;
+    if (updateId) {
+      item["update_user_name"] = this.table[updateId].name || "";
     }
     return utils.objectToHump(item);
   }
 
   /**
-   * 【数组】匹配用户名，包括：创建用户名、编辑用户名；并返回驼峰数据对象
+   * 【数组】匹配用户名，包括：创建用户名、编辑用户名
+   * - 并返回驼峰数据对象
    * @param list 
    * @returns 
    */
-  matchNameArray(list: Array<any>) {
+  matchNameArray<T extends BaseObj>(list: Array<T>) {
     const result = [];
     for (let i = 0; i < list.length; i++) {
-      const item = list[i];
-      this.matchName(item);
-      result.push(utils.objectToHump(item));
+      const item = this.matchName(list[i]);
+      result.push(item);
     }
     return result;
   }

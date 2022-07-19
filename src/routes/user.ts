@@ -247,93 +247,93 @@ router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
 // // 获取用户列表
 // router.get("/getUserList", handleToken, async (ctx: TheContext) => {
 
-//     const tokenInfo = ctx["theToken"];
-//     // console.log("tokenInfo >>", tokenInfo);
-//     const params: UserListParams = ctx.request.query as any;
+//   const tokenInfo = ctx["theToken"];
+//   // console.log("tokenInfo >>", tokenInfo);
+//   const params: UserListParams = ctx.request.query as any;
 
-//     const size = Number(params.pageSize) || 10;
+//   const size = Number(params.pageSize) || 10;
 
-//     const page = Number(params.currentPage) || 1;
+//   const page = Number(params.currentPage) || 1;
 
-//     /** 精确查询 */
-//     const accuracyText = utils.mysqlSearchParams({
-//         "type": params.type
-//     });
+//   /** 精确查询 */
+//   const accuracyText = utils.mysqlSearchParams({
+//     "type": params.type
+//   });
 
-//     /** 模糊查询 */
-//     const vagueText = utils.mysqlSearchParams({
-//         "name": params.name
-//     }, true)
+//   /** 模糊查询 */
+//   const vagueText = utils.mysqlSearchParams({
+//     "name": params.name
+//   }, true)
 
-//     /** 查询语句 */
-//     const searchText = (function() {
-//         let result = "";
+//   /** 查询语句 */
+//   const searchText = (function () {
+//     let result = "";
 
-//         if (params.groupId) {
-//             result += utils.mysqlFindInSet("group_ids", [params.groupId]);
-//         } else {
-//             if ((tokenInfo.type >= 5)) {
-//                 result += utils.mysqlFindInSet("group_ids", tokenInfo.groupIds.split(","));
-//             }
-//         }
-
-//         if (accuracyText) {
-//             result += `${result ? " and " : ""}${accuracyText}`;
-//         }
-
-//         if (vagueText) {
-//             result += `${result ? " and " : ""}${vagueText}`;
-//         }
-
-//         if (result) {
-//             result = `where ${result}`;
-//         }
-
-//         return result;
-//     })();
-
-//     /** 结果语句 */
-//     const resultText = `${searchText} order by create_time desc limit ${size * (page - 1)}, ${size}`;
-//     // const res = await query(`select * from user_table`)
-//     const resultCountText = `select count(*) from user_table ${searchText.replace(/t2./g, "")}`;
-
-//     const countRes = await query(resultCountText)
-
-//     // console.log(selectUserTable + resultText);
-//     // "select * from user_table" + resultText
-//     // selectUserTable + resultText
-//     // console.log("用户查询语句 >>", `select * from user_table ${resultText}`);
-//     const res = await query(`select * from user_table ${resultText}`)
-//     // console.log("获取用户列表 >>", res);
-
-//     /** 返回结果 */
-//     let bodyResult: ApiResult;
-
-//     if (res.state === 1) {
-//         const list: Array<UserInfo> = res.results || [];
-//         const result = [];
-//         for (let i = 0; i < list.length; i++) {
-//             const item = list[i];
-//             if (item.type < tokenInfo.type) {
-//                 item.password = "******";
-//             }
-//             // 这里可以做分组名设置
-//             group.matchGroupIds(item);
-//             result.push(user.matchName(item as any));
-//         }
-//         bodyResult = apiSuccess({
-//             pageSize: size,
-//             currentPage: page,
-//             total: countRes.results[0][`count(*)`],
-//             list: result,
-//             time: Date.now()
-//         });
+//     if (params.groupId) {
+//       result += utils.mysqlFindInSet("group_ids", [params.groupId]);
 //     } else {
-//         ctx.response.status = 500;
-//         bodyResult = apiFail(res.msg, 500, res.error);
+//       if ((tokenInfo.type >= 5)) {
+//         result += utils.mysqlFindInSet("group_ids", tokenInfo.groupIds.split(","));
+//       }
 //     }
 
-//     ctx.body = bodyResult;
+//     if (accuracyText) {
+//       result += `${result ? " and " : ""}${accuracyText}`;
+//     }
+
+//     if (vagueText) {
+//       result += `${result ? " and " : ""}${vagueText}`;
+//     }
+
+//     if (result) {
+//       result = `where ${result}`;
+//     }
+
+//     return result;
+//   })();
+
+//   /** 结果语句 */
+//   const resultText = `${searchText} order by create_time desc limit ${size * (page - 1)}, ${size}`;
+//   // const res = await query(`select * from user_table`)
+//   const resultCountText = `select count(*) from user_table ${searchText.replace(/t2./g, "")}`;
+
+//   const countRes = await query(resultCountText)
+
+//   // console.log(selectUserTable + resultText);
+//   // "select * from user_table" + resultText
+//   // selectUserTable + resultText
+//   // console.log("用户查询语句 >>", `select * from user_table ${resultText}`);
+//   const res = await query(`select * from user_table ${resultText}`)
+//   // console.log("获取用户列表 >>", res);
+
+//   /** 返回结果 */
+//   let bodyResult: ApiResult;
+
+//   if (res.state === 1) {
+//     const list: Array<UserInfo> = res.results || [];
+//     const result = [];
+//     for (let i = 0; i < list.length; i++) {
+//       const item = list[i];
+//       if (item.type < tokenInfo.type) {
+//         item.password = "******";
+//       }
+//       // 这里可以做分组名设置
+//       group.matchGroupIds(item);
+//       result.push(user.matchName(item as any));
+//     }
+//     bodyResult = apiSuccess({
+//       pageSize: size,
+//       currentPage: page,
+//       total: countRes.results[0][`count(*)`],
+//       list: result,
+//       time: Date.now()
+//     });
+//   } else {
+//     ctx.response.status = 500;
+//     bodyResult = apiFail(res.msg, 500, res.error);
+//   }
+
+//   ctx.body = bodyResult;
 // })
 
 // 删除用户

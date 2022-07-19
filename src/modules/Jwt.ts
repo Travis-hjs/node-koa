@@ -1,13 +1,7 @@
 import { apiSuccess } from "../utils/apiResult";
 import tableUser from "./TableUser";
-import {
-  TheContext,
-  ApiResult,
-} from "../types/base";
-import {
-  UserInfoToken,
-  UserInfo
-} from "../types/user";
+import { TheContext, ApiResult } from "../types/base";
+import { UserInfoToken, UserInfo } from "../types/user";
 
 class ModuleJWT {
   constructor() {
