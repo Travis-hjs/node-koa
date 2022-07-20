@@ -32,12 +32,12 @@ router.post("/uploadImg", async (ctx, next) => {
 
   // console.log(fileName, file);
 
-  /** 模拟上传到七牛云 */
-  function uploadApi(): Promise<{ image: string }> {
+  /** 模拟上传到`oss`云存储 */
+  function uploadToCloud() {
     const result = {
       image: ""
     }
-    return new Promise(function (resolve) {
+    return new Promise<{ image: string }>(function (resolve) {
       const delay = Math.floor(Math.random() * 5) * 100 + 500;
       setTimeout(() => {
         result.image = `http://${config.ip}:${config.port}/images/${fileName}`;
@@ -46,7 +46,7 @@ router.post("/uploadImg", async (ctx, next) => {
     });
   }
 
-  const res = await uploadApi();
+  const res = await uploadToCloud();
 
   ctx.body = apiSuccess(res, "上传成功");
 })
