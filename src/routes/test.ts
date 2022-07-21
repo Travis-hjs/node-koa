@@ -44,10 +44,10 @@ router.get("/home", (ctx, next) => {
     pageTitle: "serve-root",
     jsLabel: `<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>`,
     content: `
-        <div style="font-size: 24px; margin-bottom: 8px; font-weight: bold;">当前环境信息：</div>
-        <p style="font-size: 15px; margin-bottom: 10px; font-weight: 500;">${userAgent}</p>
-        <button class="button button_purple"><a href="./api-index.html">open test</></button>
-        `
+      <div style="font-size: 24px; margin-bottom: 8px; font-weight: bold;">当前环境信息：</div>
+      <p style="font-size: 15px; margin-bottom: 10px; font-weight: 500;">${userAgent}</p>
+      <button class="button button_purple"><a href="./api-index.html">open test</></button>
+    `
   }
 
   ctx.body = utils.replaceText(template, data);

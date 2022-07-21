@@ -106,7 +106,7 @@ class ModuleUser {
 
 /**
  * 用户表数据
- * @description 缓存一份到程序里面，方便读取使用
+ * - 缓存一份到内存里面，方便读取使用
  */
 const tableUser = new ModuleUser();
 
