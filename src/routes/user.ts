@@ -5,10 +5,7 @@ import { handleToken } from "../middleware";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 import utils from "../utils";
 import tableUser from "../modules/TableUser";
-import {
-  TheContext,
-  ApiResult
-} from "../types/base";
+import { TheContext, ApiResult } from "../types/base";
 import { UserInfo } from "../types/user";
 
 // 注册

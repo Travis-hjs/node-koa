@@ -1,9 +1,9 @@
 import router from "./main";
 import query from "../utils/mysql";
+import utils from "../utils";
 import { ApiResult, TheContext } from "../types/base";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 import { handleToken } from "../middleware";
-import utils from "../utils";
 
 // 获取所有列表
 router.get("/getList", handleToken, async (ctx: TheContext) => {
