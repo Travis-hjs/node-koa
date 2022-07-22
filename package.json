@@ -1,7 +1,7 @@
 {
-  "name": "node-koa-serve",
+  "name": "node-koa-service",
   "version": "1.0.2",
-  "description": "typescript + node + koa 构建服务端应用",
+  "description": "node.js + koa2 + typescript 构建服务端应用",
   "main": "index.js",
   "scripts": {
     "build": "tsc && node dist/index.js",
@@ -12,7 +12,8 @@
     "url": "git+https://github.com/Hansen-hjs/node-koa.git"
   },
   "keywords": [
-    "koa"
+    "koa",
+    "nodejs"
   ],
   "author": "Hansen-hjs",
   "license": "ISC",
