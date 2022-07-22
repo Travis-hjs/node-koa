@@ -1,4 +1,4 @@
-# Node.js + Koa + Typescript 构建服务端应用
+# Node.js + Koa2 + Typescript 构建服务端应用
 
 当前描述文件不做详细介绍，请移步到[掘金介绍](https://juejin.cn/post/6844903922767757320/)
 
