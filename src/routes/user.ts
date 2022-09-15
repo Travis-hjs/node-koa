@@ -183,17 +183,15 @@ router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
     params.name = "用户-" + utils.formatDate(Date.now(), "YMDhms");
   }
 
-  if (tableUser.table[params.id]) {
+  if (tableUser.getUserById(params.id)) {
     validAccount = true;
-    for (const key in tableUser.table) {
-      if (Object.prototype.hasOwnProperty.call(tableUser.table, key)) {
-        const item = tableUser.table[key];
-        if (item.account == params.account && item.id != params.id) {
-          validAccount = false;
-          bodyResult = apiSuccess({}, "当前账户已存在", -1);
-          break;
-        }
-      }
+    for (const iterator of tableUser.table) {
+      const user = iterator[1];
+      if (user.account == params.account && user.id != params.id) {
+        validAccount = false;
+        bodyResult = apiSuccess({}, "当前账户已存在", -1);
+        break;
+      } 
     }
   } else {
     bodyResult = apiSuccess({}, "当前用户 id 不存在", -1);

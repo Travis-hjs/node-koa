@@ -1,7 +1,7 @@
 import * as Koa from "koa";
 import { TableUserInfo } from "./user";
 
-/** 接口返回数据 */
+/** 接口响应数据，返回给前端用 */
 export interface ApiResult<T = any> {
   /** 状态提示 */
   message: string

@@ -8,20 +8,12 @@ class ModuleUser {
     this.update();
   }
 
-  /** 缓存表格数据 */
-  private _table: { [id: number]: TableUserInfo } = {};
-
-  /** 用户计数 */
-  private _total = 0;
-
-  /** 用户表数据 */
-  get table() {
-    return this._table;
-  }
+  /** 用户缓存表格数据 */
+  table = new Map<string, TableUserInfo>();
 
   /** 用户总数 */
   get total() {
-    return this._total;
+    return this.table.size;
   }
 
   /** 从数据库中更新缓存用户表 */
@@ -29,16 +21,13 @@ class ModuleUser {
     const res = await query("select * from user_table")
     if (res.state === 1) {
       const list: Array<TableUserInfo> = res.results || [];
-      this._total = list.length;
-      this._table = {};
-      if (this._total > 0) {
-        for (let i = 0; i < list.length; i++) {
-          const item = utils.objectToHump(list[i]) as TableUserInfo;
-          item.createTime = utils.formatDate(item.createTime);
-          this._table[item.id] = item;
-        }
+      this.table.clear();
+      for (let i = 0; i < list.length; i++) {
+        const item = utils.objectToHump(list[i]) as TableUserInfo;
+        item.createTime = utils.formatDate(item.createTime);
+        this.table.set(item.id.toString(), item);
       }
-      console.log("\x1B[42m 更新用户表缓存 \x1B[0m", this._total, "条数据");
+      console.log("\x1B[42m 更新用户表缓存 \x1B[0m", this.total, "条数据");
     } else {
       console.log("用户表更新失败 >>", res.msg, res.error);
     }
@@ -50,9 +39,16 @@ class ModuleUser {
    * @param value 用户信息
    */
   add(id: number, value: TableUserInfo) {
-    this._table[id] = value;
-    this._total++;
+    this.table.set(id.toString(), value);
     console.log("\x1B[42m 新增用户 \x1B[0m", value);
+  }
+
+  /**
+   * 通过用户`id`获取对应用户信息
+   * @param id 用户`id`
+   */
+  getUserById(id: number | string) {
+    return this.table.get(id.toString());
   }
 
   /**
@@ -60,8 +56,7 @@ class ModuleUser {
    * @param id 
    */
   remove(id: number) {
-    // delete _table[id];
-    this._table[id] = undefined;
+    this.table.delete(id.toString());
   }
 
   /**
@@ -70,7 +65,10 @@ class ModuleUser {
    * @param value 用户信息
    */
   updateById(id: number, value: Partial<TableUserInfo>) {
-    utils.modifyData(this._table[id], value);
+    const user = this.getUserById(id);
+    if (user) {
+      utils.modifyData(user, value);
+    }
   }
 
   /**
@@ -81,9 +79,9 @@ class ModuleUser {
   matchName(item: BaseObj) {
     const createId = item["create_user_id"] as number;
     const updateId = item["update_user_id"] as number;
-    item["create_user_name"] = this.table[createId].name;
+    item["create_user_name"] = this.getUserById(createId)?.name || "";
     if (updateId) {
-      item["update_user_name"] = this.table[updateId].name || "";
+      item["update_user_name"] = this.getUserById(updateId)?.name || "";
     }
     return utils.objectToHump(item);
   }

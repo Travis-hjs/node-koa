@@ -15,17 +15,13 @@ function getIPAdress() {
 
 class ModuleConfig {
   constructor() {
-    this._ip = getIPAdress();
-    const devDomain = `http://${this._ip}`;
+    this.ip = getIPAdress();
+    const devDomain = `http://${this.ip}`;
     this.origins.push(devDomain);
   }
 
-  private _ip = "";
-
   /** 当前服务`ip`地址 */
-  get ip() {
-    return this._ip;
-  }
+  readonly ip: string;
 
   /** 服务器公网`ip` */
   readonly publicIp = "123.123.123";

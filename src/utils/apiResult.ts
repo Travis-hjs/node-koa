@@ -6,7 +6,7 @@ import { ApiResult } from "../types/base";
  * @param tip 提示内容
  * @param code 状态码
  */
-export function apiSuccess<T>(data: T, tip?: string, code = 200): ApiResult<T> {
+export function apiSuccess<T>(data: T, tip?: string, code = 1): ApiResult<T> {
   return {
     message: tip || "success",
     code: code,

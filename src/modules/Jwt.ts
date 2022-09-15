@@ -77,7 +77,7 @@ class ModuleJWT {
 
       if (!fail) {
         if (result.o && Date.now() - result.o < this.maxAge * 3600000) {
-          const info = tableUser.table[result.i];
+          const info = tableUser.getUserById(result.i);
           // console.log("userInfo >>", info);
           // console.log("token 解析 >>", result);
           if (info) {

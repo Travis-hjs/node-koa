@@ -1,7 +1,7 @@
 // 类型提示用（运行时不会引用）
 /// <reference path="./api.js" />
 
-const userInfo = fetchUserInfo();
+const userInfo = user.getInfo();
 
 function openUserPage() {
   location.href = "./api-login.html";
@@ -16,7 +16,7 @@ if (!userInfo) {
  * @param {File} file 文件
  */
 function getObjectURL(file) {
-  let url = null;
+  let url;
   if (window.createObjectURL) {
     url = window.createObjectURL(file);
   } else if (window.URL) {
@@ -31,7 +31,7 @@ function getObjectURL(file) {
  * 上传图片
  * @param {HTMLInputElement} el 
  */
-function uploadImg(el) {
+async function uploadImg(el) {
   /** 上传文件 */
   const file = el.files[0];
   /** 上传类型数组 */
@@ -46,15 +46,14 @@ function uploadImg(el) {
   formData.append("img", file);
   // console.log(formData);
 
-  api.upload(formData, res => {
+  const res = await api.upload(formData)
+
+  if (res.code === 1) {
     console.log("上传成功", res);
     el.parentNode.classList.add("hide");
     el.parentNode.parentNode.querySelector(".img-box").classList.remove("hide");
     el.parentNode.parentNode.querySelector(".img-box .image").src = res.result.image;
-  }, err => {
-    console.log("上传失败", err);
-
-  })
+  }
 
   el.value = null;
 }
@@ -89,53 +88,56 @@ function ouputList(item) {
  * 增加一条列表
  * @param {HTMLElement} el 
  */
-function addList(el) {
+async function addList(el) {
   /**
    * @type {HTMLInputElement}
    */
   const input = el.parentNode.querySelector(".input");
   const text = input.value.trim();
   if (!text) return utils.showAlert({ content: "输入的内容不能为空~" });
-  api.addListItem(text, res => {
+  const res = await api.addListItem(text)
+  if (res.code === 1) {
     console.log(res.result);
     ouputList({
       content: text,
       id: res.result.id
     })
-    input.value = null;
-  })
+    input.value = "";
+  }
 }
 
 /**
  * 删除当前列表
  * @param {HTMLElement} el 
  */
-function removeList(el) {
+async function removeList(el) {
   // return console.log(el.parentNode.dataset["id"]);
-  api.deleteListItem(el.parentNode.dataset["id"], res => {
+  const res = await api.deleteListItem(el.parentNode.dataset["id"])
+  if (res.code === 1) {
     console.log("删除成功", res);
     utils.showToast("删除成功");
     el.parentNode.parentNode.removeChild(el.parentNode);
-  })
+  }
 }
 
 /**
  * 修改当前列表内容
  * @param {HTMLElement} el 自身节点
  */
-function subChange(el) {
-  let id = el.parentNode.dataset["id"];
-  let text = el.parentNode.querySelector(".input").value.trim();
+async function subChange(el) {
+  const id = el.parentNode.dataset["id"];
+  const text = el.parentNode.querySelector(".input").value.trim();
   if (!text) return utils.showAlert({ content: "内容不能为空" });
   // console.log(text, id);
-  api.modifyListItem({
+  const res = await api.modifyListItem({
     content: text,
     id: id
-  }, res => {
+  })
+  if (res.code === 1) {
     console.log("修改成功", res);
     utils.showToast("修改成功");
     offInput(el);
-  })
+  }
 }
 
 /**
@@ -158,27 +160,31 @@ function offInput(el) {
   el.parentNode.querySelector(".input").setAttribute("readonly", "readonly");
 }
 
-api.getTodoList(res => {
-  console.log("获取列表", res);
-  if (res.result.list.length == 0) return;
-  res.result.list.forEach(item => {
-    ouputList(item);
-  })
+api.getTodoList().then(res => {
+  if (res.code === 1) {
+    console.log("获取列表", res);
+    if (res.result.list.length == 0) return;
+    res.result.list.forEach(item => {
+      ouputList(item);
+    })
+  }
 })
 
-function clickGetUserInfo() {
-  api.getUserInfo(res => {
+async function clickGetUserInfo() {
+  const res = await api.getUserInfo()
+  if (res.code === 1) {
     console.log("用户信息", res);
-  })
+  }
 }
 
-function clickLogout() {
-  api.logout(res => {
+async function clickLogout() {
+  const res = await api.logout()
+  if (res.code === 1) {
     console.log("退出登录", res);
-    removeUserInfo();
+    user.remove();
     openUserPage();
-  }, () => {
-    removeUserInfo();
-  })
+  } else {
+    user.remove();
+  }
 }
 
