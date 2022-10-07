@@ -25,7 +25,7 @@ export interface UserInfo extends UserData, Partial<MysqlOption> {
 }
 
 /** 用户表数据 */
-export interface TableUserInfo extends UserData, MysqlOption {
+export interface TableUserInfo extends UserData, Partial<MysqlOption> {
   /** 处理过的字段 */
   updateUserName?: string
 }

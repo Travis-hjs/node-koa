@@ -43,7 +43,7 @@ class ModuleConfig {
   readonly db = {
     host: "localhost",
     user: "root",
-    password: "root",
+    password: "DRsXT5ZJ6Oi55LPQ",
     /** 数据库名 */
     database: "node_ts",
     /** 链接上限次数 */

@@ -1,6 +1,6 @@
 import tableUser from "./TableUser";
 import { apiSuccess } from "../utils/apiResult";
-import { TheContext, ApiResult } from "../types/base";
+import { ApiResult, TheContext } from "../types/base";
 import { UserInfoToken, UserInfo } from "../types/user";
 
 class ModuleJWT {
@@ -42,7 +42,7 @@ class ModuleJWT {
     /** 是否失败的`token` */
     let fail = false;
     /** 检测结果信息 */
-    let info: ApiResult<{}>;
+    let info: ApiResult;
     /**
      * 设置失败信息
      * @param msg 

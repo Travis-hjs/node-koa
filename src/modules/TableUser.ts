@@ -1,5 +1,5 @@
 import utils from "../utils";
-import query from "../utils/mysql";
+import { query } from "../utils/mysql";
 import { TableUserInfo } from "../types/user";
 import { BaseObj } from "../types/base";
 

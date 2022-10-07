@@ -1,11 +1,11 @@
 import router from "./main";
-import query from "../utils/mysql";
+import { query } from "../utils/mysql";
 import jwt from "../modules/Jwt";
 import { handleToken } from "../middleware";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 import utils from "../utils";
 import tableUser from "../modules/TableUser";
-import { TheContext, ApiResult } from "../types/base";
+import { ApiResult, TheContext } from "../types/base";
 import { UserInfo } from "../types/user";
 
 // 注册
@@ -48,11 +48,15 @@ router.post("/register", async (ctx) => {
 
   // 再写入表格
   if (validAccount) {
+    const createTime = utils.formatDate();
     const mysqlInfo = utils.mysqlFormatParams({
       "account": params.account,
       "password": params.password,
       "name": params.name,
-      "create_time": utils.formatDate()
+      "create_time": createTime,
+      "type": 1,
+      "group_id": 1,
+      "create_user_id": 1
     })
 
     // const res = await query(`insert into user_table(${mysqlInfo.keys}) values(${mysqlInfo.values})`) 这样也可以，不过 mysqlInfo.values 每个值都必须用单引号括起来，下面的方式就不用
@@ -60,6 +64,17 @@ router.post("/register", async (ctx) => {
 
     if (res.state === 1) {
       bodyResult = apiSuccess(params, "注册成功");
+      const userId: number = res.results.insertId;
+      tableUser.add(userId, {
+        id: userId,
+        account: params.account,
+        password: params.password,
+        name: params.name,
+        type: 1,
+        groupId: 1,
+        createTime: createTime,
+        createUserId: 1
+      })
     } else {
       ctx.response.status = 500;
       bodyResult = apiFail(res.msg, 500, res.error);
@@ -92,7 +107,8 @@ router.post("/login", async (ctx) => {
   if (res.state === 1) {
     // 再判断账号是否可用
     if (res.results.length > 0) {
-      const data: UserInfo = res.results[0];
+      const data = utils.objectToHump(res.results[0]) as UserInfo;
+      // console.log("login UserInfo >>", data);
       // 最后判断密码是否正确
       if (data.password == params.password) {
         data.token = jwt.createToken({

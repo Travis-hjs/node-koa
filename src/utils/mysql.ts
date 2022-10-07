@@ -2,11 +2,11 @@ import * as mysql from "mysql";         // learn: https://www.npmjs.com/package/
 import config from "../modules/Config";
 
 /** `mysql`查询结果 */
-interface MsqlResult {
+interface MsqlResult<T = any> {
   /** `state === 1`时为成功 */
   state: number
   /** 结果数组 或 对象 */
-  results: any
+  results: T
   /** 状态 */
   fields: Array<mysql.FieldInfo>
   /** 错误信息 */
@@ -28,15 +28,15 @@ const pool = mysql.createPool({
  * @param command 增删改查语句 [mysql语句参考](https://blog.csdn.net/gymaisyl/article/details/84777139)
  * @param value 对应的值
  */
-export default function query(command: string, value?: Array<any>) {
+export function query<T = any>(command: string, value?: Array<any>) {
   const result: MsqlResult = {
     state: 0,
-    results: null,
-    fields: null,
-    error: null,
+    results: undefined,
+    fields: [],
+    error: undefined,
     msg: ""
   }
-  return new Promise<MsqlResult>((resolve, reject) => {
+  return new Promise<MsqlResult<T>>(resolve => {
     pool.getConnection((error: any, connection) => {
       if (error) {
         result.error = error;

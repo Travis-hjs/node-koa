@@ -1,5 +1,5 @@
 import router from "./main";
-import query from "../utils/mysql";
+import { query } from "../utils/mysql";
 import utils from "../utils";
 import { ApiResult, TheContext } from "../types/base";
 import { apiSuccess, apiFail } from "../utils/apiResult";
@@ -37,7 +37,7 @@ router.post("/addList", handleToken, async (ctx: TheContext) => {
   /** 接收参数 */
   const params = ctx.request.body;
   /** 返回结果 */
-  let bodyResult = null;
+  let bodyResult;
 
   if (!params.content) {
     return ctx.body = apiSuccess({}, "添加的列表内容不能为空！", 400);
@@ -73,7 +73,7 @@ router.post("/modifyList", handleToken, async (ctx) => {
   /** 接收参数 */
   const params = ctx.request.body;
   /** 返回结果 */
-  let bodyResult = null;
+  let bodyResult;
 
   if (!params.id) {
     return ctx.body = apiSuccess({}, "列表id不能为空", 400);
@@ -114,7 +114,7 @@ router.post("/deleteList", handleToken, async (ctx: TheContext) => {
   /** 接收参数 */
   const params = ctx.request.body;
   /** 返回结果 */
-  let bodyResult = null;
+  let bodyResult;
 
   // 从数据库中删除
   // const res = await query(`delete from todo_table where id='${params.id}' and user_id='${state.info.id}'`)

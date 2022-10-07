@@ -1,6 +1,11 @@
 import * as Koa from "koa";
 import { TableUserInfo } from "./user";
 
+/** 基础对象 */
+export interface BaseObj<T = string | number> {
+  [key: string]: T
+}
+
 /** 接口响应数据，返回给前端用 */
 export interface ApiResult<T = any> {
   /** 状态提示 */
@@ -16,20 +21,6 @@ export type JavaScriptTypes = "string" | "number" | "array" | "object" | "functi
 
 /** 运算符号 */
 export type NumberSymbols = "+" | "-" | "*" | "/";
-
-/** 基础对象 */
-export interface BaseObj<T = string | number> {
-  [key: string]: T
-}
-
-/** 自定义的请求上下文返回信息接口 */
-export interface TheContext extends Koa.ParameterizedContext {
-  /**
-   * 请求时自定义设置的一个`token`信息
-   * @description 具体看: src/module/Jwt.ts
-   */
-  theToken?: TableUserInfo
-}
 
 /** 上传文件类型 */
 export interface UploadFile {
@@ -62,4 +53,13 @@ export interface MysqlOption {
   updateTime: string
   /** 更新用户`id` */
   updateUserId: number
+}
+
+/** 自定义的请求上下文返回信息接口 */
+export interface TheContext extends Koa.ParameterizedContext {
+  /**
+   * 请求时自定义设置的一个`token`信息
+   * @description 具体看: src/module/Jwt.ts
+   */
+  theToken?: TableUserInfo
 }

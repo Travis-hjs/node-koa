@@ -1,6 +1,4 @@
-import {
-  JavaScriptTypes
-} from "../types/base";
+import { JavaScriptTypes } from "../types/base";
 
 class ModuleUtils {
 
@@ -36,7 +34,7 @@ class ModuleUtils {
     let length = array.length;
     let min = length - count;
     let index = 0;
-    let value: T = null;
+    let value: T;
     while (length-- > min) {
       index = Math.floor((length + 1) * Math.random());
       value = array[index];

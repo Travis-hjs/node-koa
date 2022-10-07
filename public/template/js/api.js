@@ -55,14 +55,17 @@ function request(method, url, data) {
         // console.log("请求失败", err);
         let error = {
           code: -1,
-          message: "接口报错",
+          message: err.response.message || "接口报错",
           result: err
         };
-        if (err.response.charAt(0) == "{") {
+        if (typeof err.response === "string" && err.response.charAt(0) == "{") {
           error = JSON.parse(err.response);
         }
         utils.showToast(error.message || "接口报错");
         resolve(error);
+        if (err.status === 401) {
+          user.remove();
+        }
       },
       timeout() {
         console.warn("XMLHttpRequest 请求超时 !!!");

@@ -2,8 +2,8 @@ import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
 import config from "../modules/Config";
-import { UploadFile } from "../types/base";
 import { apiSuccess } from "../utils/apiResult";
+import { UploadFile } from "../types/base";
 
 // 上传图片
 // learn: https://www.cnblogs.com/nicederen/p/10758000.html
