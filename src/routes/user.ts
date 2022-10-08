@@ -359,7 +359,7 @@ router.post("/deleteUser", handleToken, async (ctx: TheContext) => {
   const tokenInfo = ctx["theToken"];
 
   /** 接收参数 */
-  const params = ctx.request.body;
+  const params = ctx.request.body as UserInfo;
   // console.log(params);
 
   if (tokenInfo && tokenInfo.type != 0) {
