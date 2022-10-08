@@ -45,8 +45,7 @@ router.post("/addList", handleToken, async (ctx: TheContext) => {
 
   const mysqlInfo = utils.mysqlFormatParams({
     "content": params.content,
-    "user_id": tokenInfo.id,
-    "update_time": utils.formatDate(),
+    "create_user_id": tokenInfo.id,
     "create_time": utils.formatDate()
   })
 
@@ -68,8 +67,9 @@ router.post("/addList", handleToken, async (ctx: TheContext) => {
 })
 
 // 修改列表
-router.post("/modifyList", handleToken, async (ctx) => {
+router.post("/modifyList", handleToken, async (ctx: TheContext) => {
 
+  const tokenInfo = ctx["theToken"];
   /** 接收参数 */
   const params = ctx.request.body;
   /** 返回结果 */
@@ -85,7 +85,8 @@ router.post("/modifyList", handleToken, async (ctx) => {
 
   const setData = utils.mysqlSetParams({
     "content": params.content,
-    "update_time": utils.formatDate()
+    "update_time": utils.formatDate(),
+    "update_user_id": tokenInfo.id
   })
 
   // 修改列表

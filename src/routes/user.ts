@@ -48,15 +48,17 @@ router.post("/register", async (ctx) => {
 
   // 再写入表格
   if (validAccount) {
+    /** 暂无分组、用户类型、创建用户id；所以给以默认值，方便后面扩充使用 */
+    const defaultValue = 1;
     const createTime = utils.formatDate();
     const mysqlInfo = utils.mysqlFormatParams({
       "account": params.account,
       "password": params.password,
       "name": params.name,
       "create_time": createTime,
-      "type": 1,
-      "group_id": 1,
-      "create_user_id": 1
+      "type": defaultValue,
+      "group_id": defaultValue,
+      "create_user_id": defaultValue
     })
 
     // const res = await query(`insert into user_table(${mysqlInfo.keys}) values(${mysqlInfo.values})`) 这样也可以，不过 mysqlInfo.values 每个值都必须用单引号括起来，下面的方式就不用
@@ -70,10 +72,10 @@ router.post("/register", async (ctx) => {
         account: params.account,
         password: params.password,
         name: params.name,
-        type: 1,
-        groupId: 1,
+        type: defaultValue,
+        groupId: defaultValue,
+        createUserId: defaultValue,
         createTime: createTime,
-        createUserId: 1
       })
     } else {
       ctx.response.status = 500;
@@ -215,12 +217,15 @@ router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
 
   // 再写入表格
   if (validAccount) {
+    const createTime = utils.formatDate();
     const setData = utils.mysqlSetParams({
       "account": params.account,
       "password": params.password,
       "name": params.name,
       "type": params.type,
-      "group_id": params.groupId
+      "group_id": params.groupId,
+      "update_time": createTime,
+      "update_user_id": tokenInfo.id
     })
 
     // console.log("修改用户信息语句 >>", `update user_table ${setData} where id = '${params.id}'`);
@@ -234,6 +239,8 @@ router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
         name: params.name,
         type: params.type,
         groupId: params.groupId,
+        updateUserId: tokenInfo.id,
+        updateTime: createTime,
       })
       // 判断是否修改自己信息
       if (params.id == tokenInfo.id) {

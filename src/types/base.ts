@@ -50,9 +50,9 @@ export interface MysqlOption {
   /** 创建用户`id` */
   createUserId: number
   /** 更新时间 */
-  updateTime: string
+  updateTime?: string
   /** 更新用户`id` */
-  updateUserId: number
+  updateUserId?: number
 }
 
 /** 自定义的请求上下文返回信息接口 */
