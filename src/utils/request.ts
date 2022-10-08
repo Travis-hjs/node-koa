@@ -27,8 +27,8 @@ export default function request(options: http.RequestOptions, params: BaseObj = 
     options.path += `?${data}`;
   }
 
-  return new Promise<ServeRequestResult>((resolve, reject) => {
-    const clientRequest = http.request(options, res => {
+  return new Promise<ServeRequestResult>(function(resolve, reject) {
+    const clientRequest = http.request(options, function(res) {
       // console.log("http.get >>", res);
       // console.log(`http.request.statusCode: ${res.statusCode}`);
       // console.log(`http.request.headers: ${JSON.stringify(res.headers)}`);
@@ -45,7 +45,7 @@ export default function request(options: http.RequestOptions, params: BaseObj = 
         return resolve(info);
       }
 
-      let output: http.IncomingMessage | zlib.Gunzip
+      let output: http.IncomingMessage | zlib.Gunzip;
 
       if (res.headers["content-encoding"] == "gzip") {
         const gzip = zlib.createGunzip();
@@ -84,9 +84,9 @@ export default function request(options: http.RequestOptions, params: BaseObj = 
     })
 
     if (data && options.method != "GET") {
-      clientRequest.write(data)
+      clientRequest.write(data);
     }
 
-    clientRequest.end()
+    clientRequest.end();
   })
 }

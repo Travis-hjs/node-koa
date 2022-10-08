@@ -15,7 +15,7 @@ router.get("/getList", handleToken, async (ctx: TheContext) => {
   // console.log("getList >>", tokenInfo);
 
   // 这里要开始连表查询
-  const res = await query(`select * from todo_table where user_id = '${tokenInfo.id}'`)
+  const res = await query(`select * from todo_table where create_user_id = '${tokenInfo.id}'`)
 
   if (res.state === 1) {
     // console.log("/getList 查询", res.results);
