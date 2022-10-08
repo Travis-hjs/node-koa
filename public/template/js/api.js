@@ -53,13 +53,14 @@ function request(method, url, data) {
       },
       fail(err) {
         // console.log("请求失败", err);
+        const { response } = err;
         let error = {
           code: -1,
-          message: err.response.message || "接口报错",
+          message: (response && response.message) || "接口报错",
           result: err
         };
-        if (typeof err.response === "string" && err.response.charAt(0) == "{") {
-          error = JSON.parse(err.response);
+        if (typeof response === "string" && response.charAt(0) == "{") {
+          error = JSON.parse(response);
         }
         utils.showToast(error.message || "接口报错");
         resolve(error);
