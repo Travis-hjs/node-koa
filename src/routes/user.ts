@@ -146,7 +146,7 @@ router.get("/getUserInfo", handleToken, async (ctx: TheContext) => {
 
   // console.log("getUserInfo >>", tokenInfo);
 
-  const res = await query(`select * from user_table where account='${tokenInfo.account}'`)
+  const res = await query(`select * from user_table where account = '${tokenInfo.account}'`)
 
   // console.log("获取用户信息 >>", res);
 

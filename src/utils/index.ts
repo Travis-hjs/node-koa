@@ -243,7 +243,7 @@ class ModuleUtils {
     for (const key in params) {
       const empty = this.isEmpty(params[key]);
       if (!empty) {
-        const prefix = key.includes(".") ? ` and ${key} ` : " and `" + key + "` ";
+        const prefix = key.includes(".") ? ` and ${key}` : " and `" + key + "`";
         if (isVague) {
           result += `${prefix} like '%${params[key]}%'`;
         } else {
