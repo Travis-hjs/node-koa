@@ -1,4 +1,4 @@
-import { JavaScriptTypes } from "../types/base";
+import { BaseObj, JavaScriptTypes } from "../types/base";
 
 class ModuleUtils {
 
@@ -48,7 +48,7 @@ class ModuleUtils {
    * 检测类型
    * @param target 检测的目标
    */
-  checkType(target: any): JavaScriptTypes {
+  checkType(target: any) {
     const value: string = Object.prototype.toString.call(target);
     const result = value.match(/\[object (\S*)\]/)[1];
     return result.toLocaleLowerCase() as JavaScriptTypes;
@@ -148,9 +148,7 @@ class ModuleUtils {
    * @param value 
    */
   toHump(value: string) {
-    return value.replace(/\_(\w)/g, function (all, letter) {
-      return letter.toUpperCase();
-    });
+    return value.replace(/\_(\w)/g, (_, letter) => letter.toUpperCase());
   }
 
   /**
@@ -179,7 +177,7 @@ class ModuleUtils {
    * @param tatget 目标对象
    */
   objectToHump(tatget: any) {
-    const result: { [key: string]: any } = {};
+    const result: BaseObj<any> = {};
     for (const key in tatget) {
       result[this.toHump(key)] = tatget[key];
     }
@@ -192,7 +190,7 @@ class ModuleUtils {
    * @param isEmptyString 是否可以为空字符串
    * @description 数据库写入的时候用
    */
-  mysqlFormatParams(params: { [key: string]: any }, isEmptyString = false) {
+  mysqlFormatParams(params: BaseObj<any>, isEmptyString = false) {
     const keys = [];
     const values = [];
     const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
@@ -216,7 +214,7 @@ class ModuleUtils {
    * @param isEmptyString 是否可以为空字符串
    * @description 修改（更新用）
    */
-  mysqlSetParams(params: { [key: string]: any }, isEmptyString = false) {
+  mysqlSetParams(params: BaseObj<any>, isEmptyString = false) {
     const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
     const values = [];
     let result = "";
@@ -238,7 +236,7 @@ class ModuleUtils {
    * @param isVague 是否模糊查询
    * @description 查询用
    */
-  mysqlSearchParams(params: { [key: string]: any }, isVague = false) {
+  mysqlSearchParams(params: BaseObj<any>, isVague = false) {
     let result = "";
     for (const key in params) {
       const empty = this.isEmpty(params[key]);
