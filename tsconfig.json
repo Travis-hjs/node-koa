@@ -17,11 +17,10 @@
   "exclude": [
     "node_modules",
     "dist",
-    "pages",
+    "mysql",
     "public"
   ],
   "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts"
+    "src/**/*.ts"
   ]
 }

@@ -4,7 +4,7 @@
   "description": "node.js + koa2 + typescript 构建服务端应用",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && node dist/index.js",
+    "build": "rimraf dist/* && tsc && node dist/index.js",
     "dev": "ts-node-dev --respawn ./src/index.ts"
   },
   "repository": {
