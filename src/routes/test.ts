@@ -94,8 +94,8 @@ router.get("/getWeather", async (ctx, next) => {
 
   const res = await request({
     method: "GET",
-    hostname: "wthrcdn.etouch.cn",
-    path: "/weather_mini?city=" + encodeURIComponent(city)
+    hostname: "www.tianqiapi.com",
+    path: "/free/day?appid=56761788&appsecret=ti3hP8y9&city=" + encodeURIComponent(city)
   })
 
   // console.log("获取天气信息 >>", res);
