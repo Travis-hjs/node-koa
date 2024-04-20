@@ -16,8 +16,26 @@ export interface ApiResult<T = any> {
   result: T
 }
 
-/** JavaScript类型 */
-export type JavaScriptTypes = "string" | "number" | "array" | "object" | "function" | "null" | "undefined" | "regexp";
+/**
+ * `JavaScript`类型映射表
+ * - 这里只枚举一些常见类型，后续根据使用场景自行添加即可
+ */
+export interface JavaScriptType {
+  string: string
+  number: number
+  boolean: boolean
+  null: null
+  undefined: undefined
+  array: Array<any>
+  object: object
+  regexp: RegExp
+  function: Function
+  promise: Promise<any>
+  formdata: FormData
+}
+
+/** `JavaScript`类型 */
+export type JavaScriptTypes = keyof JavaScriptType;
 
 /** 运算符号 */
 export type NumberSymbols = "+" | "-" | "*" | "/";

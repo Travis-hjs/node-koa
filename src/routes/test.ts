@@ -101,7 +101,7 @@ router.get("/getWeather", async (ctx, next) => {
   // console.log("获取天气信息 >>", res);
 
   if (res.state === 1) {
-    if (utils.checkType(res.result) === "string") {
+    if (utils.isType(res.result, "string")) {
       res.result = JSON.parse(res.result);
     }
     ctx.body = apiSuccess(res.result)

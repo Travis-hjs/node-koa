@@ -9,18 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Hansen-hjs/node-koa.git"
+    "url": "git+https://github.com/Travis-hjs/node-koa.git"
   },
   "keywords": [
     "koa",
     "nodejs"
   ],
-  "author": "Hansen-hjs",
+  "author": "Travis-hjs",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Hansen-hjs/node-koa/issues"
+    "url": "https://github.com/Travis-hjs/node-koa/issues"
   },
-  "homepage": "https://github.com/Hansen-hjs/node-koa#readme",
+  "homepage": "https://github.com/Travis-hjs/node-koa#readme",
   "dependencies": {
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",
