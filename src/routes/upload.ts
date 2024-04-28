@@ -5,21 +5,26 @@ import config from "../modules/Config";
 import { apiSuccess } from "../utils/apiResult";
 import { UploadFile } from "../types/base";
 
-// 上传图片
+// 上传文件
 // learn: https://www.cnblogs.com/nicederen/p/10758000.html
 // learn: https://blog.csdn.net/qq_24134853/article/details/81745104
-router.post("/uploadImg", async (ctx, next) => {
+// [图片类型参考](https://developer.mozilla.org/zh-CN/docs/Web/Media/Formats/Image_types#webp_image)
+router.post("/uploadFile", async (ctx, next) => {
 
-  const file: UploadFile = ctx.request.files[config.uploadImgName] as any;
-
-  let fileName: string = ctx.request.body.name || `img_${Date.now()}`;
-
-  fileName = `${fileName}.${file.name.split(".")[1]}`;
+  const file: UploadFile = ctx.request.files[config.uploadName] as any;
+  // console.log("file >>", file);
+  const fileName = file.name;
+  // console.log("fileName >>", fileName);
+  const isImage = file.type.includes("image");
+  /** 目录名 */
+  const folder = isImage ? "/images/" : "/assets/";
+  /** 上传的资源目录名 */
+  const folderPath = config.uploadPath + folder;
 
   // 创建可读流
   const render = fs.createReadStream(file.path);
-  const filePath = path.join(config.uploadPath, fileName);
-  const fileDir = path.join(config.uploadPath);
+  const filePath = path.join(folderPath, fileName);
+  const fileDir = path.join(folderPath);
 
   if (!fs.existsSync(fileDir)) {
     fs.mkdirSync(fileDir);
@@ -40,7 +45,7 @@ router.post("/uploadImg", async (ctx, next) => {
     return new Promise<{ image: string }>(function (resolve) {
       const delay = Math.floor(Math.random() * 5) * 100 + 500;
       setTimeout(() => {
-        result.image = `http://${config.ip}:${config.port}/images/${fileName}`;
+        result.image = `http://${config.ip}:${config.port}${folder}${fileName}`;
         resolve(result);
       }, delay);
     });

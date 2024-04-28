@@ -34,12 +34,11 @@ function getObjectURL(file) {
 async function uploadImg(el) {
   /** 上传文件 */
   const file = el.files[0];
-  /** 上传类型数组 */
-  const types = ["image/jpg", "image/png", "image/jpeg", "image/gif"];
+  if (!file) return;
   // 判断文件类型
-  if (types.indexOf(file.type) < 0) return utils.showAlert({ content: "文件格式只支持：jpg 和 png" });
+  if (!file.type.includes("image")) return utils.dialog.show({ title: "操作提示", content: "文件格式只支持图片" });
   // 判断大小
-  if (file.size > 2 * 1024 * 1024) return utils.showAlert({ content: "上传的文件不能大于2M" });
+  if (file.size > 5 * 1024 * 1024) return utils.dialog.show({ title: "操作提示", content: "上传的文件不能大于5M" });
 
   const formData = new FormData();
   // formData.append("name", "hjs-img");
