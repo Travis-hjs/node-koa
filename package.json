@@ -1,11 +1,12 @@
 {
   "name": "node-koa-service",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "node.js + koa2 + typescript 构建服务端应用",
   "main": "index.js",
   "scripts": {
     "build": "rimraf dist/* && tsc && node dist/index.js",
-    "dev": "ts-node-dev --respawn ./src/index.ts"
+    "dev": "ts-node-dev --respawn ./src/index.ts",
+    "build-sql": "ts-node-dev --respawn ./mysql/creator.ts"
   },
   "repository": {
     "type": "git",
