@@ -299,6 +299,25 @@ class ModuleUtils {
     }
     return val;
   }
+
+  /**
+   * `JSON`转字符串传参
+   * @param params `JSON`对象
+   * @example 
+   * ```js
+   * const info = { name: "hjs", id: 123 };
+   * const val = jsonToFormData(info);
+   * console.log(val); // "name=hjs&id=123"
+   * ```
+   */
+  jsonToPath(params: { [key: string]: number | string | boolean }) {
+    let result = "";
+    for (const key in params) {
+      result += `&${key}=${params[key]}`;
+    }
+    return result.slice(1);
+  }
+
 }
 
 /** 工具模块 */
