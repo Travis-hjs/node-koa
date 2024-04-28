@@ -28,7 +28,7 @@ router.get("/", (ctx, next) => {
   // console.log("根目录");
 
   // 路由重定向
-  ctx.redirect("/home");
+  ctx.redirect(config.getRoutePath("/home"));
 
   // 302 重定向到其他网站
   // ctx.status = 302;
@@ -40,13 +40,16 @@ router.get("/home", (ctx, next) => {
 
   ctx.response.type = "text/html; charset=utf-8";
 
+  const path = `http://${config.ip}:${config.port}`;
+
   const data = {
     pageTitle: "serve-root",
+    path: path,
     jsLabel: `<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>`,
     content: `
       <div style="font-size: 24px; margin-bottom: 8px; font-weight: bold;">当前环境信息：</div>
       <p style="font-size: 15px; margin-bottom: 10px; font-weight: 500;">${userAgent}</p>
-      <button class="button button_purple"><a href="./api-index.html">open test</></button>
+      <button class="button button_purple"><a href="${path}/api-index.html">open test</></button>
     `
   }
 
@@ -85,17 +88,34 @@ router.post("/postData", (ctx, next) => {
 // 请求第三方接口并把数据返回到前端
 router.get("/getWeather", async (ctx, next) => {
   // console.log("ctx.query >>", ctx.query);
-  const city = ctx.query.city as string;
+  const cityCode = ctx.query.cityCode as string;
 
-  if (!city) {
-    ctx.body = apiSuccess({}, "缺少传参字段 city", 400);
+  if (!cityCode) {
+    ctx.body = apiSuccess({}, "缺少传参字段 cityCode", 400);
     return;
   }
 
+  /**
+   * 自行去申请`appKey`才能使用
+   * - [高德地图应用入口](https://console.amap.com/dev/key/app)
+   * - [天气预报接口文档](https://lbs.amap.com/api/webservice/guide/api/weatherinfo/)
+   */
+  const appKey = "";
+
+  if (!appKey) {
+    ctx.body = apiFail("服务端缺少 appKey 请检查再重试", 500, {})
+    return;
+  }
+  
+  const path = utils.jsonToPath({
+    key: appKey,
+    city: cityCode
+  })
+
   const res = await request({
     method: "GET",
-    hostname: "www.tianqiapi.com",
-    path: "/free/day?appid=56761788&appsecret=ti3hP8y9&city=" + encodeURIComponent(city)
+    hostname: "restapi.amap.com",
+    path: "/v3/weather/weatherInfo?" + path
   })
 
   // console.log("获取天气信息 >>", res);

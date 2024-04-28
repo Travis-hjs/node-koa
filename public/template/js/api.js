@@ -37,7 +37,7 @@ function request(method, url, data) {
   const userInfo = user.getInfo();
   return new Promise(function(resolve) {
     ajax({
-      url: BASE_URL + url,
+      url: BASE_URL + "/api" + url, // 这里的`"api"`和后端代码中的`config.apiPrefix`一致
       method: method,
       data: data,
       headers: {
@@ -102,10 +102,10 @@ class ModuleApi {
 
   /**
    * 获取天气信息
-   * @param {string} city 城市名
+   * @param {string} cityCode 城市`adcode`，[城市编码表](https://lbs.amap.com/api/webservice/download)
    */
-  getWeather(city) {
-    return request("GET", "/getWeather", { city })
+  getWeather(cityCode) {
+    return request("GET", "/getWeather", { cityCode })
   }
 
   /**
