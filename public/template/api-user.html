@@ -27,17 +27,17 @@
     .list .list_item{ height: 60px; margin-bottom: 10px; padding: 10px; }
     .list .list_item .center{ margin: 0 10px; }
 
-    .hide{ display: none; }
+    .hide { display: none; }
   </style>
 </head>
 
 <body>
   <div class="page">
     <div class="item">
-      <button class="button button_blue" onclick="clickGetUserInfo()">获取用户信息</button>
+      <button class="the-btn blue" onclick="clickGetUserInfo()">获取用户信息</button>
     </div>
     <div class="item">
-      <button class="button button_blue" onclick="clickLogout()">退出登录</button>
+      <button class="the-btn blue" onclick="clickLogout()">退出登录</button>
     </div>
     <div class="card upload-img">
       <div class="img-box hide">
@@ -52,15 +52,15 @@
     <div class="todo">
       <h2>增删改查</h2>
       <input class="input" type="text" placeholder="输入增加内容">
-      <button class="button button_blue" onclick="addList(this)">增加一条</button>
+      <button class="the-btn blue" onclick="addList(this)">增加一条</button>
     </div>
     <div class="list">
       <script type="text/template">
         <div class="card flex fvertical list_item" data-id="{{id}}">
           <input class="input f1" type="text" readonly="readonly" value="{{content}}">
-          <button class="button button_green center" onclick="canInput(this)">修改</button>
-          <button class="button button_blue center hide" onclick="subChange(this)">确定修改</button>
-          <button class="button button_red" onclick="removeList(this)">删除</button>
+          <button class="the-btn green center" onclick="canInput(this)">修改</button>
+          <button class="the-btn blue center hide" onclick="subChange(this)">确定修改</button>
+          <button class="the-btn red" onclick="removeList(this)">删除</button>
         </div>
       </script>
     </div>

@@ -74,6 +74,7 @@ const listEl = utils.find(".list");
 const template = listEl.children[0].innerHTML;
 // 清空列表
 listEl.innerHTML = null;
+listEl.classList.add("hide");
 
 /**
  * 输出列表item
@@ -82,6 +83,7 @@ listEl.innerHTML = null;
 function outputList(item) {
   const itemHTML = template.replace("{{id}}", item.id).replace("{{content}}", item.content);
   listEl.insertAdjacentHTML("beforeend", itemHTML);
+  listEl.classList.remove("hide");
 }
 
 /**
@@ -110,13 +112,20 @@ async function addList(el) {
  * 删除当前列表
  * @param {HTMLElement} el 
  */
-async function removeList(el) {
+function removeList(el) {
   // return console.log(el.parentNode.dataset["id"]);
-  const res = await api.deleteListItem(el.parentNode.dataset["id"])
-  if (res.code === 1) {
-    utils.message.success("删除成功");
-    el.parentNode.parentNode.removeChild(el.parentNode);
-  }
+  utils.dialog.show({
+    title: "确定删除？",
+    content: "删除后不可恢复",
+    async confirm() {
+      const res = await api.deleteListItem(el.parentNode.dataset["id"])
+      if (res.code === 1) {
+        utils.message.success("删除成功");
+        el.parentNode.parentNode.removeChild(el.parentNode);
+      }
+    },
+    cancelText: "取消"
+  });
 }
 
 /**
@@ -143,7 +152,7 @@ async function subChange(el) {
  * @param {HTMLElement} el 自身节点
  */
 function canInput(el) {
-  el.parentNode.querySelector(".button_blue").classList.remove("hide");
+  el.parentNode.querySelector(".the-btn.blue").classList.remove("hide");
   el.classList.add("hide");
   el.parentNode.querySelector(".input").removeAttribute("readonly");
 }
@@ -153,8 +162,8 @@ function canInput(el) {
  * @param {HTMLElement} el 自身节点
  */
 function offInput(el) {
-  el.parentNode.querySelector(".button_blue").classList.add("hide");
-  el.parentNode.querySelector(".button_green").classList.remove("hide");
+  el.parentNode.querySelector(".the-btn.blue").classList.add("hide");
+  el.parentNode.querySelector(".the-btn.green").classList.remove("hide");
   el.parentNode.querySelector(".input").setAttribute("readonly", "readonly");
 }
 

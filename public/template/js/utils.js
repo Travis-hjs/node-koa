@@ -285,6 +285,7 @@ function useDialog() {
     --black: #333;
     --text-color: #555;
     --confirm-bg: #2ec1cb;
+    --border-radius: 2px;
     position: fixed;
     top: 0;
     left: 0;
@@ -305,47 +306,31 @@ function useDialog() {
   .${className.popup} {
     width: 74%;
     max-width: 375px;
-    padding: 16px;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
+    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12);
     background-color: #fff;
     transition: var(--transition);
     animation: ${className.show} var(--time);
   }
   .${className.title} {
     font-size: 18px;
+    padding: 12px 15px;
+    border-bottom: solid 1px #eee;
+    font-weight: normal;
     color: var(--black);
-    text-align: center;
+    text-align: left;
   }
   .${className.content} {
-    padding: 16px 0;
+    padding: 16px 15px;
     font-size: 15px;
     color: var(--text-color);
-    text-align: center;
+    text-align: left;
   }
   .${className.footer} {
     width: 100%;
-    padding-top: 8px;
-    display: flex;
-    justify-content: center;
-  }
-  .${className.footer} button {
-    font-size: 15px;
-    height: 40px;
-    border-radius: 20px;
-    padding: 0 20px;
-    background-color: #f8f8f8;
-    color: var(--black);
-    line-height: 1;
-    letter-spacing: 1px;
-    margin: auto; border: none; outline: none;
-    transition: .2s all;
-  }
-  .${className.footer} button:active {
-    opacity: 0.8;
-  }
-  .${className.footer} .${className.confirm} {
-    color: #fff;
-    background-color: var(--confirm-bg);
+    text-align: right;
+    border-top: solid 1px #eee;
+    padding: 12px 15px;
   }
   @keyframes ${className.fade} {
     0% { opacity: 0; }
@@ -403,14 +388,14 @@ function useDialog() {
     // 设置完之后还原坐标位置
     clickSize.x = "0vw";
     clickSize.y = "0vh";
-    const cancelBtn = option.cancelText ? `<button>${option.cancelText}</button>` : "";
+    const cancelBtn = option.cancelText ? `<button class="the-btn">${option.cancelText}</button>` : "";
     el.innerHTML = `
     <div class="${className.popup}">
       <h2 class="${className.title}">${ typeof option.title === "string" ? option.title : "提示"}</h2>
       <div class="${className.content}">${option.content}</div>
       <div class="${className.footer}">
         ${cancelBtn}
-        <button class="${className.confirm}">${option.confirmText || "确认"}</button>
+        <button class="${className.confirm} the-btn blue">${option.confirmText || "确认"}</button>
       </div>
     </div>
     `;
