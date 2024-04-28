@@ -47,7 +47,7 @@ function request(method, url, data) {
       success(res) {
         // console.log("请求成功", res);
         if (res.code !== 1) {
-          utils.showToast(res.message || "code 不为 1");
+          utils.message.error(res.message || "code 不为 1");
         }
         resolve(res);
       },
@@ -62,7 +62,7 @@ function request(method, url, data) {
         if (typeof response === "string" && response.charAt(0) == "{") {
           error = JSON.parse(response);
         }
-        utils.showToast(error.message || "接口报错");
+        utils.message.error(error.message || "接口报错");
         resolve(error);
         if (err.status === 401) {
           user.remove();
@@ -74,7 +74,7 @@ function request(method, url, data) {
           code: -1,
           message: "请求超时"
         }
-        utils.showToast("请求超时");
+        utils.message.warning("请求超时");
         resolve(error);
       }
     });
@@ -137,11 +137,11 @@ class ModuleApi {
   }
 
   /**
-   * 上传图片
-   * @param {FormData} formdata 
+   * 上传文件
+   * @param {FormData} formData 
    */
-  upload(formdata) {
-    return request("POST", "/uploadImg", formdata);
+  upload(formData) {
+    return request("POST", "/uploadFile", formData);
   }
 
   /**

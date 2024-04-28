@@ -43,7 +43,7 @@ async function uploadImg(el) {
 
   const formData = new FormData();
   // formData.append("name", "hjs-img");
-  formData.append("img", file);
+  formData.append("file", file);
   // console.log(formData);
 
   const res = await api.upload(formData)
@@ -79,7 +79,7 @@ listEl.innerHTML = null;
  * 输出列表item
  * @param {{ content: string, id: number }} item 
  */
-function ouputList(item) {
+function outputList(item) {
   const itemHTML = template.replace("{{id}}", item.id).replace("{{content}}", item.content);
   listEl.insertAdjacentHTML("beforeend", itemHTML);
 }
@@ -98,7 +98,7 @@ async function addList(el) {
   const res = await api.addListItem(text)
   if (res.code === 1) {
     console.log(res.result);
-    ouputList({
+    outputList({
       content: text,
       id: res.result.id
     })
@@ -114,8 +114,7 @@ async function removeList(el) {
   // return console.log(el.parentNode.dataset["id"]);
   const res = await api.deleteListItem(el.parentNode.dataset["id"])
   if (res.code === 1) {
-    console.log("删除成功", res);
-    utils.showToast("删除成功");
+    utils.message.success("删除成功");
     el.parentNode.parentNode.removeChild(el.parentNode);
   }
 }
@@ -134,8 +133,7 @@ async function subChange(el) {
     id: id
   })
   if (res.code === 1) {
-    console.log("修改成功", res);
-    utils.showToast("修改成功");
+    utils.message.success("修改成功");
     offInput(el);
   }
 }
@@ -165,7 +163,7 @@ api.getTodoList().then(res => {
     console.log("获取列表", res);
     if (res.result.list.length == 0) return;
     res.result.list.forEach(item => {
-      ouputList(item);
+      outputList(item);
     })
   }
 })

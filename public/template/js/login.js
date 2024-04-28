@@ -47,7 +47,7 @@ async function clickRegister() {
     loginAccount.value = registerAccount.value;
     loginPassword.value = registerPassword.value;
     resetRegister();
-    utils.showToast("注册成功");
+    utils.message.success("注册成功");
   }
 }
 

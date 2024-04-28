@@ -5,7 +5,7 @@ async function clickGet() {
   const res = await api.testGet(10)
   if (res.code === 1) {
     console.log("get 成功", res);
-    utils.showToast("get 成功");
+    utils.message.success("get 成功");
   }
 }
 
@@ -16,7 +16,7 @@ async function clickPost() {
   })
   if (res.code === 1) {
     console.log("post 成功", res);
-    utils.showToast("post 成功");
+    utils.message.success("post 成功");
   }
 }
 
