@@ -49,7 +49,7 @@ router.get("/home", (ctx, next) => {
     content: `
       <div style="font-size: 24px; margin-bottom: 8px; font-weight: bold;">当前环境信息：</div>
       <p style="font-size: 15px; margin-bottom: 10px; font-weight: 500;">${userAgent}</p>
-      <button class="the-btn purple"><a href="${path}/api-index.html">open test</></button>
+      <button class="the-btn purple"><a href="${path}/api-index.html">open test</a></button>
     `
   }
 
