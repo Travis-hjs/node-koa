@@ -83,7 +83,7 @@ function request(method, url, data = {}, option = {}) {
   const controller = new AbortController();
   let timer;
   return new Promise(function(resolve, reject) {
-    fetch(`${BASE_URL}/api${url}${query}`, {
+    fetch(`${BASE_URL}/api${url}`, {
       method,
       body,
       headers,
