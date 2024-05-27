@@ -103,6 +103,7 @@ router.get("/getWeather", async (ctx, next) => {
   const appKey = "";
 
   if (!appKey) {
+    ctx.status = 500;
     ctx.body = apiFail("服务端缺少 appKey 请检查再重试", 500, {})
     return;
   }
@@ -126,6 +127,7 @@ router.get("/getWeather", async (ctx, next) => {
     }
     ctx.body = apiSuccess(res.result)
   } else {
+    ctx.status = 500;
     ctx.body = apiFail(res.msg, 500, res.result)
   }
 
