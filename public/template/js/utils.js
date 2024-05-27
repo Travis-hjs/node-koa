@@ -503,7 +503,7 @@ export function setGlobal(target) {
   for (const key in target) {
     Object.defineProperty(window, key, {
       value: target[key],
-      writable: true
+      writable: false
     })
   }
 }
