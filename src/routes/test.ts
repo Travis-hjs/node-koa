@@ -76,10 +76,10 @@ router.post("/postData", (ctx, next) => {
   /** 接收参数 */
   const params: BaseObj = ctx.request.body || ctx.params;
 
-  console.log("/postData", params);
+  // console.log("/postData", params);
 
   const result = {
-    data: "请求成功"
+    data: params
   }
 
   ctx.body = apiSuccess(result, "post success")
