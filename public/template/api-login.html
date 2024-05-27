@@ -41,14 +41,14 @@
     <div class="title">登录</div>
     <div class="input-item">
       <div class="input-tip">账号：</div>
-      <input class="input login_account" type="text" placeholder="请输入账号">
+      <input class="input login_account" type="text" placeholder="请输入账号摁回车键登录">
     </div>
     <div class="input-item">
       <div class="input-tip">密码：</div>
-      <input class="input login_password" type="password" placeholder="请输入密码">
+      <input class="input login_password" type="password" placeholder="请输入密码摁回车键登录" onkeydown="">
     </div>
     <div class="sub-box">
-      <button class="the-btn blue" onclick="clickLogin()">登录</button>
+      <button class="the-btn blue" onclick="onLogin()">登录</button>
     </div>
     <div class="title">注册</div>
     <div class="input-item">
@@ -64,8 +64,8 @@
       <input class="input register_name" type="text" placeholder="请输入用户名">
     </div>
     <div class="sub-box">
-      <button class="the-btn blue" onclick="clickRegister()">注册</button>
-      <button class="the-btn green" onclick="resetRegister()">重置</button>
+      <button class="the-btn blue" onclick="onRegister()">注册</button>
+      <button class="the-btn green" onclick="onReset()">重置</button>
       <span style="width: 50%; display: inline-block;"></span>
       <button class="the-btn purple">
         <a href="./api-index.html">跳转测试页</a>
@@ -73,9 +73,7 @@
     </div>
   </div>
 
-  <script src="./js/utils.js"></script>
-  <script src="./js/api.js"></script>
-  <script src="./js/login.js"></script>
+  <script type="module" src="./js/login.js"></script>
 </body>
 
 </html>

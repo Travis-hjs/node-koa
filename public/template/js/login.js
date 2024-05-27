@@ -1,29 +1,28 @@
-// 类型提示用（运行时不会引用）
-/// <reference path="./api.js" />
+import { find, message, setGlobal } from "./utils.js";
+import { api, user } from "./api.js";
 
 /** 
  * @type {HTMLInputElement} 
 */
-const loginAccount = utils.find(".login_account");
+const loginAccount = find(".login_account");
 /** 
  * @type {HTMLInputElement} 
 */
-const loginPassword = utils.find(".login_password");
+const loginPassword = find(".login_password");
 /** 
  * @type {HTMLInputElement} 
 */
-const registerAccount = utils.find(".register_account");
+const registerAccount = find(".register_account");
 /** 
  * @type {HTMLInputElement} 
 */
-const registerPassword = utils.find(".register_password");
+const registerPassword = find(".register_password");
 /** 
  * @type {HTMLInputElement} 
 */
-const registerName = utils.find(".register_name");
+const registerName = find(".register_name");
 
-/** 点击登录 */
-async function clickLogin() {
+async function onLogin() {
   const res = await api.login({
     account: loginAccount.value,
     password: loginPassword.value
@@ -35,8 +34,7 @@ async function clickLogin() {
   }
 }
 
-/** 点击注册 */
-async function clickRegister() {
+async function onRegister() {
   const res = await api.register({
     account: registerAccount.value,
     password: registerPassword.value,
@@ -46,14 +44,33 @@ async function clickRegister() {
     console.log("register", res);
     loginAccount.value = registerAccount.value;
     loginPassword.value = registerPassword.value;
-    resetRegister();
-    utils.message.success("注册成功");
+    onReset();
+    message.success("注册成功");
   }
 }
 
 /** 重置注册信息 */
-function resetRegister() {
+function onReset() {
   registerAccount.value = "";
   registerPassword.value = "";
   registerName.value = "";
 }
+
+/**
+ * 回车事件
+ * @param {KeyboardEvent} event 
+ */
+function onEnter(event) {
+  if (event.key === "Enter" || event.keyCode === 13) {
+    onLogin();
+  }
+}
+
+loginPassword.addEventListener("keydown", onEnter);
+loginAccount.addEventListener("keydown", onEnter);
+
+setGlobal({
+  onLogin,
+  onRegister,
+  onReset,
+});

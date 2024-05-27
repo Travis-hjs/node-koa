@@ -1,12 +1,12 @@
 // 类型提示用（运行时不会引用）
 /// <reference path="./index.d.ts" />
-/// <reference path="./utils.js" />
+import { checkType, message } from "./utils.js";
 
 /** 本地的IP地址+端口；端口跟后台设置的一致 */
 const BASE_URL = location.host ? location.origin : "http://192.168.0.24:1995";
 
 /** 用户缓存模块 */
-const user = {
+export const user = {
   /**
    * 缓存用户数据
    * @param {object} data 
@@ -27,58 +27,87 @@ const user = {
 }
 
 /**
- * 基础请求
- * @param {"GET"|"POST"} method 
- * @param {string} url 请求接口
- * @param {string | object | FormData} data 请求数据 
+ * 基于`fetch`请求 [MDN文档](https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API)
+ * @param {"GET"|"POST"|"PUT"|"DELETE"} method 请求方法
+ * @param {string} url 请求路径
+ * @param {object|FormData|string=} data 传参对象，json、formdata、普通表单字符串
+ * @param {RequestInit & { timeout: number }} option 其他配置
  * @returns {Promise<ApiResult>}
  */
-function request(method, url, data) {
+function request(method, url, data = {}, option = {}) {
   const userInfo = user.getInfo();
-  return new Promise(function(resolve) {
-    ajax({
-      url: BASE_URL + "/api" + url, // 这里的`"api"`和后端代码中的`config.apiPrefix`一致
-      method: method,
-      data: data,
-      headers: {
-        "authorization": userInfo ? userInfo.token : "",
-      },
-      overtime: 5000,
-      success(res) {
-        // console.log("请求成功", res);
-        if (res.code !== 1) {
-          utils.message.error(res.message || "code 不为 1");
-        }
-        resolve(res);
-      },
-      fail(err) {
-        // console.log("请求失败", err);
-        const { response } = err;
-        let error = {
-          code: -1,
-          message: (response && response.message) || "接口报错",
-          result: err
-        };
-        if (typeof response === "string" && response.charAt(0) == "{") {
-          error = JSON.parse(response);
-        }
-        utils.message.error(error.message || "接口报错");
-        resolve(error);
-        if (err.status === 401) {
-          user.remove();
-        }
-      },
-      timeout() {
-        console.warn("XMLHttpRequest 请求超时 !!!");
-        const error = {
-          code: -1,
-          message: "请求超时"
-        }
-        utils.message.warning("请求超时");
-        resolve(error);
+  /** 非`GET`请求传参 */
+  let body = undefined;
+  /** `GET`请求传参 */
+  let query = "";
+  /** 默认请求头 */
+  const headers = {
+    "authorization": userInfo ? userInfo.token : "",
+  };
+  /** 超时毫秒 */
+  const timeout = option.timeout || 8000;
+  /** 传参数据类型 */
+  const dataType = checkType(data);
+  // 传参处理
+  if (method === "GET") {
+    // 解析对象传参
+    if (dataType === "object") {
+      for (const key in data) {
+        query += "&" + key + "=" + data[key];
       }
+    } else {
+      console.warn("fetch 传参处理 GET 传参有误，需要的请求参数应为 object 类型");
+    }
+    if (query) {
+      query = "?" + query.slice(1);
+      url += query;
+    }
+  } else {
+    body = dataType === "object" ? JSON.stringify(data) : data;
+  }
+  // 设置对应的传参请求头，GET 方法不需要
+  if (method !== "GET") {
+    switch (dataType) {
+      case "object":
+        headers["Content-Type"] = "application/json";
+        break;
+
+      case "string":
+        headers["Content-Type"] = "application/x-www-form-urlencoded"; // 表单请求，`id=1&type=2` 非`new FormData()`
+        break;
+
+      default:
+        break;
+    }
+  }
+  const controller = new AbortController();
+  let timer;
+  return new Promise(function(resolve, reject) {
+    fetch(`${BASE_URL}/api${url}${query}`, {
+      method,
+      body,
+      headers,
+      signal: controller.signal,
+      ...option,
+    }).then(response => {
+      // 把响应的信息转为`json`
+      return response.json();
+    }).then(res => {
+      clearTimeout(timer);
+      resolve(res);
+      if (res.code !== 1) {
+        message.error(res.message);
+      }
+    }).catch(error => {
+      clearTimeout(timer);
+      reject(error);
     });
-  })
+    timer = setTimeout(function() {
+      reject("fetch is timeout");
+      controller.abort();
+      message.warning("网络响应超时~");
+    }, timeout);
+  });
 }
 
 class ModuleApi {
@@ -188,8 +217,7 @@ class ModuleApi {
 }
 
 /** api模块 */
-const api = new ModuleApi();
-
+export const api = new ModuleApi();
 
 
 

@@ -1,5 +1,5 @@
-// 类型提示用（运行时不会引用）
-/// <reference path="./api.js" />
+import { api, user } from "./api.js";
+import { find, message, dialog, setGlobal } from "./utils.js";
 
 const userInfo = user.getInfo();
 
@@ -12,22 +12,6 @@ if (!userInfo) {
 }
 
 /**
- * 获取二进制路径（需要打开服务器调试）
- * @param {File} file 文件
- */
-function getObjectURL(file) {
-  let url;
-  if (window.createObjectURL) {
-    url = window.createObjectURL(file);
-  } else if (window.URL) {
-    url = window.URL.createObjectURL(file);
-  } else if (window.webkitURL) {
-    url = window.webkitURL.createObjectURL(file);
-  }
-  return url;
-}
-
-/**
  * 上传图片
  * @param {HTMLInputElement} el 
  */
@@ -36,9 +20,9 @@ async function uploadImg(el) {
   const file = el.files[0];
   if (!file) return;
   // 判断文件类型
-  if (!file.type.includes("image")) return utils.dialog.show({ title: "操作提示", content: "文件格式只支持图片" });
+  if (!file.type.includes("image")) return dialog.show({ title: "操作提示", content: "文件格式只支持图片" });
   // 判断大小
-  if (file.size > 5 * 1024 * 1024) return utils.dialog.show({ title: "操作提示", content: "上传的文件不能大于5M" });
+  if (file.size > 5 * 1024 * 1024) return dialog.show({ title: "操作提示", content: "上传的文件不能大于5M" });
 
   const formData = new FormData();
   // formData.append("name", "hjs-img");
@@ -68,11 +52,13 @@ function removeImg(el) {
 }
 
 /** 列表节点 */
-const listEl = utils.find(".list");
-/** 模板内容 */
-const template = listEl.children[0].innerHTML;
-// 清空列表
-listEl.innerHTML = null;
+const listEl = find(".list");
+/**
+ * 模板内容 
+ * @type {HTMLTemplateElement}
+ */
+const template = find("#list-item");
+
 listEl.classList.add("hide");
 
 /**
@@ -80,7 +66,7 @@ listEl.classList.add("hide");
  * @param {{ content: string, id: number }} item 
  */
 function outputList(item) {
-  const itemHTML = template.replace("{{id}}", item.id).replace("{{content}}", item.content);
+  const itemHTML = template.innerHTML.replace("{{id}}", item.id).replace("{{content}}", item.content);
   listEl.insertAdjacentHTML("beforeend", itemHTML);
   listEl.classList.remove("hide");
 }
@@ -89,13 +75,13 @@ function outputList(item) {
  * 增加一条列表
  * @param {HTMLElement} el 
  */
-async function addList(el) {
+async function onAdd(el) {
   /**
    * @type {HTMLInputElement}
    */
   const input = el.parentNode.querySelector(".input");
   const text = input.value.trim();
-  if (!text) return utils.showAlert({ content: "输入的内容不能为空~" });
+  if (!text) return message.error("输入的内容不能为空~");
   const res = await api.addListItem(text)
   if (res.code === 1) {
     console.log(res.result);
@@ -111,15 +97,15 @@ async function addList(el) {
  * 删除当前列表
  * @param {HTMLElement} el 
  */
-function removeList(el) {
+function onDelete(el) {
   // return console.log(el.parentNode.dataset["id"]);
-  utils.dialog.show({
+  dialog.show({
     title: "确定删除？",
     content: "删除后不可恢复",
     async confirm() {
       const res = await api.deleteListItem(el.parentNode.dataset["id"])
       if (res.code === 1) {
-        utils.message.success("删除成功");
+        message.success("删除成功");
         el.parentNode.parentNode.removeChild(el.parentNode);
       }
     },
@@ -131,17 +117,17 @@ function removeList(el) {
  * 修改当前列表内容
  * @param {HTMLElement} el 自身节点
  */
-async function subChange(el) {
+async function submitEdit(el) {
   const id = el.parentNode.dataset["id"];
   const text = el.parentNode.querySelector(".input").value.trim();
-  if (!text) return utils.showAlert({ content: "内容不能为空" });
+  if (!text) return message.error("内容不能为空");
   // console.log(text, id);
   const res = await api.modifyListItem({
     content: text,
     id: id
   })
   if (res.code === 1) {
-    utils.message.success("修改成功");
+    message.success("修改成功");
     offInput(el);
   }
 }
@@ -150,7 +136,7 @@ async function subChange(el) {
  * 使输入框可以修改
  * @param {HTMLElement} el 自身节点
  */
-function canInput(el) {
+function onEdit(el) {
   el.parentNode.querySelector(".the-btn.blue").classList.remove("hide");
   el.classList.add("hide");
   el.parentNode.querySelector(".input").removeAttribute("readonly");
@@ -176,14 +162,14 @@ api.getTodoList().then(res => {
   }
 })
 
-async function clickGetUserInfo() {
+async function getUserInfo() {
   const res = await api.getUserInfo()
   if (res.code === 1) {
     console.log("用户信息", res);
   }
 }
 
-async function clickLogout() {
+async function onLogout() {
   const res = await api.logout()
   if (res.code === 1) {
     console.log("退出登录", res);
@@ -194,3 +180,13 @@ async function clickLogout() {
   }
 }
 
+setGlobal({
+  uploadImg,
+  removeImg,
+  onAdd,
+  onDelete,
+  submitEdit,
+  onEdit,
+  getUserInfo,
+  onLogout,
+});
