@@ -47,7 +47,7 @@ class ModuleConfig {
 
   /** 端口号 */
   get port() {
-    return this.isDev ? 1995 : 80;
+    return this.isDev ? 2019 : 80;
   }
 
   /** 数据库配置 */
