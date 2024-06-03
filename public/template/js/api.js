@@ -31,7 +31,7 @@ export const user = {
  * @param {"GET"|"POST"|"PUT"|"DELETE"} method 请求方法
  * @param {string} url 请求路径
  * @param {object|FormData|string=} data 传参对象，json、formdata、普通表单字符串
- * @param {RequestInit & { timeout: number }} option 其他配置
+ * @param {{ timeout?: number, responseType?: "arraybuffer"|"blob"|"document"|"json"|"text" }} option 其他配置
  * @returns {Promise<ApiResult>}
  */
 function request(method, url, data = {}, option = {}) {
@@ -83,6 +83,14 @@ function request(method, url, data = {}, option = {}) {
   const controller = new AbortController();
   let timer;
   return new Promise(function(resolve, reject) {
+    /**
+     * @type {ApiResult}
+     */
+    const result = {
+      code: -1,
+      data: null,
+      msg: "" 
+    }
     fetch(`${BASE_URL}/api${url}`, {
       method,
       body,
@@ -90,20 +98,35 @@ function request(method, url, data = {}, option = {}) {
       signal: controller.signal,
       ...option,
     }).then(response => {
-      // 把响应的信息转为`json`
+      if (option.responseType === "blob") {
+        return response.blob();
+      }
+      // 默认响应的信息转为`json`
       return response.json();
     }).then(res => {
       clearTimeout(timer);
-      resolve(res);
-      if (res.code !== 1) {
-        message.error(res.message);
+      if (option.responseType === "blob") {
+        result.code = 1;
+        result.data = res;
+        resolve(result);
+      } else {
+        if (res.code === 1) {
+          result.code = 1;
+          result.data = res.result;
+          result.msg = res.message || "ok";
+        } else {
+          message.error(res.message);
+        }
+        resolve(result);
       }
     }).catch(error => {
       clearTimeout(timer);
-      reject(error);
+      result.msg = `${error}`;
+      resolve(result);
     });
     timer = setTimeout(function() {
-      reject("fetch is timeout");
+      result.msg = "fetch is timeout";
+      resolve(result);
       controller.abort();
       message.warning("网络响应超时~");
     }, timeout);
@@ -213,6 +236,17 @@ class ModuleApi {
     return request("POST", "/addList", {
       content: value
     });
+  }
+
+  /**
+   * 
+   * @param {"video"|"excel"} type 
+   * @returns 
+   */
+  getFile(type) {
+    return request("GET", type === "video" ? "/getVideo" : "/getExcel", {}, {
+      responseType: "blob"
+    })
   }
 }
 

@@ -29,7 +29,7 @@ async function onLogin() {
   });
   if (res.code === 1) {
     console.log("登录成功", res);
-    user.update(res.result);
+    user.update(res.data);
     location.href = "api-user.html";
   }
 }

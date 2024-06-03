@@ -132,3 +132,48 @@ router.get("/getWeather", async (ctx, next) => {
   }
 
 })
+
+const filePath = path.resolve(__dirname, "../../public/upload");
+
+router.get("/getVideo", async (ctx, next) => {
+  // const blob = new Blob(["hello there"]);
+  // console.log("filePath >>", filePath);
+  
+  // 设置响应头，告诉浏览器该文件需要下载
+  ctx.set("Content-disposition", "attachment; filename=xhs.webm");
+  ctx.set("Content-type", "video/webm");
+
+  const stream = fs.createReadStream(filePath + "/xhs2.webm");
+
+	// stream.pipe(ctx.body);
+
+  ctx.body = stream;
+
+})
+
+router.get("/getExcel", async (ctx, next) => {
+  const fileName = "demo.xls"; // 文件名
+
+  // 设置响应头，告诉浏览器这是一个需要下载的文件
+  ctx.set("Content-disposition", `attachment; filename=${fileName}`);
+  ctx.set("Content-type", "application/octet-stream");
+
+  // 创建可读流
+  const stream = fs.createReadStream(filePath + "/demo.xls");
+
+  // 把可读流的内容写入响应
+  ctx.body = stream;
+
+  // 如果需要在下载完成后做一些操作，可以监听可读流的结束事件
+  stream.on("end", () => {
+    // 可以在这里做一些下载完成后的操作
+    console.log("文件下载完成");
+  });
+
+  // 如果发生错误，可以监听错误事件
+  stream.on("error", (err) => {
+    console.error("文件下载出错", err);
+    ctx.status = 500;
+    ctx.body = "文件下载出错";
+  });
+})

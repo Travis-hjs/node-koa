@@ -35,7 +35,7 @@ async function uploadImg(el) {
     console.log("上传成功", res);
     el.parentNode.classList.add("hide");
     el.parentNode.parentNode.querySelector(".img-box").classList.remove("hide");
-    el.parentNode.parentNode.querySelector(".img-box .image").src = res.result.image;
+    el.parentNode.parentNode.querySelector(".img-box .image").src = res.data.image;
   }
 
   el.value = null;
@@ -84,10 +84,10 @@ async function onAdd(el) {
   if (!text) return message.error("输入的内容不能为空~");
   const res = await api.addListItem(text)
   if (res.code === 1) {
-    console.log(res.result);
+    console.log(res.data);
     outputList({
       content: text,
-      id: res.result.id
+      id: res.data.id
     })
     input.value = "";
   }
@@ -155,8 +155,8 @@ function offInput(el) {
 api.getTodoList().then(res => {
   if (res.code === 1) {
     console.log("获取列表", res);
-    if (res.result.list.length == 0) return;
-    res.result.list.forEach(item => {
+    if (res.data.list.length == 0) return;
+    res.data.list.forEach(item => {
       outputList(item);
     })
   }

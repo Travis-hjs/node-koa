@@ -27,7 +27,7 @@ async function getWeatherInfo() {
   const res = await api.getWeather(code)
   if (res.code === 1) {
     console.log("获取天气数据 成功", res);
-    outputList(res.result);
+    outputList(res.data);
   }
 }
 
@@ -46,8 +46,16 @@ function outputList(info) {
   find(".weather_box").innerHTML = html;
 }
 
+async function getFile() {
+  const res = await api.getFile("video")
+  if (res.code === 1) {
+    console.log(res.data);
+  }
+}
+
 setGlobal({
   getData,
   postData,
   getWeatherInfo,
+  getFile,
 });
