@@ -191,9 +191,36 @@ class ModuleApi {
   /**
    * 上传文件
    * @param {FormData} formData 
+   * @param {(event: ProgressEvent<XMLHttpRequestEventTarget>) => void} progress
+   * @returns {Promise<ApiResult>}
    */
-  upload(formData) {
-    return request("POST", "/uploadFile", formData);
+  upload(formData, progress) {
+    // return request("POST", "/uploadFile", formData);
+    /**
+     * @type {ApiResult}
+     */
+    const result = {
+      code: -1,
+      data: null,
+      msg: "" 
+    }
+    return new Promise(function(resolve) {
+      const XHR = new XMLHttpRequest();
+      XHR.onreadystatechange = function () {
+        if (XHR.readyState !== 4) return;
+        if (XHR.status === 200 || XHR.status === 304) {
+          const data = JSON.parse(XHR.response);
+          result.data = data.result;
+          result.code = 1;
+          resolve(result);
+        } else {
+          resolve(result);
+        }
+      }
+      progress && XHR.upload.addEventListener("progress", progress);
+      XHR.open("POST", `${BASE_URL}/api/uploadFile`, true);
+      XHR.send(formData);
+    })
   }
 
   /**

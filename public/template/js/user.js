@@ -29,7 +29,10 @@ async function uploadImg(el) {
   formData.append("file", file);
   // console.log(formData);
 
-  const res = await api.upload(formData)
+  const res = await api.upload(formData, function (e) {
+    const value = Math.round(e.loaded / e.total * 100);
+    console.log(`上传进度 >> ${value}%`);
+  })
 
   if (res.code === 1) {
     console.log("上传成功", res);
