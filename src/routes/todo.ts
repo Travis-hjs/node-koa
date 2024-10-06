@@ -135,4 +135,4 @@ router.post("/deleteList", handleToken, async (ctx: TheContext) => {
   }
 
   ctx.body = bodyResult;
-})
+});

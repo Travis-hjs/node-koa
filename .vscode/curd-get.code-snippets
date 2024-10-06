@@ -1,0 +1,31 @@
+{
+  "接口查询": {
+    "scope": "typescript",
+    "prefix": "curd-get",
+    "body": [
+      "// 接口查询",
+      "router.get(\"/get$Path\", handleToken, async (ctx: TheContext) => {",
+      "",
+      "  const tokenInfo = ctx[\"theToken\"];",
+      "",
+      "  let bodyResult: ApiResult;",
+      "",
+      "  const res = await query(`select * from table_name where id = '${tokenInfo.id}'`)",
+      "",
+      "  if (res.state === 1) {",
+      "    // console.log(\"接口查询\", res.results);",
+      "    bodyResult = apiSuccess({",
+      "      list: res.results.length > 0 ? utils.arrayItemToHump(res.results) : []",
+      "    });",
+      "  } else {",
+      "    ctx.response.status = 500;",
+      "    bodyResult = apiFail(res.msg, 500, res.error);",
+      "  }",
+      "",
+      "  ctx.body = bodyResult;",
+      "});",
+      "",
+    ],
+    "description": "接口查询代码片段"
+  }
+}
