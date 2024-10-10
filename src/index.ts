@@ -1,6 +1,9 @@
-import * as Koa from "koa";                     // learn: https://www.npmjs.com/package/koa
-import * as koaBody from "koa-body";            // learn: http://www.ptbird.cn/koa-body.html
-import * as staticFiles from "koa-static";      // 静态文件处理模块
+// learn: https://www.npmjs.com/package/koa
+import * as Koa from "koa";
+// learn: https://www.npmjs.com/package/koa-body
+import { koaBody } from "koa-body";
+// 静态文件处理模块 https://www.npmjs.com/package/koa-static
+import * as staticFiles from "koa-static";
 import * as path from "path";
 import config from "./modules/Config";
 import router from "./routes/main";

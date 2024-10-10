@@ -66,7 +66,7 @@ router.post("/addList", handleToken, async (ctx: TheContext) => {
 })
 
 // 修改列表
-router.post("/modifyList", handleToken, async (ctx: TheContext) => {
+router.post("/editList", handleToken, async (ctx: TheContext) => {
 
   const tokenInfo = ctx["theToken"];
   /** 接收参数 */

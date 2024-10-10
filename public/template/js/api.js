@@ -98,6 +98,25 @@ function request(method, url, data = {}, option = {}) {
       signal: controller.signal,
       ...option,
     }).then(response => {
+      if (response.status !== 200) {
+        result.code = response.status;
+        switch (response.status) {
+          case 404:
+            result.msg = "请求的地址不存在！";
+            break;
+
+          case 500:
+            // console.log(response);
+            result.msg = response.statusText;
+            break;
+
+          default:
+            break;
+        }
+        message.error(result.msg);
+        resolve(result);
+        return;
+      }
       if (option.responseType === "blob") {
         return response.blob();
       }
@@ -121,7 +140,9 @@ function request(method, url, data = {}, option = {}) {
       }
     }).catch(error => {
       clearTimeout(timer);
-      result.msg = `${error}`;
+      if (result.code === -1) {
+        result.msg = `${error}`;
+      }
       resolve(result);
     });
     timer = setTimeout(function() {
@@ -214,6 +235,13 @@ class ModuleApi {
           result.code = 1;
           resolve(result);
         } else {
+          try {
+            const data = JSON.parse(XHR.response);
+            result.msg = data.message;
+          } catch (error) {
+            console.warn(error);
+          }
+          message.error(result.msg);
           resolve(result);
         }
       }
@@ -242,7 +270,7 @@ class ModuleApi {
    * @param {{ content: string, id: string|number }} data
    */
   modifyListItem(data) {
-    return request("POST", "/modifyList", data);
+    return request("POST", "/editList", data);
   }
 
   /**

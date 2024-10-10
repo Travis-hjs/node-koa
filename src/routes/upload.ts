@@ -13,16 +13,16 @@ router.post("/uploadFile", async (ctx, next) => {
 
   const file: UploadFile = ctx.request.files[config.uploadName] as any;
   // console.log("file >>", file);
-  const fileName = file.name;
+  const fileName = file.originalFilename;
   // console.log("fileName >>", fileName);
-  const isImage = file.type.includes("image");
+  const isImage = file.mimetype && file.mimetype.includes("image");
   /** 目录名 */
   const folder = isImage ? "/images/" : "/assets/";
   /** 上传的资源目录名 */
   const folderPath = config.uploadPath + folder;
 
   // 创建可读流
-  const render = fs.createReadStream(file.path);
+  const render = fs.createReadStream(file.filepath);
   const filePath = path.join(folderPath, fileName);
   const fileDir = path.join(folderPath);
 
