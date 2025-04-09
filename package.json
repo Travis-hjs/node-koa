@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/Travis-hjs/node-koa#readme",
   "dependencies": {
-    "koa": "2.15.3",
+    "koa": "2.16.1",
     "koa-body": "6.0.1",
     "koa-router": "13.0.1",
     "koa-static": "5.0.0",
