@@ -12,7 +12,7 @@ import { BaseObj, ServeRequestResult } from "../types/base";
  * @param options 请求配置
  * @param params 请求传参数据
  */
-export default function request(options: http.RequestOptions, params: BaseObj = {}) {
+export default function request(options: http.RequestOptions, params: BaseObj<any> = {}) {
   /** 返回结果 */
   const info: ServeRequestResult = {
     msg: "",
