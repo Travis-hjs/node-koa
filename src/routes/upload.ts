@@ -1,9 +1,9 @@
+import type { UploadFile } from "../types/base";
 import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
-import config from "../modules/Config";
+import { config } from "../modules";
 import { apiSuccess } from "../utils/apiResult";
-import { UploadFile } from "../types/base";
 
 // 上传文件
 // learn: https://www.cnblogs.com/nicederen/p/10758000.html

@@ -1,5 +1,5 @@
-import * as Koa from "koa";
-import { TableUserInfo } from "./user";
+import type { ParameterizedContext } from "koa";
+import type { TableUserInfo } from "./user";
 
 /** 基础对象 */
 export interface BaseObj<T = string | number> {
@@ -108,7 +108,7 @@ export interface MysqlOption {
 }
 
 /** 自定义的请求上下文返回信息接口 */
-export interface TheContext extends Koa.ParameterizedContext {
+export interface TheContext extends ParameterizedContext {
   /**
    * 请求时自定义设置的一个`token`信息
    * @description 具体看: src/module/Jwt.ts

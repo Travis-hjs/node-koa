@@ -1,4 +1,4 @@
-import { MysqlOption } from "./base";
+import type { MysqlOption } from "./base";
 
 /** 用户必有数据 */
 interface UserData {

@@ -1,12 +1,11 @@
+import type { ApiResult, TheContext } from "../types/base";
+import type { UserInfo } from "../types/user";
 import router from "./main";
 import { query } from "../utils/mysql";
-import jwt from "../modules/Jwt";
+import { jwt, tableUser } from "../modules";
 import { handleToken } from "../middleware";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 import utils from "../utils";
-import tableUser from "../modules/TableUser";
-import { ApiResult, TheContext } from "../types/base";
-import { UserInfo } from "../types/user";
 
 // 注册
 router.post("/register", async (ctx) => {
@@ -209,7 +208,7 @@ router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
         validAccount = false;
         bodyResult = apiSuccess({}, "当前账户已存在", -1);
         break;
-      } 
+      }
     }
   } else {
     bodyResult = apiSuccess({}, "当前用户 id 不存在", -1);

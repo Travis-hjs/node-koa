@@ -1,24 +1,29 @@
-import * as mysql from "mysql";         // learn: https://www.npmjs.com/package/mysql
-import config from "../modules/Config";
+import type { BaseObj } from "../types/base";
+import {
+  type FieldInfo,
+  type MysqlError,
+  type queryCallback,
+  createPool
+} from "mysql";         // learn: https://www.npmjs.com/package/mysql
+import { config } from "../modules";
 import utils from "./index";
-import { BaseObj } from "../types/base";
 
 /** `mysql`查询结果 */
-interface MsqlResult<T = any> {
+interface SqlResult<T = any> {
   /** `state === 1`时为成功 */
   state: number
   /** 结果数组 或 对象 */
   results: T
   /** 状态 */
-  fields: Array<mysql.FieldInfo>
+  fields: Array<FieldInfo>
   /** 错误信息 */
-  error: mysql.MysqlError
+  error: MysqlError
   /** 描述信息 */
   msg: string
 }
 
 /** 数据库链接池 */
-const pool = mysql.createPool({
+const pool = createPool({
   host: config.db.host,
   user: config.db.user,
   password: config.db.password,
@@ -31,21 +36,21 @@ const pool = mysql.createPool({
  * @param value 对应的值
  */
 export function query<T = any>(command: string, value?: Array<any>) {
-  const result: MsqlResult = {
+  const result: SqlResult = {
     state: 0,
     results: undefined,
     fields: [],
     error: undefined,
     msg: ""
   }
-  return new Promise<MsqlResult<T>>(resolve => {
+  return new Promise<SqlResult<T>>(resolve => {
     pool.getConnection((error: any, connection) => {
       if (error) {
         result.error = error;
         result.msg = "数据库连接出错";
         resolve(result);
       } else {
-        const callback: mysql.queryCallback = (error: any, results, fields) => {
+        const callback: queryCallback = (error: any, results, fields) => {
           // pool.end();
           connection.release();
           if (error) {

@@ -1,7 +1,7 @@
+import type { BaseObj, ServeRequestResult } from "../types/base";
 import * as http from "http";
 import * as querystring from "querystring";
 import * as zlib from "zlib";
-import { BaseObj, ServeRequestResult } from "../types/base";
 
 /**
  * 服务端请求

@@ -1,11 +1,11 @@
+import type { BaseObj } from "../types/base";
 import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
 import utils from "../utils";
 import { apiSuccess, apiFail } from "../utils/apiResult";
-import config from "../modules/Config";
+import { config } from "../modules";
 import request from "../utils/request";
-import { BaseObj } from "../types/base";
 
 /** 资源路径 */
 const resourcePath = path.resolve(__dirname, "../../public/template");

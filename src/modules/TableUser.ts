@@ -1,7 +1,7 @@
 import utils from "../utils";
 import { query } from "../utils/mysql";
-import { TableUserInfo } from "../types/user";
-import { BaseObj } from "../types/base";
+import type { TableUserInfo } from "../types/user";
+import type { BaseObj } from "../types/base";
 
 class ModuleUser {
   constructor() {

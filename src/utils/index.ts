@@ -1,4 +1,4 @@
-import { BaseObj, JavaScriptType, JavaScriptTypes } from "../types/base";
+import type { BaseObj, JavaScriptType, JavaScriptTypes } from "../types/base";
 
 class ModuleUtils {
 

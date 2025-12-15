@@ -1,18 +1,16 @@
-// learn: https://www.npmjs.com/package/koa
-import * as Koa from "koa";
-// learn: https://www.npmjs.com/package/koa-body
-import { koaBody } from "koa-body";
-// 静态文件处理模块 https://www.npmjs.com/package/koa-static
-import * as staticFiles from "koa-static";
+
+import * as Koa from "koa"; // learn: https://www.npmjs.com/package/koa
+import { koaBody } from "koa-body"; // learn: https://www.npmjs.com/package/koa-body
+import * as staticFiles from "koa-static"; // 静态文件处理模块 https://www.npmjs.com/package/koa-static
 import * as path from "path";
-import config from "./modules/Config";
+import type { TheContext } from "./types/base";
+import { config } from "./modules";
 import router from "./routes/main";
 import utils from "./utils";
 import "./routes/test";                         // 基础测试模块
 import "./routes/user";                         // 用户模块
 import "./routes/upload";                       // 上传文件模块
 import "./routes/todo";                         // 用户列表模块
-import { TheContext } from "./types/base";
 
 const App = new Koa();
 
@@ -82,7 +80,7 @@ App.use(koaBody({
 }));
 
 // 开始使用路由
-App.use(router.routes())
+App.use(router.routes());
 
 // 默认无路由模式
 // App.use((ctx, next) => {
@@ -92,17 +90,17 @@ App.use(router.routes())
 
 App.on("error", (err, ctx) => {
   console.log(`\x1B[91m server error !!!!!!!!!!!!! \x1B[0m`, err, ctx);
-})
+});
 
 App.listen(config.port, () => {
   // for (let i = 0; i < 100; i++) {
-  //     console.log(`\x1B[${i}m 颜色 \x1B[0m`, i);
+  //   console.log(`\x1B[${i}m 颜色 \x1B[0m`, i);
   // }
   const suffix = config.port + config.apiPrefix;
   console.log("服务器启动完成:");
   console.log(` - Local:   \x1B[36m http://localhost:\x1B[0m\x1B[96m${suffix} \x1B[0m`);
   console.log(` - Network: \x1B[36m http://${config.ip}:\x1B[0m\x1B[96m${suffix} \x1B[0m`);
-})
+});
 
 // 参考项目配置连接: https://juejin.im/post/5ce25993f265da1baa1e464f
 // mysql learn: https://www.jianshu.com/p/d54e055db5e0

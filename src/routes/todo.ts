@@ -1,7 +1,7 @@
+import type { ApiResult, TheContext } from "../types/base";
 import router from "./main";
 import { query } from "../utils/mysql";
 import utils from "../utils";
-import { ApiResult, TheContext } from "../types/base";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 import { handleToken } from "../middleware";
 

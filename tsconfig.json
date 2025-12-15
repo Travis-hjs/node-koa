@@ -2,8 +2,10 @@
   // learn: https://segmentfault.com/a/1190000021749847
   "compilerOptions": {
     "module": "commonjs",
-    "target": "esnext",
+    "target": "ESNext",
     "noImplicitAny": true,
+    "skipLibCheck": true,
+    // "verbatimModuleSyntax": true,
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist", // TS文件编译后会放入到此文件夹内
