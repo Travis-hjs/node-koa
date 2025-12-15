@@ -17,7 +17,7 @@ export default function request(options: http.RequestOptions, params: BaseObj<an
   const info: ServeRequestResult = {
     msg: "",
     result: "",
-    state: -1
+    state: -1,
   }
 
   /** 传参字段 */
@@ -27,8 +27,8 @@ export default function request(options: http.RequestOptions, params: BaseObj<an
     options.path += `?${data}`;
   }
 
-  return new Promise<ServeRequestResult>(function(resolve, reject) {
-    const clientRequest = http.request(options, function(res) {
+  return new Promise<ServeRequestResult>(function (resolve, reject) {
+    const clientRequest = http.request(options, function (res) {
       // console.log("http.get >>", res);
       // console.log(`http.request.statusCode: ${res.statusCode}`);
       // console.log(`http.request.headers: ${JSON.stringify(res.headers)}`);
@@ -67,7 +67,7 @@ export default function request(options: http.RequestOptions, params: BaseObj<an
         console.log("----------> 服务端请求错误 >>", error);
         info.msg = error.message;
         info.result = error;
-      })
+      });
 
       output.on("end", function () {
         // console.log("---------- end ----------");
@@ -81,12 +81,12 @@ export default function request(options: http.RequestOptions, params: BaseObj<an
         }
       });
 
-    })
+    });
 
     if (data && options.method != "GET") {
       clientRequest.write(data);
     }
 
     clientRequest.end();
-  })
+  });
 }
