@@ -1,9 +1,9 @@
 
+import type { TheContext } from "./types/base";
 import * as Koa from "koa"; // learn: https://www.npmjs.com/package/koa
 import { koaBody } from "koa-body"; // learn: https://www.npmjs.com/package/koa-body
 import * as staticFiles from "koa-static"; // 静态文件处理模块 https://www.npmjs.com/package/koa-static
 import * as path from "path";
-import type { TheContext } from "./types/base";
 import { config } from "./modules";
 import router from "./routes/main";
 import utils from "./utils";
