@@ -23,15 +23,14 @@
   },
   "homepage": "https://github.com/Travis-hjs/node-koa#readme",
   "dependencies": {
+    "@koa/router": "15.3.0",
     "koa": "2.15.3",
     "koa-body": "6.0.1",
-    "koa-router": "13.0.1",
     "koa-static": "5.0.0",
     "mysql": "2.18.1"
   },
   "devDependencies": {
     "@types/koa": "2.15.0",
-    "@types/koa-router": "7.4.8",
     "@types/koa-static": "4.0.4",
     "@types/mysql": "2.15.26",
     "ts-node": "10.9.2",

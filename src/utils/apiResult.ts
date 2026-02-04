@@ -10,7 +10,7 @@ export function apiSuccess<T>(data: T, tip?: string, code = 1): ApiResult<T> {
   return {
     message: tip || "success",
     code: code,
-    result: data
+    data
   }
 }
 
@@ -24,6 +24,6 @@ export function apiFail<T>(tip: string, code = 500, error?: T): ApiResult<T> {
   return {
     message: tip || "fail",
     code: code,
-    result: error
+    data: error
   }
 }

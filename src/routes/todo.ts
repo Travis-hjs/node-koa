@@ -1,4 +1,4 @@
-import type { ApiResult, TheContext } from "../types/base";
+import type { ApiResult } from "../types/base";
 import router from "./main";
 import { query } from "../utils/mysql";
 import utils from "../utils";
@@ -6,9 +6,9 @@ import { apiSuccess, apiFail } from "../utils/apiResult";
 import { handleToken } from "../middleware";
 
 // 获取所有列表
-router.get("/getList", handleToken, async (ctx: TheContext) => {
+router.get("/getList", handleToken, async (ctx) => {
 
-  const tokenInfo = ctx["theToken"];
+  const tokenInfo = ctx.theToken;
   /** 返回结果 */
   let bodyResult: ApiResult;
 
@@ -30,9 +30,9 @@ router.get("/getList", handleToken, async (ctx: TheContext) => {
 })
 
 // 添加列表
-router.post("/addList", handleToken, async (ctx: TheContext) => {
+router.post("/addList", handleToken, async (ctx) => {
 
-  const tokenInfo = ctx["theToken"];
+  const tokenInfo = ctx.theToken;
   /** 接收参数 */
   const params = ctx.request.body;
   /** 返回结果 */
@@ -66,9 +66,9 @@ router.post("/addList", handleToken, async (ctx: TheContext) => {
 })
 
 // 修改列表
-router.post("/editList", handleToken, async (ctx: TheContext) => {
+router.post("/editList", handleToken, async (ctx) => {
 
-  const tokenInfo = ctx["theToken"];
+  const tokenInfo = ctx.theToken;
   /** 接收参数 */
   const params = ctx.request.body;
   /** 返回结果 */
@@ -108,9 +108,9 @@ router.post("/editList", handleToken, async (ctx: TheContext) => {
 })
 
 // 删除列表
-router.post("/deleteList", handleToken, async (ctx: TheContext) => {
+router.post("/deleteList", handleToken, async (ctx) => {
 
-  // const state = ctx["theToken"];
+  // const state = ctx.theToken;
   /** 接收参数 */
   const params = ctx.request.body;
   /** 返回结果 */

@@ -1,4 +1,4 @@
-import type { ApiResult, TheContext } from "../types/base";
+import type { ApiResult } from "../types/base";
 import type { UserInfo } from "../types/user";
 import router from "./main";
 import { query } from "../utils/mysql";
@@ -135,7 +135,7 @@ router.post("/login", async (ctx) => {
 })
 
 // 获取用户信息
-router.get("/getUserInfo", handleToken, async (ctx: TheContext) => {
+router.get("/getUserInfo", handleToken, async (ctx) => {
 
   const tokenInfo = ctx["theToken"];
   // /** 接收参数 */
@@ -166,8 +166,8 @@ router.get("/getUserInfo", handleToken, async (ctx: TheContext) => {
 })
 
 // 编辑用户信息
-router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
-  const tokenInfo = ctx["theToken"];
+router.post("/editUserInfo", handleToken, async (ctx) => {
+  const tokenInfo = ctx.theToken;
   /** 接收参数 */
   const params: UserInfo = ctx.request.body;
   /** 返回结果 */
@@ -262,9 +262,9 @@ router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
 })
 
 // // 获取用户列表
-// router.get("/getUserList", handleToken, async (ctx: TheContext) => {
+// router.get("/getUserList", handleToken, async (ctx) => {
 
-//   const tokenInfo = ctx["theToken"];
+//   const tokenInfo = ctx.theToken;
 //   // console.log("tokenInfo >>", tokenInfo);
 //   const params: UserListParams = ctx.request.query as any;
 
@@ -354,8 +354,8 @@ router.post("/editUserInfo", handleToken, async (ctx: TheContext) => {
 // })
 
 // 删除用户
-router.post("/deleteUser", handleToken, async (ctx: TheContext) => {
-  const tokenInfo = ctx["theToken"];
+router.post("/deleteUser", handleToken, async (ctx) => {
+  const tokenInfo = ctx.theToken;
 
   /** 接收参数 */
   const params = ctx.request.body as UserInfo;

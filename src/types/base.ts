@@ -1,5 +1,5 @@
-import type { ParameterizedContext } from "koa";
 import type { TableUserInfo } from "./user";
+import type { RouterContext } from "@koa/router";
 
 /** 基础对象 */
 export interface BaseObj<T = string | number> {
@@ -13,7 +13,7 @@ export interface ApiResult<T = any> {
   /** 状态码 */
   code: number
   /** 返回数据 */
-  result: T
+  data: T
 }
 
 /**
@@ -107,11 +107,17 @@ export interface MysqlOption {
   updateUserId?: number
 }
 
+export interface AppState {
+  // 待补充
+}
+
 /** 自定义的请求上下文返回信息接口 */
-export interface TheContext extends ParameterizedContext {
+export interface AppContext {
   /**
    * 请求时自定义设置的一个`token`信息
    * @description 具体看: src/module/Jwt.ts
    */
   theToken?: TableUserInfo
 }
+
+export type TheContext = RouterContext<AppState, AppContext>;

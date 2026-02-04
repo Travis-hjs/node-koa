@@ -131,7 +131,7 @@ function request(method, url, data = {}, option = {}) {
       } else {
         if (res.code === 1) {
           result.code = 1;
-          result.data = res.result;
+          result.data = res.data;
           result.msg = res.message || "ok";
         } else {
           message.error(res.message);
@@ -230,14 +230,14 @@ class ModuleApi {
       XHR.onreadystatechange = function () {
         if (XHR.readyState !== 4) return;
         if (XHR.status === 200 || XHR.status === 304) {
-          const data = JSON.parse(XHR.response);
-          result.data = data.result;
+          const res = JSON.parse(XHR.response);
+          result.data = res.data;
           result.code = 1;
           resolve(result);
         } else {
           try {
-            const data = JSON.parse(XHR.response);
-            result.msg = data.message;
+            const res = JSON.parse(XHR.response);
+            result.msg = res.message;
           } catch (error) {
             console.warn(error);
           }
