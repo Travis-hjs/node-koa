@@ -7,9 +7,10 @@
     "dev": "ts-node-dev --respawn ./src/index.ts",
     "dev:test": "cross-env mode=test ts-node-dev --respawn ./src/index.ts",
     "dev:prod": "cross-env mode=prod ts-node-dev --respawn ./src/index.ts",
-    "build": "rimraf dist/* && tsc && node dist/index.js",
-    "build:test": "rimraf dist/* && tsc && cross-env mode=test node dist/index.js",
-    "build:prod": "rimraf dist/* && tsc && cross-env mode=prod node dist/index.js",
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc && node dist/index.js",
+    "build:test": "npm run clean && tsc && cross-env mode=test node dist/index.js",
+    "build:prod": "npm run clean && tsc && cross-env mode=prod node dist/index.js",
     "build-sql": "ts-node-dev --respawn ./mysql/creator.ts"
   },
   "repository": {
@@ -37,8 +38,8 @@
     "@types/koa": "2.15.0",
     "@types/koa-static": "4.0.4",
     "@types/mysql": "2.15.26",
+    "@types/node": "25.5.0",
     "cross-env": "10.1.0",
-    "ts-node": "10.9.2",
     "ts-node-dev": "2.0.0",
     "typescript": "5.6.3"
   }
