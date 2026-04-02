@@ -1,5 +1,5 @@
 import Router from "@koa/router";       // learn: https://www.npmjs.com/package/koa-router
-import { config } from "../modules";
+import { config } from "../utils/config";
 import type { AppState, AppContext } from "../types/base";
 
 /**

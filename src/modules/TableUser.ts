@@ -1,4 +1,4 @@
-import utils from "../utils";
+import { formatDate, modifyData, objectToHump } from "../utils";
 import { query } from "../utils/mysql";
 import type { TableUserInfo } from "../types/user";
 import type { BaseObj } from "../types/base";
@@ -23,8 +23,8 @@ class ModuleUser {
       const list: Array<TableUserInfo> = res.results || [];
       this.table.clear();
       for (let i = 0; i < list.length; i++) {
-        const item = utils.objectToHump(list[i]) as TableUserInfo;
-        item.createTime = utils.formatDate(item.createTime);
+        const item = objectToHump(list[i]) as TableUserInfo;
+        item.createTime = formatDate(item.createTime);
         this.table.set(item.id.toString(), item);
       }
       console.log("\x1B[42m 更新用户表缓存 \x1B[0m", this.total, "条数据");
@@ -67,7 +67,7 @@ class ModuleUser {
   updateById(id: number, value: Partial<TableUserInfo>) {
     const user = this.getUserById(id);
     if (user) {
-      utils.modifyData(user, value);
+      modifyData(user, value);
     }
   }
 
@@ -83,7 +83,7 @@ class ModuleUser {
     if (updateId) {
       item["update_user_name"] = this.getUserById(updateId)?.name || "";
     }
-    return utils.objectToHump(item);
+    return objectToHump(item);
   }
 
   /**

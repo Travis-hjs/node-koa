@@ -5,7 +5,7 @@ import { query } from "../utils/mysql";
 import { jwt, tableUser } from "../modules";
 import { handleToken } from "../middleware";
 import { apiSuccess, apiFail } from "../utils/apiResult";
-import utils from "../utils";
+import { checkType, formatDate, mysqlFormatParams, mysqlSetParams, objectToHump } from "../utils";
 
 // 注册
 router.post("/register", async (ctx) => {
@@ -49,8 +49,8 @@ router.post("/register", async (ctx) => {
   if (validAccount) {
     /** 暂无分组、用户类型、创建用户id；所以给以默认值，方便后面扩充使用 */
     const defaultValue = 1;
-    const createTime = utils.formatDate();
-    const mysqlInfo = utils.mysqlFormatParams({
+    const createTime = formatDate();
+    const mysqlInfo = mysqlFormatParams({
       "account": params.account,
       "password": params.password,
       "name": params.name,
@@ -108,7 +108,7 @@ router.post("/login", async (ctx) => {
   if (res.state === 1) {
     // 再判断账号是否可用
     if (res.results.length > 0) {
-      const data = utils.objectToHump(res.results[0]) as UserInfo;
+      const data = objectToHump(res.results[0]) as UserInfo;
       // console.log("login UserInfo >>", data);
       // 最后判断密码是否正确
       if (data.password == params.password) {
@@ -153,7 +153,7 @@ router.get("/getUserInfo", handleToken, async (ctx) => {
     // 判断账号是否可用
     if (res.results.length > 0) {
       const data: UserInfo = res.results[0];
-      bodyResult = apiSuccess(utils.objectToHump(data));
+      bodyResult = apiSuccess(objectToHump(data));
     } else {
       bodyResult = apiSuccess({}, "该账号不存在，可能已经从数据库中删除", 400);
     }
@@ -191,13 +191,13 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     return ctx.body = apiSuccess({}, "编辑失败！密码必须由英文或数字组成", 400);
   }
 
-  if (utils.checkType(params.groupId) !== "number") {
+  if (checkType(params.groupId) !== "number") {
     ctx.response.status = 400;
     return ctx.body = apiSuccess({}, "编辑失败！分组不正确", 400);
   }
 
   if (!params.name.trim()) {
-    params.name = "用户-" + utils.formatDate(Date.now(), "YMDhms");
+    params.name = "用户-" + formatDate(Date.now(), "YMDhms");
   }
 
   if (tableUser.getUserById(params.id)) {
@@ -216,8 +216,8 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
 
   // 再写入表格
   if (validAccount) {
-    const createTime = utils.formatDate();
-    const setData = utils.mysqlSetParams({
+    const createTime = formatDate();
+    const setData = mysqlSetParams({
       "account": params.account,
       "password": params.password,
       "name": params.name,
@@ -273,12 +273,12 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
 //   const page = Number(params.currentPage) || 1;
 
 //   /** 精确查询 */
-//   const accuracyText = utils.mysqlSearchParams({
+//   const accuracyText = mysqlSearchParams({
 //     "type": params.type
 //   });
 
 //   /** 模糊查询 */
-//   const vagueText = utils.mysqlSearchParams({
+//   const vagueText = mysqlSearchParams({
 //     "name": params.name
 //   }, true)
 
@@ -287,10 +287,10 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
 //     let result = "";
 
 //     if (params.groupId) {
-//       result += utils.mysqlFindInSet("group_ids", [params.groupId]);
+//       result += mysqlFindInSet("group_ids", [params.groupId]);
 //     } else {
 //       if ((tokenInfo.type >= 5)) {
-//         result += utils.mysqlFindInSet("group_ids", tokenInfo.groupIds.split(","));
+//         result += mysqlFindInSet("group_ids", tokenInfo.groupIds.split(","));
 //       }
 //     }
 

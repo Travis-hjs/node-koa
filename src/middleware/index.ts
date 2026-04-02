@@ -1,7 +1,8 @@
 import type { Next } from "koa";
 import type { TheContext } from "../types/base";
-import utils from "../utils";
-import { config, jwt } from "../modules";
+import { getDomain } from "../utils";
+import { jwt } from "../modules";
+import { config } from "../utils/config";
 
 /**
  * 中间件-处理`token`验证
@@ -30,7 +31,7 @@ export async function handleDoMain(ctx: TheContext, next: Next) {
   const { referer, origin } = ctx.headers;
   // console.log(referer, origin);
 
-  const domain = utils.getDomain(referer || "");
+  const domain = getDomain(referer || "");
 
   const list = config.origins.concat([`http://${config.ip}:${config.port}`]);
 

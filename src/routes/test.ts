@@ -2,9 +2,9 @@ import type { BaseObj } from "../types/base";
 import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
-import utils from "../utils";
+import { formatDate, isType, jsonToPath, replaceText } from "../utils";
 import { apiSuccess, apiFail } from "../utils/apiResult";
-import { config } from "../modules";
+import { config } from "../utils/config";
 import request from "../utils/request";
 
 /** 资源路径 */
@@ -24,7 +24,7 @@ router.get("/", (ctx, next) => {
   //   content: `<button class="button button_green"><a href="/home">go to home<a></button>`
   // }
 
-  // ctx.body = utils.replaceText(template, data);
+  // ctx.body = replaceText(template, data);
   // console.log("根目录");
 
   // 路由重定向
@@ -53,7 +53,7 @@ router.get("/home", (ctx, next) => {
     `
   }
 
-  ctx.body = utils.replaceText(template, data);
+  ctx.body = replaceText(template, data);
   // console.log("/home");
 })
 
@@ -67,7 +67,7 @@ router.get("/getData", (ctx, next) => {
   ctx.body = apiSuccess({
     method: "get",
     port: config.port,
-    date: utils.formatDate()
+    date: formatDate()
   });
 })
 
@@ -108,7 +108,7 @@ router.get("/getWeather", async (ctx, next) => {
     return;
   }
   
-  const path = utils.jsonToPath({
+  const path = jsonToPath({
     key: appKey,
     city: cityCode
   })
@@ -122,7 +122,7 @@ router.get("/getWeather", async (ctx, next) => {
   // console.log("获取天气信息 >>", res);
 
   if (res.state === 1) {
-    if (utils.isType(res.result, "string")) {
+    if (isType(res.result, "string")) {
       res.result = JSON.parse(res.result);
     }
     ctx.body = apiSuccess(res.result)

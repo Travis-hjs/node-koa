@@ -5,8 +5,8 @@ import {
   type queryCallback,
   createPool
 } from "mysql";         // learn: https://www.npmjs.com/package/mysql
-import { config } from "../modules";
-import utils from "./index";
+import { config } from "../utils/config";
+import { mysqlSearchParams } from "./index";
 
 /** `mysql`查询结果 */
 interface SqlResult<T = any> {
@@ -138,10 +138,10 @@ export function getSearchText(params: SearchTextParams) {
   let text = "";
 
   /** 精确查询语句 */
-  const accuracy = params.accurate ? utils.mysqlSearchParams(params.accurate) : "";
+  const accuracy = params.accurate ? mysqlSearchParams(params.accurate) : "";
 
   /** 模糊查询语句 */
-  const vague = params.vague ? utils.mysqlSearchParams(params.vague, true) : "";
+  const vague = params.vague ? mysqlSearchParams(params.vague, true) : "";
   
   // TODO需调试验证
   const sortText = (function() {

@@ -1,7 +1,7 @@
 import type { ApiResult } from "../types/base";
 import router from "./main";
 import { query } from "../utils/mysql";
-import utils from "../utils";
+import { arrayItemToHump, formatDate, mysqlFormatParams, mysqlSetParams } from "../utils";
 import { apiSuccess, apiFail } from "../utils/apiResult";
 import { handleToken } from "../middleware";
 
@@ -19,7 +19,7 @@ router.get("/getList", handleToken, async (ctx) => {
   if (res.state === 1) {
     // console.log("/getList 查询", res.results);
     bodyResult = apiSuccess({
-      list: res.results.length > 0 ? utils.arrayItemToHump(res.results) : []
+      list: res.results.length > 0 ? arrayItemToHump(res.results) : []
     });
   } else {
     ctx.response.status = 500;
@@ -42,10 +42,10 @@ router.post("/addList", handleToken, async (ctx) => {
     return ctx.body = apiSuccess({}, "添加的列表内容不能为空！", 400);
   }
 
-  const mysqlInfo = utils.mysqlFormatParams({
+  const mysqlInfo = mysqlFormatParams({
     "content": params.content,
     "create_user_id": tokenInfo.id,
-    "create_time": utils.formatDate()
+    "create_time": formatDate()
   })
 
   // 写入列表
@@ -82,9 +82,9 @@ router.post("/editList", handleToken, async (ctx) => {
     return ctx.body = apiSuccess({}, "列表内容不能为空", 400);
   }
 
-  const setData = utils.mysqlSetParams({
+  const setData = mysqlSetParams({
     "content": params.content,
-    "update_time": utils.formatDate(),
+    "update_time": formatDate(),
     "update_user_id": tokenInfo.id
   })
 

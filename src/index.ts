@@ -4,9 +4,9 @@ import * as Koa from "koa"; // learn: https://www.npmjs.com/package/koa
 import { koaBody } from "koa-body"; // learn: https://www.npmjs.com/package/koa-body
 import * as staticFiles from "koa-static"; // 静态文件处理模块 https://www.npmjs.com/package/koa-static
 import * as path from "path";
-import { config } from "./modules";
+import { config } from "./utils/config";
 import router from "./routes/main";
-import utils from "./utils";
+import { getDomain } from "./utils";
 import "./routes/test";                         // 基础测试模块
 import "./routes/user";                         // 用户模块
 import "./routes/upload";                       // 上传文件模块
@@ -30,7 +30,7 @@ App.use(async (ctx: TheContext, next) => {
 
   const { origin, referer } = ctx.headers;
 
-  const domain = utils.getDomain(referer || "");
+  const domain = getDomain(referer || "");
   // console.log("referer domain >>", domain);
   // 如果是 允许访问的域名源 ，则给它设置跨域访问和正常的请求头配置
   if (domain && config.origins.includes(domain)) {
@@ -75,7 +75,7 @@ App.use(async (ctx: TheContext, next) => {
 App.use(koaBody({
   multipart: true,
   formidable: {
-    maxFileSize: config.uploadImgSize
+    maxFileSize: config.uploadImgLimit
   }
 }));
 

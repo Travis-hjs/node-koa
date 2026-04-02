@@ -3,12 +3,14 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "ESNext",
+    "incremental": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
     // "verbatimModuleSyntax": true,
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist", // TS文件编译后会放入到此文件夹内
+    "types": ["node"],
     "baseUrl": "./",
     "paths": {
       "*": [

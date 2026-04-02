@@ -2,7 +2,7 @@ import type { UploadFile } from "../types/base";
 import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
-import { config } from "../modules";
+import { config } from "../utils/config";
 import { apiSuccess } from "../utils/apiResult";
 
 // 上传文件
@@ -54,4 +54,4 @@ router.post("/uploadFile", async (ctx, next) => {
   const res = await uploadToCloud();
 
   ctx.body = apiSuccess(res, "上传成功");
-})
+});
