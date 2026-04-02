@@ -24,6 +24,6 @@ export function apiFail<T>(tip: string, code = 500, error?: T): ApiResult<T> {
   return {
     message: tip || "fail",
     code: code,
-    data: error
+    data: error as T
   }
 }

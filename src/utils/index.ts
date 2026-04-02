@@ -48,7 +48,7 @@ export function getRandomArrayElements<T>(array: Array<T>, count: number) {
  */
 export function checkType(target: any) {
   const value: string = Object.prototype.toString.call(target);
-  const result = value.match(/\[object (\S*)\]/)[1];
+  const result = value.match(/\[object (\S*)\]/)![1];
   return result.toLocaleLowerCase() as JavaScriptTypes;
 }
 

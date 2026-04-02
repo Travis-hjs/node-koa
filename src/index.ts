@@ -63,7 +63,7 @@ App.use(async (ctx: TheContext, next) => {
 
   try {
     await next();
-  } catch (err) {
+  } catch (err: any) {
     ctx.response.status = err.statusCode || err.status || 500;
     ctx.response.body = {
       message: err.message

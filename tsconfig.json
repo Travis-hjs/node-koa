@@ -1,16 +1,18 @@
 {
-  // learn: https://segmentfault.com/a/1190000021749847
   "compilerOptions": {
     "module": "commonjs",
     "target": "ESNext",
-    "incremental": true,
-    "noImplicitAny": true,
+    "lib": ["ESNext"],
+    "types": ["node"],
+    // "strict": true,
+    // "strictNullChecks": true,         // 严格的 null 和 undefined 检查
+    "incremental": true,              // 启用增量编译
+    "noImplicitAny": true,            // 禁止隐式的 any 类型
     "skipLibCheck": true,
-    // "verbatimModuleSyntax": true,
+    "noImplicitThis": true,           // 禁止隐式的 this类型
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist", // TS文件编译后会放入到此文件夹内
-    "types": ["node"],
+    "outDir": "dist",
     "baseUrl": "./",
     "paths": {
       "*": [
