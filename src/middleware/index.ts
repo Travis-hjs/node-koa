@@ -26,7 +26,7 @@ export async function handleToken(ctx: TheContext, next: Next) {
  * @param ctx 
  * @param next 
  */
-export async function handleDoMain(ctx: TheContext, next: Next) {
+export async function handleDomain(ctx: TheContext, next: Next) {
 
   const { referer, origin } = ctx.headers;
   // console.log(referer, origin);
