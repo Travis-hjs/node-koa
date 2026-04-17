@@ -6,7 +6,7 @@ import * as staticFiles from "koa-static"; // 静态文件处理模块 https://w
 import * as path from "path";
 import { config } from "./utils/config";
 import router from "./routes/main";
-import { getDomain } from "./utils";
+import { getDomain, getLogText } from "./utils";
 import "./routes/test";                         // 基础测试模块
 import "./routes/user";                         // 用户模块
 import "./routes/upload";                       // 上传文件模块
@@ -22,10 +22,8 @@ App.use(staticFiles(path.resolve(__dirname, "../public/upload")))
 
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx: TheContext, next) => {
-  /** 请求路径 */
-  // const path = ctx.request.path;
-
   console.log("--------------------------");
+  console.log(getLogText(new Date().toLocaleString(), "yellow"), ctx.request.path);
   console.count("request count");
 
   const { origin, referer } = ctx.headers;
@@ -63,10 +61,10 @@ App.use(async (ctx: TheContext, next) => {
 
   try {
     await next();
-  } catch (err: any) {
+  } catch (err) {
     ctx.response.status = err.statusCode || err.status || 500;
     ctx.response.body = {
-      message: err.message
+      message: err.message || `${err}`
     }
   }
 });
@@ -81,6 +79,8 @@ App.use(koaBody({
 
 // 开始使用路由
 App.use(router.routes());
+// allowedMethods 自动根据当前路由配置响应 OPTIONS 请求，并针对未实现的方法返回 405/501
+App.use(router.allowedMethods());
 
 // 默认无路由模式
 // App.use((ctx, next) => {
@@ -89,17 +89,19 @@ App.use(router.routes());
 // });
 
 App.on("error", (err, ctx) => {
-  console.log(`\x1B[91m server error !!!!!!!!!!!!! \x1B[0m`, err, ctx);
+  const text = getLogText("server error !!!!!!!!!!!!!", "red-light");
+  console.log(text, err, ctx);
 });
 
 App.listen(config.port, () => {
   // for (let i = 0; i < 100; i++) {
   //   console.log(`\x1B[${i}m 颜色 \x1B[0m`, i);
   // }
-  const suffix = config.port + config.apiPrefix;
-  console.log("服务器启动完成:");
-  console.log(` - Local:   \x1B[36m http://localhost:\x1B[0m\x1B[96m${suffix} \x1B[0m`);
-  console.log(` - Network: \x1B[36m http://${config.ip}:\x1B[0m\x1B[96m${suffix} \x1B[0m`);
+  const suffix = getLogText(config.port + config.apiPrefix, "cyan");
+  console.log(getLogText("服务器启动完成:", "green"));
+  console.log(` - 当前环境: ${getLogText(config.env, "cyan")}`);
+  console.log(` - Local:    ${getLogText("http://localhost:", "blue") + suffix}`);
+  console.log(` - Network:  ${getLogText(`http://${config.ip}:`, "blue") + suffix}`);
 });
 
 // 参考项目配置连接: https://juejin.im/post/5ce25993f265da1baa1e464f

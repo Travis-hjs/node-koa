@@ -1,11 +1,11 @@
-import type { BaseObj } from "../types/base";
+import type { BaseObj } from "#/types/base";
 import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
-import { formatDate, isType, jsonToPath, replaceText } from "../utils";
-import { apiSuccess, apiFail } from "../utils/apiResult";
-import { config } from "../utils/config";
-import request from "../utils/request";
+import { formatDate, isType, replaceText } from "#/utils";
+import { apiSuccess, apiFail } from "#/utils/apiResult";
+import { config } from "#/utils/config";
+import request from "#/utils/request";
 
 /** 资源路径 */
 const resourcePath = path.resolve(__dirname, "../../public/template");
@@ -74,7 +74,7 @@ router.get("/getData", (ctx, next) => {
 // post 请求
 router.post("/postData", (ctx, next) => {
   /** 接收参数 */
-  const params: BaseObj = ctx.request.body || ctx.params;
+  const params = ctx.request.body;
 
   // console.log("/postData", params);
 
@@ -107,16 +107,14 @@ router.get("/getWeather", async (ctx, next) => {
     ctx.body = apiFail("服务端缺少 appKey 请检查再重试", 500, {})
     return;
   }
-  
-  const path = jsonToPath({
-    key: appKey,
-    city: cityCode
-  })
 
   const res = await request({
     method: "GET",
     hostname: "restapi.amap.com",
-    path: "/v3/weather/weatherInfo?" + path
+    path: "/v3/weather/weatherInfo",
+  }, {
+    key: appKey,
+    city: cityCode
   })
 
   // console.log("获取天气信息 >>", res);
@@ -138,14 +136,14 @@ const filePath = path.resolve(__dirname, "../../public/upload");
 router.get("/getVideo", async (ctx, next) => {
   // const blob = new Blob(["hello there"]);
   // console.log("filePath >>", filePath);
-  
+
   // 设置响应头，告诉浏览器该文件需要下载
   ctx.set("Content-disposition", "attachment; filename=xhs.webm");
   ctx.set("Content-type", "video/webm");
 
   const stream = fs.createReadStream(filePath + "/xhs2.webm");
 
-	// stream.pipe(ctx.body);
+  // stream.pipe(ctx.body);
 
   ctx.body = stream;
 
@@ -176,4 +174,4 @@ router.get("/getExcel", async (ctx, next) => {
     ctx.status = 500;
     ctx.body = "文件下载出错";
   });
-})
+});

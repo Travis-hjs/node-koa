@@ -1,4 +1,4 @@
-import { formatDate, modifyData, objectToHump } from "../utils";
+import { formatDate, getLogText, modifyData, objectToHump } from "../utils";
 import { query } from "../utils/mysql";
 import type { TableUserInfo } from "../types/user";
 import type { BaseObj } from "../types/base";
@@ -27,7 +27,7 @@ class ModuleUser {
         item.createTime = formatDate(item.createTime);
         this.table.set(item.id.toString(), item);
       }
-      console.log("\x1B[42m 更新用户表缓存 \x1B[0m", this.total, "条数据");
+      console.log(getLogText("更新用户表缓存", "green-light"), this.total, "条数据");
     } else {
       console.log("用户表更新失败 >>", res.msg, res.error);
     }
@@ -40,7 +40,7 @@ class ModuleUser {
    */
   add(id: number, value: TableUserInfo) {
     this.table.set(id.toString(), value);
-    console.log("\x1B[42m 新增用户 \x1B[0m", value);
+    console.log(getLogText("新增用户", "green-light"), value);
   }
 
   /**

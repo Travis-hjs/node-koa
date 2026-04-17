@@ -15,7 +15,7 @@ function getIPAddress() {
 
 /** 项目配置 */
 export const config = (function () {
-  const env = process.env.mode as "dev" | "prod" || "dev";
+  const environment = process.env.mode as "dev" | "prod" || "dev";
   const ipAddress = getIPAddress();
   const devDomain = `http://${ipAddress}`;
 
@@ -34,7 +34,7 @@ export const config = (function () {
   return {
     /** 当前环境 */
     get env() {
-      return env;
+      return environment;
     },
     /** 当前服务`ip`地址 */
     get ip() {
@@ -42,7 +42,7 @@ export const config = (function () {
     },
     /** 端口号 */
     get port() {
-      return env === "dev" ? 2019 : 80;
+      return environment === "dev" ? 2019 : 80;
     },
     /** 允许访问的域名源 */
     get origins() {
@@ -60,7 +60,7 @@ export const config = (function () {
         /** 默认是`root`除非在服务器配置时有修改过 */
         user: "root",
         /** 这个密码是服务器配置的时候设置的 */
-        password: env === "dev" ? "DRsXT5ZJ6Oi55LPQ" : "服务器密码",
+        password: environment === "dev" ? "DRsXT5ZJ6Oi55LPQ" : "服务器密码",
         /** 数据库名 */
         database: "node_ts",
         /** 链接上限次数 */

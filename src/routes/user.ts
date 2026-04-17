@@ -1,16 +1,16 @@
-import type { ApiResult } from "../types/base";
-import type { UserInfo } from "../types/user";
+import type { ApiResult } from "#/types/base";
+import type { UserInfo } from "#/types/user";
 import router from "./main";
-import { query } from "../utils/mysql";
-import { jwt, tableUser } from "../modules";
-import { handleToken } from "../middleware";
-import { apiSuccess, apiFail } from "../utils/apiResult";
-import { checkType, formatDate, mysqlFormatParams, mysqlSetParams, objectToHump } from "../utils";
+import { query } from "#/utils/mysql";
+import { jwt, tableUser } from "#/modules";
+import { handleToken } from "#/middleware";
+import { apiSuccess, apiFail } from "#/utils/apiResult";
+import { checkType, formatDate, mysqlFormatParams, mysqlSetParams, objectToHump } from "#/utils";
 
 // 注册
 router.post("/register", async (ctx) => {
   /** 接收参数 */
-  const params: UserInfo = ctx.request.body;
+  const params = ctx.request.body as unknown as UserInfo;
   /** 返回结果 */
   let bodyResult: ApiResult;
   /** 账号是否可用 */
@@ -88,7 +88,7 @@ router.post("/register", async (ctx) => {
 // 登录
 router.post("/login", async (ctx) => {
   /** 接收参数 */
-  const params: UserInfo = ctx.request.body;
+  const params = ctx.request.body as unknown as UserInfo;
   /** 返回结果 */
   let bodyResult: ApiResult;
   // console.log("登录", params);
@@ -169,7 +169,7 @@ router.get("/getUserInfo", handleToken, async (ctx) => {
 router.post("/editUserInfo", handleToken, async (ctx) => {
   const tokenInfo = ctx.theToken;
   /** 接收参数 */
-  const params: UserInfo = ctx.request.body;
+  const params = ctx.request.body as unknown as UserInfo;
   /** 返回结果 */
   let bodyResult: ApiResult;
   /** 账号是否可用 */
@@ -358,7 +358,7 @@ router.post("/deleteUser", handleToken, async (ctx) => {
   const tokenInfo = ctx.theToken;
 
   /** 接收参数 */
-  const params = ctx.request.body as UserInfo;
+  const params = ctx.request.body as unknown as UserInfo;
   // console.log(params);
 
   if (tokenInfo && tokenInfo.type != 0) {

@@ -1,4 +1,4 @@
-# Node.js + Koa2 + Typescript 构建服务端应用
+# Node.js + Koa + Typescript 构建服务端应用
 
 当前描述文件不做详细介绍，请移步到[掘金介绍](https://juejin.cn/post/6844903922767757320/)
 
@@ -15,8 +15,9 @@ npm run dev
 npm run build
 ```
 
-## 重要功能修改记录
+## 项目变更记录
 
+- **2026-04-17** 导入文件路径使用别名配置、`koa`相关版本升级至最新。
 - **2026-04-02** `utils`工具类使用改用按需导入、`tsconfig.json`配置文件调整、`config`配置文件目录调整、加入环境变量使用。
 - **2026-02-04** 弃用`koa-router`，改用`@koa/router`。
 - **2024-10-05** 新增 vscode 增删改查代码片段，快速编写接口功能。

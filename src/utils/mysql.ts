@@ -1,11 +1,11 @@
-import type { BaseObj } from "../types/base";
+import type { BaseObj } from "#/types/base";
 import {
   type FieldInfo,
   type MysqlError,
   type queryCallback,
   createPool
 } from "mysql";         // learn: https://www.npmjs.com/package/mysql
-import { config } from "../utils/config";
+import { config } from "#/utils/config";
 import { mysqlSearchParams } from "./index";
 
 /** `mysql`查询结果 */
