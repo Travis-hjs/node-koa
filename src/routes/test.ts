@@ -1,11 +1,11 @@
-import type { BaseObj } from "#/types/base";
+import type { BaseObj } from "~/types/base";
 import * as fs from "fs";
 import * as path from "path";
 import router from "./main";
-import { formatDate, isType, replaceText } from "#/utils";
-import { apiSuccess, apiFail } from "#/utils/apiResult";
-import { config } from "#/utils/config";
-import request from "#/utils/request";
+import { formatDate, isType, replaceText } from "~/utils";
+import { apiSuccess, apiFail } from "~/utils/apiResult";
+import { config } from "~/utils/config";
+import request from "~/utils/request";
 
 /** 资源路径 */
 const resourcePath = path.resolve(__dirname, "../../public/template");

@@ -1,8 +1,8 @@
 import type { Next } from "koa";
-import type { TheContext } from "#/types/base";
-import { getDomain } from "#/utils";
-import { jwt } from "#/modules";
-import { config } from "#/utils/config";
+import type { TheContext } from "~/types/base";
+import { getDomain } from "~/utils";
+import { jwt } from "~/modules";
+import { config } from "~/utils/config";
 
 /**
  * 中间件-处理`token`验证

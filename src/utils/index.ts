@@ -1,4 +1,4 @@
-import type { BaseObj, JavaScriptType, JavaScriptTypes } from "#/types/base";
+import type { BaseObj, JavaScriptType, JavaScriptTypes } from "~/types/base";
 
 /**
  * 范围随机数
