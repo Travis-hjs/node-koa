@@ -15,7 +15,7 @@ function getIPAddress() {
 
 /** 项目配置 */
 export const config = (function () {
-  const environment = process.env.mode as "dev" | "prod" || "dev";
+  const environment = (process.env.mode as "dev" | "test" | "prod") || "dev";
   const ipAddress = getIPAddress();
   const devDomain = `http://${ipAddress}`;
 
