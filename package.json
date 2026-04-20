@@ -8,12 +8,15 @@
     "dev": "tsx watch ./src/index.ts",
     "dev:test": "cross-env mode=test tsx watch ./src/index.ts",
     "dev:prod": "cross-env mode=prod tsx watch ./src/index.ts",
+    
     "clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\"",
     "copy-assets": "copyfiles -u 1 \"src/**/*.md\" dist",
     "build": "npm run clean && tsc && npm run copy-assets",
+
     "start": "node ./dist/index.js",
     "start:test": "cross-env mode=test node ./dist/index.js",
     "start:prod": "cross-env mode=prod node ./dist/index.js",
+    
     "build-sql": "tsx ./mysql/creator.ts"
   },
   "repository": {
