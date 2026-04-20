@@ -11,6 +11,7 @@
     "noImplicitAny": true,            // 禁止隐式的 any 类型
     "skipLibCheck": true,
     "noImplicitThis": true,           // 禁止隐式的 this类型
+    "verbatimModuleSyntax": true,
     "sourceMap": true,
     "outDir": "dist",
     "esModuleInterop": true,
