@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { config } from "./utils/config.js";
 import router from "./routes/main.js";
-import { getDomain, getLogText } from "./utils/index.js";
+import { formatDate, getDomain, getLogText } from "./utils/index.js";
 import "./routes/test.js";                         // 基础测试模块
 import "./routes/user.js";                         // 用户模块
 import "./routes/upload.js";                       // 上传文件模块
@@ -26,7 +26,7 @@ App.use(serve(path.resolve(__dirname, "../public/upload")))
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx: TheContext, next) => {
   console.log("--------------------------");
-  console.log(getLogText(new Date().toLocaleString(), "yellow"), ctx.request.path);
+  console.log(getLogText(`服务器时间: ${formatDate()}`, "yellow"), ctx.request.path);
   console.count("request count");
 
   const { origin, referer } = ctx.headers;
