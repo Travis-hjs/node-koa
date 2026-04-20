@@ -1,5 +1,5 @@
 {
-  "name": "node-koa-service",
+  "name": "typescript-koa-node-service",
   "version": "1.0.7",
   "description": "node.js + koa + typescript 构建服务端应用",
   "main": "index.js",
@@ -8,15 +8,12 @@
     "dev": "tsx watch ./src/index.ts",
     "dev:test": "cross-env mode=test tsx watch ./src/index.ts",
     "dev:prod": "cross-env mode=prod tsx watch ./src/index.ts",
-    
     "clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\"",
     "copy-assets": "copyfiles -u 1 \"src/**/*.md\" dist",
     "build": "npm run clean && tsc && npm run copy-assets",
-    
     "start": "node ./dist/index.js",
     "start:test": "cross-env mode=test node ./dist/index.js",
     "start:prod": "cross-env mode=prod node ./dist/index.js",
-    
     "build-sql": "tsx ./mysql/creator.ts"
   },
   "repository": {
@@ -35,7 +32,6 @@
   "homepage": "https://github.com/Travis-hjs/node-koa#readme",
   "dependencies": {
     "@koa/router": "15.4.0",
-    "copyfiles": "2.4.1",
     "koa": "3.2.0",
     "koa-body": "7.0.1",
     "koa-static": "5.0.0",
@@ -46,6 +42,7 @@
     "@types/koa-static": "4.0.4",
     "@types/mysql": "2.15.27",
     "@types/node": "25.6.0",
+    "copyfiles": "2.4.1",
     "cross-env": "10.1.0",
     "tsx": "4.20.6",
     "typescript": "5.6.3"
