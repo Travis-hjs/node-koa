@@ -10,9 +10,16 @@ npm install
 
 # 运行并开启代码热更新
 npm run dev
+npm run dev:test
+npm run dev:prod
 
 # 直接编译输出到`dist`目录并运行
 npm run build
+
+# 运行编译后的代码
+npm run start
+npm run start:test
+npm run start:prod
 ```
 
 ## 项目变更记录

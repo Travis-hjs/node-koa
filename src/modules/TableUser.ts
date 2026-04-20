@@ -1,7 +1,7 @@
-import { formatDate, getLogText, modifyData, objectToHump } from "../utils";
-import { query } from "../utils/mysql";
-import type { TableUserInfo } from "../types/user";
-import type { BaseObj } from "../types/base";
+import { formatDate, getLogText, modifyData, objectToHump } from "../utils/index.js";
+import { query } from "../utils/mysql.js";
+import type { TableUserInfo } from "../types/user.js";
+import type { BaseObj } from "../types/base.js";
 
 class ModuleUser {
   constructor() {

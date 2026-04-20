@@ -1,24 +1,27 @@
 
-import type { TheContext } from "./types/base";
-import * as Koa from "koa"; // learn: https://www.npmjs.com/package/koa
-import { koaBody } from "koa-body"; // learn: https://www.npmjs.com/package/koa-body
-import * as staticFiles from "koa-static"; // 静态文件处理模块 https://www.npmjs.com/package/koa-static
-import * as path from "path";
-import { config } from "./utils/config";
-import router from "./routes/main";
-import { getDomain, getLogText } from "./utils";
-import "./routes/test";                         // 基础测试模块
-import "./routes/user";                         // 用户模块
-import "./routes/upload";                       // 上传文件模块
-import "./routes/todo";                         // 用户列表模块
+import type { TheContext } from "./types/base.js";
+import Koa from "koa";
+import { koaBody } from "koa-body";
+import serve from "koa-static";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { config } from "./utils/config.js";
+import router from "./routes/main.js";
+import { getDomain, getLogText } from "./utils/index.js";
+import "./routes/test.js";                         // 基础测试模块
+import "./routes/user.js";                         // 用户模块
+import "./routes/upload.js";                       // 上传文件模块
+import "./routes/todo.js";                         // 用户列表模块
 
 const App = new Koa();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 指定 public目录为静态资源目录，用来存放 js css images 等
 // 注意：这里`template`目录下如果有`index.html`的话，会默认使用`index.html`代`router.get("/")`监听的
-App.use(staticFiles(path.resolve(__dirname, "../public/template")))
+App.use(serve(path.resolve(__dirname, "../public/template")))
 // 上传文件读取图片的目录也需要设置为静态目录
-App.use(staticFiles(path.resolve(__dirname, "../public/upload")))
+App.use(serve(path.resolve(__dirname, "../public/upload")))
 
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx: TheContext, next) => {
@@ -44,10 +47,6 @@ App.use(async (ctx: TheContext, next) => {
     });
   }
 
-  // 如果前端设置了 XHR.setRequestHeader("Content-Type", "application/json")
-  // ctx.set 就必须携带 "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization" 
-  // 如果前端设置了 XHR.setRequestHeader("Authorization", "xxxx") 那对应的字段就是 Authorization
-  // 并且这里要转换一下状态码
   // console.log(ctx.request.method);
   if (ctx.request.method === "OPTIONS") {
     ctx.response.status = 200;
@@ -56,7 +55,7 @@ App.use(async (ctx: TheContext, next) => {
   // const hasPath = router.stack.some(item => item.path == path);
   // // 判断是否 404
   // if (path != "/" && !hasPath) {
-  //     return ctx.body = "<h1 style="text-align: center; line-height: 40px; font-size: 24px; color: tomato">404：访问的页面（路径）不存在</h1>";
+  //     return ctx.body = "<h1 style=\"text-align: center; line-height: 40px; font-size: 24px; color: tomato\">404: page not found</h1>";
   // }
 
   try {

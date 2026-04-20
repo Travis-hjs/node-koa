@@ -1,4 +1,4 @@
-import type { TableUserInfo } from "./user";
+import type { TableUserInfo } from "./user.js";
 import type { RouterContext } from "@koa/router";
 
 /** 基础对象 */

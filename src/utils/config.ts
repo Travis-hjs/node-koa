@@ -1,4 +1,4 @@
-import * as os from "os";
+import os from "node:os";
 
 function getIPAddress() {
   const interfaces = os.networkInterfaces();

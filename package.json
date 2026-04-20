@@ -1,19 +1,23 @@
 {
   "name": "node-koa-service",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "node.js + koa + typescript 构建服务端应用",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "dev": "ts-node-dev --require tsconfig-paths/register --respawn ./src/index.ts",
-    "dev:test": "cross-env mode=test ts-node-dev --require tsconfig-paths/register --respawn ./src/index.ts",
-    "dev:prod": "cross-env mode=prod ts-node-dev --require tsconfig-paths/register --respawn ./src/index.ts",
+    "dev": "tsx watch ./src/index.ts",
+    "dev:test": "cross-env mode=test tsx watch ./src/index.ts",
+    "dev:prod": "cross-env mode=prod tsx watch ./src/index.ts",
     
-    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
-    "build": "npm run clean && tsc && tsc-alias && node dist/index.js",
-    "build:test": "npm run clean && tsc && tsc-alias && cross-env mode=test node dist/index.js",
-    "build:prod": "npm run clean && tsc && tsc-alias && cross-env mode=prod node dist/index.js",
+    "clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\"",
+    "copy-assets": "copyfiles -u 1 \"src/**/*.md\" dist",
+    "build": "npm run clean && tsc && npm run copy-assets",
     
-    "build-sql": "ts-node-dev --respawn ./mysql/creator.ts"
+    "start": "node ./dist/index.js",
+    "start:test": "cross-env mode=test node ./dist/index.js",
+    "start:prod": "cross-env mode=prod node ./dist/index.js",
+    
+    "build-sql": "tsx ./mysql/creator.ts"
   },
   "repository": {
     "type": "git",
@@ -31,6 +35,7 @@
   "homepage": "https://github.com/Travis-hjs/node-koa#readme",
   "dependencies": {
     "@koa/router": "15.4.0",
+    "copyfiles": "2.4.1",
     "koa": "3.2.0",
     "koa-body": "7.0.1",
     "koa-static": "5.0.0",
@@ -42,9 +47,7 @@
     "@types/mysql": "2.15.27",
     "@types/node": "25.6.0",
     "cross-env": "10.1.0",
-    "ts-node-dev": "2.0.0",
-    "tsc-alias": "1.8.16",
-    "tsconfig-paths": "4.2.0",
+    "tsx": "4.20.6",
     "typescript": "5.6.3"
   }
 }

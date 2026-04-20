@@ -1,11 +1,11 @@
-import type { ApiResult } from "~/types/base";
-import type { UserInfo } from "~/types/user";
-import router from "./main";
-import { query } from "~/utils/mysql";
-import { jwt, tableUser } from "~/modules";
-import { handleToken } from "~/middleware";
-import { apiSuccess, apiFail } from "~/utils/apiResult";
-import { checkType, formatDate, mysqlFormatParams, mysqlSetParams, objectToHump } from "~/utils";
+import type { ApiResult } from "../types/base.js";
+import type { UserInfo } from "../types/user.js";
+import router from "./main.js";
+import { query } from "../utils/mysql.js";
+import { jwt, tableUser } from "../modules/index.js";
+import { handleToken } from "../middleware/index.js";
+import { apiSuccess, apiFail } from "../utils/apiResult.js";
+import { checkType, formatDate, mysqlFormatParams, mysqlSetParams, objectToHump } from "../utils/index.js";
 
 // 注册
 router.post("/register", async (ctx) => {

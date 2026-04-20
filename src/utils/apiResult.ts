@@ -1,4 +1,4 @@
-import type { ApiResult } from "~/types/base";
+import type { ApiResult } from "../types/base.js";
 
 /**
  * 接口成功响应返回数据

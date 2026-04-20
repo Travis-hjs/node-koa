@@ -1,9 +1,9 @@
-import type { ApiResult } from "~/types/base";
-import router from "./main";
-import { query } from "~/utils/mysql";
-import { arrayItemToHump, formatDate, mysqlFormatParams, mysqlSetParams } from "~/utils";
-import { apiSuccess, apiFail } from "~/utils/apiResult";
-import { handleToken } from "~/middleware";
+import type { ApiResult } from "../types/base.js";
+import router from "./main.js";
+import { query } from "../utils/mysql.js";
+import { arrayItemToHump, formatDate, mysqlFormatParams, mysqlSetParams } from "../utils/index.js";
+import { apiSuccess, apiFail } from "../utils/apiResult.js";
+import { handleToken } from "../middleware/index.js";
 
 // 获取所有列表
 router.get("/getList", handleToken, async (ctx) => {

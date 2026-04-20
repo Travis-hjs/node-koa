@@ -1,5 +1,4 @@
-import * as fs from "fs";
-import utils from "../src/utils";
+import fs from "node:fs";
 
 /** `sql`生成器类型 */
 namespace SqlCreator {
@@ -207,11 +206,11 @@ sqlCreator({
 // });
 
 // function add() {
-//   const info = utils.mysqlFormatParams({
+//   const info = mysqlFormatParams({
 //     "name": "params.content",
 //     "state": 1,
 //     "create_user_id": 3,
-//     "create_time": utils.formatDate()
+//     "create_time": formatDate()
 //   })
   
 //   const text = `insert into xxx_table(${info.keys}) values(${info.values.toString()})`;

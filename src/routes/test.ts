@@ -1,13 +1,14 @@
-import type { BaseObj } from "~/types/base";
-import * as fs from "fs";
-import * as path from "path";
-import router from "./main";
-import { formatDate, isType, replaceText } from "~/utils";
-import { apiSuccess, apiFail } from "~/utils/apiResult";
-import { config } from "~/utils/config";
-import request from "~/utils/request";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import router from "./main.js";
+import { formatDate, isType, replaceText } from "../utils/index.js";
+import { apiSuccess, apiFail } from "../utils/apiResult.js";
+import { config } from "../utils/config.js";
+import request from "../utils/request.js";
 
-/** 资源路径 */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const resourcePath = path.resolve(__dirname, "../../public/template");
 
 const template = fs.readFileSync(resourcePath + "/page.html", "utf-8");
@@ -57,9 +58,7 @@ router.get("/home", (ctx, next) => {
   // console.log("/home");
 })
 
-// get 请求
 router.get("/getData", (ctx, next) => {
-  /** 接收参数 */
   const params = ctx.query || ctx.querystring;
 
   console.log("/getData", params);
@@ -71,9 +70,7 @@ router.get("/getData", (ctx, next) => {
   });
 })
 
-// post 请求
 router.post("/postData", (ctx, next) => {
-  /** 接收参数 */
   const params = ctx.request.body;
 
   // console.log("/postData", params);
@@ -104,7 +101,7 @@ router.get("/getWeather", async (ctx, next) => {
 
   if (!appKey) {
     ctx.status = 500;
-    ctx.body = apiFail("服务端缺少 appKey 请检查再重试", 500, {})
+    ctx.body = apiFail("服务端缺少 appKey 请检查再重试", 500, {});
     return;
   }
 

@@ -1,7 +1,7 @@
-import type { BaseObj, ServeRequestResult } from "~/types/base";
-import * as http from "http";
-import * as querystring from "querystring";
-import * as zlib from "zlib";
+import type { BaseObj, ServeRequestResult } from "../types/base.js";
+import http from "node:http";
+import querystring from "node:querystring";
+import zlib from "node:zlib";
 
 /**
  * 服务端请求

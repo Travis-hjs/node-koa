@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "target": "ESNext",
     "lib": ["ESNext"],
     "types": ["node"],
@@ -10,13 +11,10 @@
     "noImplicitAny": true,            // 禁止隐式的 any 类型
     "skipLibCheck": true,
     "noImplicitThis": true,           // 禁止隐式的 this类型
-    "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
-    "baseUrl": "./",
-    "paths": {
-      "~/*": ["src/*"],
-    }
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "node_modules",

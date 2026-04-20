@@ -1,8 +1,8 @@
 import type { Next } from "koa";
-import type { TheContext } from "~/types/base";
-import { getDomain } from "~/utils";
-import { jwt } from "~/modules";
-import { config } from "~/utils/config";
+import type { TheContext } from "../types/base.js";
+import { getDomain } from "../utils/index.js";
+import { jwt } from "../modules/index.js";
+import { config } from "../utils/config.js";
 
 /**
  * 中间件-处理`token`验证
@@ -39,5 +39,4 @@ export async function handleDomain(ctx: TheContext, next: Next) {
   if (domain && list.indexOf(domain) > -1) {
     await next();
   }
-
 }

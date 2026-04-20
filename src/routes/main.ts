@@ -1,6 +1,6 @@
-import Router from "@koa/router";       // learn: https://www.npmjs.com/package/koa-router
-import { config } from "~/utils/config";
-import type { AppState, AppContext } from "~/types/base";
+import Router from "@koa/router";
+import { config } from "../utils/config.js";
+import type { AppState, AppContext } from "../types/base.js";
 
 /**
  * 路由/接口模块
