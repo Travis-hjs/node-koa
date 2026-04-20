@@ -103,6 +103,3 @@ App.listen(config.port, () => {
   console.log(` - Local:    ${getLogText("http://localhost:", "blue") + suffix}`);
   console.log(` - Network:  ${getLogText(`http://${config.ip}:`, "blue") + suffix}`);
 });
-
-// 参考项目配置连接: https://juejin.im/post/5ce25993f265da1baa1e464f
-// mysql learn: https://www.jianshu.com/p/d54e055db5e0
