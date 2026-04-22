@@ -9,10 +9,10 @@ class ModuleJWT {
   }
 
   /** 效期（小时） */
-  private maxAge = 24 * 7;
+  private readonly maxAge = 24 * 7;
 
   /** 前缀长度 */
-  private prefixSize = 8;
+  private readonly prefixSize = 8;
 
   /**
    * 通过用户信息创建`token`
@@ -39,76 +39,62 @@ class ModuleJWT {
    */
   checkToken(ctx: TheContext) {
     const token: string = ctx.header.authorization;
-    /** 是否失败的`token` */
-    let fail = false;
-    /** 检测结果信息 */
-    let info: ApiResult;
-    /**
-     * 设置失败信息
-     * @param msg
-     */
-    function setFail(msg: string) {
-      fail = true;
+
+    const setFail = (msg: string) => {
       ctx.response.status = 401;
-      info = apiSuccess({}, msg, -1);
-    }
+      return {
+        fail: true,
+        info: apiSuccess({}, msg, -1) as ApiResult,
+      };
+    };
 
     if (!token) {
-      setFail("缺少 token");
+      return setFail("缺少 token");
     }
 
-    if (token && token.length < this.prefixSize * 2) {
-      setFail("token 错误");
+    if (token.length < this.prefixSize * 2) {
+      return setFail("token 错误");
     }
 
-    if (!fail) {
-      /** 准备解析的字符串 */
-      const str = Buffer.from(token.slice(this.prefixSize), "base64").toString("utf-8");
+    const str = Buffer.from(token.slice(this.prefixSize), "base64").toString("utf-8");
 
-      /** 解析出来的结果 */
-      let result: UserInfoToken;
+    let result: UserInfoToken;
 
-      try {
-        result = JSON.parse(str);
-      }
-      catch (error) {
-        console.log("错误的 token 解析", error);
-        setFail("token 错误");
-      }
-
-      if (!fail) {
-        if (result.o && Date.now() - result.o < this.maxAge * 3600000) {
-          const info = tableUser.getUserById(result.i);
-          // console.log("userInfo >>", info);
-          // console.log("token 解析 >>", result);
-          if (info) {
-            // 设置`token`信息到上下文中给接口模块里面调用
-            // 1. 严格判断账号、密码、用户权限等是否相同
-            // 2. 后台管理修改个人信息之后需要重新返回`token`
-            if (
-              info.password.toString() === result.p.toString()
-              && info.groupId.toString() === result.g.toString()
-              && info.type.toString() === result.t.toString()
-            ) {
-              ctx.theToken = info;
-            }
-            else {
-              setFail("token 已失效");
-            }
-          }
-          else {
-            setFail("token 不存在");
-          }
-        }
-        else {
-          setFail("token 过期");
-        }
-      }
+    try {
+      result = JSON.parse(str);
     }
+    catch (error) {
+      console.log("错误的 token 解析", error);
+      return setFail("token 错误");
+    }
+
+    if (!result.o || Date.now() - result.o >= this.maxAge * 3600000) {
+      return setFail("token 过期");
+    }
+
+    const info = tableUser.getUserById(result.i);
+    // console.log("userInfo >>", info);
+    // console.log("token 解析 >>", result);
+    if (!info) {
+      return setFail("token 不存在");
+    }
+
+    // 设置`token`信息到上下文中给接口模块里面调用
+    // 1. 严格判断账号、密码、用户权限等是否相同
+    // 2. 后台管理修改个人信息之后需要重新返回`token`
+    if (
+      info.password.toString() !== result.p.toString()
+      || info.groupId.toString() !== result.g.toString()
+      || info.type.toString() !== result.t.toString()
+    ) {
+      return setFail("token 已失效");
+    }
+
+    ctx.theToken = info;
 
     return {
-      fail,
-      info,
+      fail: false,
+      info: undefined as ApiResult,
     };
   }
 }
