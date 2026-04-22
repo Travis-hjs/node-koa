@@ -7,10 +7,10 @@
     "types": ["node"],
     // "strict": true,
     // "strictNullChecks": true,         // 严格的 null 和 undefined 检查
-    "incremental": true,              // 启用增量编译
-    "noImplicitAny": true,            // 禁止隐式的 any 类型
+    "incremental": true, // 启用增量编译
+    "noImplicitAny": true, // 禁止隐式的 any 类型
     "skipLibCheck": true,
-    "noImplicitThis": true,           // 禁止隐式的 this类型
+    "noImplicitThis": true, // 禁止隐式的 this类型
     "verbatimModuleSyntax": true,
     "sourceMap": true,
     "outDir": "dist",

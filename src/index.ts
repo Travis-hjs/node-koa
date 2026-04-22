@@ -1,17 +1,16 @@
-
 import type { TheContext } from "./types/base.js";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import Koa from "koa";
 import { koaBody } from "koa-body";
 import serve from "koa-static";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { config } from "./utils/config.js";
 import router from "./routes/main.js";
+import { config } from "./utils/config.js";
 import { formatDate, getDomain, getLogText } from "./utils/index.js";
-import "./routes/test.js";                         // 基础测试模块
-import "./routes/user.js";                         // 用户模块
-import "./routes/upload.js";                       // 上传文件模块
-import "./routes/todo.js";                         // 用户列表模块
+import "./routes/test.js"; // 基础测试模块
+import "./routes/user.js"; // 用户模块
+import "./routes/upload.js"; // 上传文件模块
+import "./routes/todo.js"; // 用户列表模块
 
 const App = new Koa();
 const __filename = fileURLToPath(import.meta.url);
@@ -19,9 +18,9 @@ const __dirname = path.dirname(__filename);
 
 // 指定 public目录为静态资源目录，用来存放 js css images 等
 // 注意：这里`template`目录下如果有`index.html`的话，会默认使用`index.html`代`router.get("/")`监听的
-App.use(serve(path.resolve(__dirname, "../public/template")))
+App.use(serve(path.resolve(__dirname, "../public/template")));
 // 上传文件读取图片的目录也需要设置为静态目录
-App.use(serve(path.resolve(__dirname, "../public/upload")))
+App.use(serve(path.resolve(__dirname, "../public/upload")));
 
 // 先统一设置请求配置 => 跨域，请求头信息...
 App.use(async (ctx: TheContext, next) => {
@@ -29,7 +28,7 @@ App.use(async (ctx: TheContext, next) => {
   console.log(getLogText(`服务器时间: ${formatDate()}`, "yellow"), ctx.request.path);
   console.count("request count");
 
-  const { origin, referer } = ctx.headers;
+  const { referer } = ctx.headers;
 
   const domain = getDomain(referer || "");
   // console.log("referer domain >>", domain);
@@ -60,11 +59,12 @@ App.use(async (ctx: TheContext, next) => {
 
   try {
     await next();
-  } catch (err) {
+  }
+  catch (err) {
     ctx.response.status = err.statusCode || err.status || 500;
     ctx.response.body = {
-      message: err.message || `${err}`
-    }
+      message: err.message || `${err}`,
+    };
   }
 });
 
@@ -72,8 +72,8 @@ App.use(async (ctx: TheContext, next) => {
 App.use(koaBody({
   multipart: true,
   formidable: {
-    maxFileSize: config.uploadImgLimit
-  }
+    maxFileSize: config.uploadImgLimit,
+  },
 }));
 
 // 开始使用路由

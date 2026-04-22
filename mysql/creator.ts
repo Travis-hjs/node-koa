@@ -5,50 +5,50 @@ namespace SqlCreator {
   /** 每一列的数据基础配置 */
   interface Base {
     /** 备注 */
-    comment: string
+    comment: string;
     /**
      * 字段值
      * 建议用小写+下划线方式命名
      */
-    name: string
+    name: string;
     /**
      * 字节长度
      * - 当`type: "date"时不需要设置`
      */
-    length: number
+    length: number;
     /** 是否可以为`null` */
-    isNull: boolean
+    isNull: boolean;
   }
 
   export interface Date extends Omit<Base, "length" | "isNull"> {
-    type: "date"
+    type: "date";
 
   }
 
   export interface Int extends Base {
-    type: "int"
-    /** 
+    type: "int";
+    /**
      * 是否为`键`
      * - 设置时为`true`时，`isNull`固定为`false`
      */
-    key?: boolean
+    key?: boolean;
   }
 
   export interface Varchar extends Omit<Base, "isNull"> {
-    type: "varchar"
+    type: "varchar";
   }
 
   export type Column = Int | Varchar | Date;
 
   export interface Option {
-    /** 
+    /**
      * 数据库表名
      * - 建议用小写 + 下划线方式命名
      * - 生成的表会带有`_table`标识
      */
-    name: string
+    name: string;
     /** 表列数据 */
-    columns: Array<Column>
+    columns: Array<Column>;
     /**
      * 存储引擎
      * | 字段 | 说明 |
@@ -62,39 +62,39 @@ namespace SqlCreator {
      * | FEDERATED | 允许在本地服务器上访问远程服务器上的数据，适用于分布式数据库环境。 |
      * | NDB | 也称为`NDBCluster`，适用于 MySQL Cluster，提供高可用性和实时性能。 |
      */
-    engine: "MyISAM"|"InnoDB"|"MEMORY"|"CSV"|"ARCHIVE"|"BLACKHOLE"|"FEDERATED"|"NDB"
+    engine: "MyISAM" | "InnoDB" | "MEMORY" | "CSV" | "ARCHIVE" | "BLACKHOLE" | "FEDERATED" | "NDB";
   }
 
 }
 
 /**
  * `sql`文件生成器
- * @param option 
+ * @param option
  */
 function sqlCreator(option: SqlCreator.Option) {
   if (option.columns.filter((col: any) => col.key).length > 1) {
     console.log(`\x1B[91m 一张表只能出现一个 key !!! \x1B[0m`);
     return;
-  } 
-  const tableName = option.name + "_table";
+  }
+  const tableName = `${option.name}_table`;
   const getNull = (val: boolean) => val ? "NULL" : "NOT NULL";
   const getComment = (val: string) => `COMMENT '${val}'`;
-  const getName = (val: string) => "`"+ val +"`";
+  const getName = (val: string) => `\`${val}\``;
   let key = "";
   const fnMap = {
     int(col: SqlCreator.Int) {
       if (col.key) {
         key = col.name;
       }
-      return `${getName(col.name)} int(${col.length}) ${col.key ? getNull(false) + " AUTO_INCREMENT" : "NULL DEFAULT NULL"} ${getComment(col.comment)}`
+      return `${getName(col.name)} int(${col.length}) ${col.key ? `${getNull(false)} AUTO_INCREMENT` : "NULL DEFAULT NULL"} ${getComment(col.comment)}`;
     },
     date(col: SqlCreator.Date) {
       return `${getName(col.name)} datetime(0) NULL DEFAULT NULL ${getComment(col.comment)}`;
     },
     varchar(col: SqlCreator.Varchar) {
       return `${getName(col.name)} varchar(${col.length}) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL ${getComment(col.comment)}`;
-    }
-  }
+    },
+  };
   const list = option.columns.map(column => fnMap[column.type](column as any));
   if (key) {
     list.push(`PRIMARY KEY (\`${key}\`) USING BTREE`);
@@ -116,7 +116,8 @@ SET FOREIGN_KEY_CHECKS = 1;
     }
     fs.writeFileSync(`${path}/${tableName}.sql`, context, { encoding: "utf8" });
     console.log(`\x1B[42m 成功创建文件 \x1B[0m`, `${tableName}.sql`);
-  } catch (error) {
+  }
+  catch (error) {
     console.log(`\x1B[91m 写入 .sql 文件失败 \x1B[0m`, error);
   }
 }
@@ -131,13 +132,13 @@ sqlCreator({
       comment: "项目id",
       length: 64,
       isNull: false,
-      key: true
+      key: true,
     },
     {
       type: "varchar",
       name: "name",
       comment: "项目名称",
-      length: 255
+      length: 255,
     },
     {
       type: "int",
@@ -156,15 +157,15 @@ sqlCreator({
       name: "create_user_id",
       comment: "创建用户id",
       length: 64,
-      isNull: false
+      isNull: false,
     },
     {
       type: "varchar",
       name: "remarks",
       comment: "备注",
-      length: 255
-    }
-  ]
+      length: 255,
+    },
+  ],
 });
 
 // sqlCreator({
@@ -212,7 +213,7 @@ sqlCreator({
 //     "create_user_id": 3,
 //     "create_time": formatDate()
 //   })
-  
+
 //   const text = `insert into xxx_table(${info.keys}) values(${info.values.toString()})`;
 
 //   console.log(text);

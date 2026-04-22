@@ -1,20 +1,20 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import router from "./main.js";
-import { formatDate, isType, replaceText } from "../utils/index.js";
-import { apiSuccess, apiFail } from "../utils/apiResult.js";
+import { apiFail, apiSuccess } from "../utils/apiResult.js";
 import { config } from "../utils/config.js";
+import { formatDate, isType, replaceText } from "../utils/index.js";
 import request from "../utils/request.js";
+import router from "./main.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const resourcePath = path.resolve(__dirname, "../../public/template");
 
-const template = fs.readFileSync(resourcePath + "/page.html", "utf-8");
+const template = fs.readFileSync(`${resourcePath}/page.html`, "utf-8");
 
 // "/*" 监听全部
-router.get("/", (ctx, next) => {
+router.get("/", (ctx) => {
   // 指定返回类型
   // ctx.response.type = "html";
   // ctx.response.type = "text/html; charset=utf-8";
@@ -34,9 +34,9 @@ router.get("/", (ctx, next) => {
   // 302 重定向到其他网站
   // ctx.status = 302;
   // ctx.redirect("https://www.baidu.com");
-})
+});
 
-router.get("/home", (ctx, next) => {
+router.get("/home", (ctx) => {
   const userAgent = ctx.header["user-agent"];
 
   ctx.response.type = "text/html; charset=utf-8";
@@ -45,20 +45,20 @@ router.get("/home", (ctx, next) => {
 
   const data = {
     pageTitle: "serve-root",
-    path: path,
+    path,
     jsLabel: `<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>`,
     content: `
       <div style="font-size: 24px; margin-bottom: 8px; font-weight: bold;">当前环境信息：</div>
       <p style="font-size: 15px; margin-bottom: 10px; font-weight: 500;">${userAgent}</p>
       <button class="the-btn purple"><a href="${path}/api-index.html">open test</a></button>
-    `
-  }
+    `,
+  };
 
   ctx.body = replaceText(template, data);
   // console.log("/home");
-})
+});
 
-router.get("/getData", (ctx, next) => {
+router.get("/getData", (ctx) => {
   const params = ctx.query || ctx.querystring;
 
   console.log("/getData", params);
@@ -66,24 +66,24 @@ router.get("/getData", (ctx, next) => {
   ctx.body = apiSuccess({
     method: "get",
     port: config.port,
-    date: formatDate()
+    date: formatDate(),
   });
-})
+});
 
-router.post("/postData", (ctx, next) => {
+router.post("/postData", (ctx) => {
   const params = ctx.request.body;
 
   // console.log("/postData", params);
 
   const result = {
-    data: params
-  }
+    data: params,
+  };
 
-  ctx.body = apiSuccess(result, "post success")
-})
+  ctx.body = apiSuccess(result, "post success");
+});
 
 // 请求第三方接口并把数据返回到前端
-router.get("/getWeather", async (ctx, next) => {
+router.get("/getWeather", async (ctx) => {
   // console.log("ctx.query >>", ctx.query);
   const cityCode = ctx.query.cityCode as string;
 
@@ -111,8 +111,8 @@ router.get("/getWeather", async (ctx, next) => {
     path: "/v3/weather/weatherInfo",
   }, {
     key: appKey,
-    city: cityCode
-  })
+    city: cityCode,
+  });
 
   // console.log("获取天气信息 >>", res);
 
@@ -120,17 +120,17 @@ router.get("/getWeather", async (ctx, next) => {
     if (isType(res.result, "string")) {
       res.result = JSON.parse(res.result);
     }
-    ctx.body = apiSuccess(res.result)
-  } else {
-    ctx.status = 500;
-    ctx.body = apiFail(res.msg, 500, res.result)
+    ctx.body = apiSuccess(res.result);
   }
-
-})
+  else {
+    ctx.status = 500;
+    ctx.body = apiFail(res.msg, 500, res.result);
+  }
+});
 
 const filePath = path.resolve(__dirname, "../../public/upload");
 
-router.get("/getVideo", async (ctx, next) => {
+router.get("/getVideo", async (ctx) => {
   // const blob = new Blob(["hello there"]);
   // console.log("filePath >>", filePath);
 
@@ -138,15 +138,14 @@ router.get("/getVideo", async (ctx, next) => {
   ctx.set("Content-disposition", "attachment; filename=xhs.webm");
   ctx.set("Content-type", "video/webm");
 
-  const stream = fs.createReadStream(filePath + "/xhs2.webm");
+  const stream = fs.createReadStream(`${filePath}/xhs2.webm`);
 
   // stream.pipe(ctx.body);
 
   ctx.body = stream;
+});
 
-})
-
-router.get("/getExcel", async (ctx, next) => {
+router.get("/getExcel", async (ctx) => {
   const fileName = "demo.xls"; // 文件名
 
   // 设置响应头，告诉浏览器这是一个需要下载的文件
@@ -154,7 +153,7 @@ router.get("/getExcel", async (ctx, next) => {
   ctx.set("Content-type", "application/octet-stream");
 
   // 创建可读流
-  const stream = fs.createReadStream(filePath + "/demo.xls");
+  const stream = fs.createReadStream(`${filePath}/demo.xls`);
 
   // 把可读流的内容写入响应
   ctx.body = stream;

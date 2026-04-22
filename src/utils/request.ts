@@ -18,16 +18,16 @@ export default function request(options: http.RequestOptions, params: BaseObj<an
     msg: "",
     result: "",
     state: -1,
-  }
+  };
 
   /** 传参字段 */
   const data = querystring.stringify(params);
 
-  if (data && options.method == "GET") {
+  if (data && options.method === "GET") {
     options.path += `?${data}`;
   }
 
-  return new Promise<ServeRequestResult>(function (resolve, reject) {
+  return new Promise<ServeRequestResult>(function (resolve) {
     const clientRequest = http.request(options, function (res) {
       // console.log("http.get >>", res);
       // console.log(`http.request.statusCode: ${res.statusCode}`);
@@ -40,18 +40,19 @@ export default function request(options: http.RequestOptions, params: BaseObj<an
         info.msg = "请求失败";
         info.result = {
           statusCode: res.statusCode,
-          headers: res.headers
-        }
+          headers: res.headers,
+        };
         return resolve(info);
       }
 
       let output: http.IncomingMessage | zlib.Gunzip;
 
-      if (res.headers["content-encoding"] == "gzip") {
+      if (res.headers["content-encoding"] === "gzip") {
         const gzip = zlib.createGunzip();
         res.pipe(gzip);
         output = gzip;
-      } else {
+      }
+      else {
         output = res;
       }
 
@@ -75,15 +76,15 @@ export default function request(options: http.RequestOptions, params: BaseObj<an
           info.msg = "ok";
           info.state = 1;
           resolve(info);
-        } else {
-          info.msg = "连接中断"
+        }
+        else {
+          info.msg = "连接中断";
           resolve(info);
         }
       });
-
     });
 
-    if (data && options.method != "GET") {
+    if (data && options.method !== "GET") {
       clientRequest.write(data);
     }
 

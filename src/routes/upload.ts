@@ -1,16 +1,15 @@
 import type { UploadFile } from "../types/base.js";
 import fs from "node:fs";
 import path from "node:path";
-import router from "./main.js";
-import { config } from "../utils/config.js";
 import { apiSuccess } from "../utils/apiResult.js";
+import { config } from "../utils/config.js";
+import router from "./main.js";
 
 // 上传文件
 // learn: https://www.cnblogs.com/nicederen/p/10758000.html
 // learn: https://blog.csdn.net/qq_24134853/article/details/81745104
 // [图片类型参考](https://developer.mozilla.org/zh-CN/docs/Web/Media/Formats/Image_types#webp_image)
 router.post("/uploadFile", async (ctx, next) => {
-
   const file: UploadFile = ctx.request.files[config.uploadName] as any;
   // console.log("file >>", file);
   const fileName = file.originalFilename;
@@ -40,8 +39,8 @@ router.post("/uploadFile", async (ctx, next) => {
   /** 模拟上传到`oss`云存储 */
   function uploadToCloud() {
     const result = {
-      image: ""
-    }
+      image: "",
+    };
     return new Promise<{ image: string }>(function (resolve) {
       const delay = Math.floor(Math.random() * 5) * 100 + 500;
       setTimeout(() => {

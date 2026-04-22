@@ -1,19 +1,19 @@
-import type { TableUserInfo } from "./user.js";
 import type { RouterContext } from "@koa/router";
+import type { TableUserInfo } from "./user.js";
 
 /** 基础对象 */
 export interface BaseObj<T = string | number> {
-  [key: string]: T
+  [key: string]: T;
 }
 
 /** 接口响应数据，返回给前端用 */
 export interface ApiResult<T = any> {
   /** 状态提示 */
-  message: string
+  message: string;
   /** 状态码 */
-  code: number
+  code: number;
   /** 返回数据 */
-  data: T
+  data: T;
 }
 
 /**
@@ -21,17 +21,17 @@ export interface ApiResult<T = any> {
  * - 这里只枚举一些常见类型，后续根据使用场景自行添加即可
  */
 export interface JavaScriptType {
-  string: string
-  number: number
-  boolean: boolean
-  null: null
-  undefined: undefined
-  array: Array<any>
-  object: object
-  regexp: RegExp
-  function: Function
-  promise: Promise<any>
-  formdata: FormData
+  string: string;
+  number: number;
+  boolean: boolean;
+  null: null;
+  undefined: undefined;
+  array: Array<any>;
+  object: object;
+  regexp: RegExp;
+  function: Function;
+  promise: Promise<any>;
+  formdata: FormData;
 }
 
 /** `JavaScript`类型 */
@@ -81,30 +81,30 @@ export interface UploadFile {
    *
    * @link https://github.com/node-formidable/formidable#filetojson
    */
-  toJSON(): Record<string, any>;
-  toString(): string;
+  toJSON: () => Record<string, any>;
+  toString: () => string;
 }
 
 /** 服务端请求响应结果 */
 export interface ServeRequestResult {
   /** 状态标记 `state === 1`时为成功 */
-  state: number
+  state: number;
   /** 状态描述信息 */
-  msg: string
+  msg: string;
   /** 结果对象 */
-  result: any
+  result: any;
 }
 
 /** `mysql`数据操作类型 */
 export interface MysqlOption {
   /** 创建时间 */
-  createTime: string
+  createTime: string;
   /** 创建用户`id` */
-  createUserId: number
+  createUserId: number;
   /** 更新时间 */
-  updateTime?: string
+  updateTime?: string;
   /** 更新用户`id` */
-  updateUserId?: number
+  updateUserId?: number;
 }
 
 export interface AppState {
@@ -117,7 +117,7 @@ export interface AppContext {
    * 请求时自定义设置的一个`token`信息
    * @description 具体看: src/module/Jwt.ts
    */
-  theToken?: TableUserInfo
+  theToken?: TableUserInfo;
 }
 
 export type TheContext = RouterContext<AppState, AppContext>;

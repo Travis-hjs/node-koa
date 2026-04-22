@@ -3,5 +3,5 @@ import tableUser from "./TableUser.js";
 
 export {
   jwt,
-  tableUser
-}
+  tableUser,
+};

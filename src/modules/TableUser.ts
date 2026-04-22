@@ -1,7 +1,7 @@
+import type { BaseObj } from "../types/base.js";
+import type { TableUserInfo } from "../types/user.js";
 import { formatDate, getLogText, modifyData, objectToHump } from "../utils/index.js";
 import { query } from "../utils/mysql.js";
-import type { TableUserInfo } from "../types/user.js";
-import type { BaseObj } from "../types/base.js";
 
 class ModuleUser {
   constructor() {
@@ -18,7 +18,7 @@ class ModuleUser {
 
   /** 从数据库中更新缓存用户表 */
   async update() {
-    const res = await query("select * from user_table")
+    const res = await query("select * from user_table");
     if (res.state === 1) {
       const list: Array<TableUserInfo> = res.results || [];
       this.table.clear();
@@ -28,14 +28,15 @@ class ModuleUser {
         this.table.set(item.id.toString(), item);
       }
       console.log(getLogText("更新用户表缓存", "green-light"), this.total, "条数据");
-    } else {
+    }
+    else {
       console.log("用户表更新失败 >>", res.msg, res.error);
     }
   }
 
   /**
    * 新增用户
-   * @param id 
+   * @param id
    * @param value 用户信息
    */
   add(id: number, value: TableUserInfo) {
@@ -53,7 +54,7 @@ class ModuleUser {
 
   /**
    * 通过`id`删除用户记录
-   * @param id 
+   * @param id
    */
   remove(id: number) {
     this.table.delete(id.toString());
@@ -61,7 +62,7 @@ class ModuleUser {
 
   /**
    * 通过`id`更新指定用户信息
-   * @param id 
+   * @param id
    * @param value 用户信息
    */
   updateById(id: number, value: Partial<TableUserInfo>) {
@@ -74,14 +75,14 @@ class ModuleUser {
   /**
    * 【单个对象】匹配用户名，包括：创建用户名、编辑用户名
    * - 并返回新的驼峰数据对象
-   * @param item 
+   * @param item
    */
   matchName(item: BaseObj) {
-    const createId = item["create_user_id"] as number;
-    const updateId = item["update_user_id"] as number;
-    item["create_user_name"] = this.getUserById(createId)?.name || "";
+    const createId = item.create_user_id as number;
+    const updateId = item.update_user_id as number;
+    item.create_user_name = this.getUserById(createId)?.name || "";
     if (updateId) {
-      item["update_user_name"] = this.getUserById(updateId)?.name || "";
+      item.update_user_name = this.getUserById(updateId)?.name || "";
     }
     return objectToHump(item);
   }
@@ -89,8 +90,7 @@ class ModuleUser {
   /**
    * 【数组】匹配用户名，包括：创建用户名、编辑用户名
    * - 并返回驼峰数据对象
-   * @param list 
-   * @returns 
+   * @param list
    */
   matchNameArray<T extends BaseObj>(list: Array<T>) {
     const result = [];

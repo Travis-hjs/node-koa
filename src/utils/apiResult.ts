@@ -9,9 +9,9 @@ import type { ApiResult } from "../types/base.js";
 export function apiSuccess<T>(data: T, tip?: string, code = 1): ApiResult<T> {
   return {
     message: tip || "success",
-    code: code,
-    data
-  }
+    code,
+    data,
+  };
 }
 
 /**
@@ -23,7 +23,7 @@ export function apiSuccess<T>(data: T, tip?: string, code = 1): ApiResult<T> {
 export function apiFail<T>(tip: string, code = 500, error?: T): ApiResult<T> {
   return {
     message: tip || "fail",
-    code: code,
-    data: error as T
-  }
+    code,
+    data: error as T,
+  };
 }

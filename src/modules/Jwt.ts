@@ -1,7 +1,7 @@
-import tableUser from "./TableUser.js";
-import { apiSuccess } from "../utils/apiResult.js";
 import type { ApiResult, TheContext } from "../types/base.js";
-import type { UserInfoToken, UserInfo } from "../types/user.js";
+import type { UserInfo, UserInfoToken } from "../types/user.js";
+import { apiSuccess } from "../utils/apiResult.js";
+import tableUser from "./TableUser.js";
 
 class ModuleJWT {
   constructor() {
@@ -16,7 +16,7 @@ class ModuleJWT {
 
   /**
    * 通过用户信息创建`token`
-   * @param info 用户信息 
+   * @param info 用户信息
    */
   createToken(info: Omit<UserInfo, "name">) {
     const decode = JSON.stringify({
@@ -25,7 +25,7 @@ class ModuleJWT {
       p: info.password,
       t: info.type,
       g: info.groupId,
-      o: Date.now()
+      o: Date.now(),
     } as UserInfoToken);
     // const decode = encodeURI(JSON.stringify(info))
     const base64 = Buffer.from(decode, "utf-8").toString("base64");
@@ -45,7 +45,7 @@ class ModuleJWT {
     let info: ApiResult;
     /**
      * 设置失败信息
-     * @param msg 
+     * @param msg
      */
     function setFail(msg: string) {
       fail = true;
@@ -70,7 +70,8 @@ class ModuleJWT {
 
       try {
         result = JSON.parse(str);
-      } catch (error) {
+      }
+      catch (error) {
         console.log("错误的 token 解析", error);
         setFail("token 错误");
       }
@@ -84,15 +85,22 @@ class ModuleJWT {
             // 设置`token`信息到上下文中给接口模块里面调用
             // 1. 严格判断账号、密码、用户权限等是否相同
             // 2. 后台管理修改个人信息之后需要重新返回`token`
-            if (info.password == result.p && info.groupId == result.g && info.type == result.t) {
-              ctx["theToken"] = info;
-            } else {
+            if (
+              info.password.toString() === result.p.toString()
+              && info.groupId.toString() === result.g.toString()
+              && info.type.toString() === result.t.toString()
+            ) {
+              ctx.theToken = info;
+            }
+            else {
               setFail("token 已失效");
             }
-          } else {
+          }
+          else {
             setFail("token 不存在");
           }
-        } else {
+        }
+        else {
           setFail("token 过期");
         }
       }
@@ -100,10 +108,9 @@ class ModuleJWT {
 
     return {
       fail,
-      info
-    }
+      info,
+    };
   }
-
 }
 
 /** `jwt-token`模块 */

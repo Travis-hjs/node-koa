@@ -63,7 +63,7 @@ export function checkType(target: any) {
  *   id: number
  *   name: string
  * }
- * 
+ *
  * function setData(params: string | User | Array<User>) {
  *   if (isType<User>(params, "object")) {
  *     params.name = "xxx";
@@ -86,13 +86,13 @@ export function isType<T>(target: any, type: T extends "object" ? T : JavaScript
  */
 export function replaceText(target: string, data: any) {
   for (const key in data) {
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
+    if (Object.hasOwn(data, key)) {
       const value = data[key] || "";
       const reg = `{{${key}}}`;
       target = target.replace(reg, value);
     }
   }
-  return target
+  return target;
 }
 
 /**
@@ -109,7 +109,8 @@ export function replaceText(target: string, data: any) {
  * ```
  */
 export function formatDate(value: string | number | Date = Date.now(), format = "Y-M-D h:m:s") {
-  if (["null", null, "undefined", undefined, ""].includes(value as any)) return "";
+  if (["null", null, "undefined", undefined, ""].includes(value as any))
+    return "";
   // ios 和 mac 系统中，带横杆的字符串日期是格式不了的，这里做一下判断处理
   if (typeof value === "string" && new Date(value).toString() === "Invalid Date") {
     value = value.replace(/-/g, "/");
@@ -132,17 +133,16 @@ export function formatDate(value: string | number | Date = Date.now(), format = 
 
 /**
  * 获取两个日期之间的天数
- * @param date1 
- * @param date2 
- * @returns 
+ * @param date1
+ * @param date2
  */
-export function daysBetween(date1: Date|string|number, date2: Date|string|number) {
+export function daysBetween(date1: Date | string | number, date2: Date | string | number) {
   return Math.ceil(Math.abs(new Date(date1).getTime() - new Date(date2).getTime()) / (1000 * 60 * 60 * 24));
 }
 
 /**
  * 判断是否为空值
- * @param target 
+ * @param target
  * @param rules 传入的规则
  */
 export function isEmpty(target: any, rules = ["null", "undefined", "", null, undefined]) {
@@ -156,12 +156,13 @@ export function isEmpty(target: any, rules = ["null", "undefined", "", null, und
  */
 export function modifyData<T>(target: T, value: T) {
   for (const key in value) {
-    if (Object.prototype.hasOwnProperty.call(target, key)) {
+    if (Object.hasOwn(target as any, key)) {
       // target[key] = value[key];
       // 需要的话，深层逐个赋值
       if (isType(target[key], "object")) {
         modifyData(target[key], value[key]);
-      } else {
+      }
+      else {
         target[key] = value[key];
       }
     }
@@ -170,15 +171,15 @@ export function modifyData<T>(target: T, value: T) {
 
 /**
  * 下划线转换驼峰
- * @param value 
+ * @param value
  */
 export function toHump(value: string) {
-  return value.replace(/\_(\w)/g, (_, letter) => letter.toUpperCase());
+  return value.replace(/_(\w)/g, (_, letter) => letter.toUpperCase());
 }
 
 /**
  * 驼峰转换下划线
- * @param value 
+ * @param value
  */
 export function toLine(value: string) {
   return value.replace(/([A-Z])/g, "_$1").toLowerCase();
@@ -211,7 +212,7 @@ export function objectToHump(target: any) {
 
 /**
  * 数据库语句格式化
- * @param params 
+ * @param params
  * @param isEmptyString 是否可以为空字符串
  * @description 数据库写入的时候用
  */
@@ -222,20 +223,20 @@ export function mysqlFormatParams(params: BaseObj<any>, isEmptyString = false) {
   for (const key in params) {
     const empty = isEmpty(params[key], rules);
     if (!empty) {
-      keys.push("`" + key + "`");
+      keys.push(`\`${key}\``);
       values.push(params[key]);
     }
   }
   return {
     keys,
     values,
-    symbols: keys.map(_ => "?").toString()
-  }
+    symbols: keys.map(_ => "?").toString(),
+  };
 }
 
 /**
  * 数据库更新参数语句格式化
- * @param params 
+ * @param params
  * @param isEmptyString 是否可以为空字符串
  * @description 修改（更新用）
  */
@@ -246,18 +247,18 @@ export function mysqlSetParams(params: BaseObj<any>, isEmptyString = false) {
   for (const key in params) {
     const empty = isEmpty(params[key], rules);
     if (!empty) {
-      values.push("`" + key + "`='" + params[key] + "'");
+      values.push(`\`${key}\`='${params[key]}'`);
     }
   }
   if (values.length > 0) {
-    result = "set " + values.toString();
+    result = `set ${values.toString()}`;
   }
   return result;
 }
 
 /**
  * 数据库查询参数格式化
- * @param params 
+ * @param params
  * @param isVague 是否模糊查询
  * @description 查询用
  */
@@ -266,10 +267,11 @@ export function mysqlSearchParams(params: BaseObj<any>, isVague = false) {
   for (const key in params) {
     const empty = isEmpty(params[key]);
     if (!empty) {
-      const prefix = key.includes(".") ? ` and ${key}` : " and `" + key + "`";
+      const prefix = key.includes(".") ? ` and ${key}` : ` and \`${key}\``;
       if (isVague) {
         result += `${prefix} like '%${params[key]}%'`;
-      } else {
+      }
+      else {
         result += `${prefix} = '${params[key]}'`;
       }
     }
@@ -282,7 +284,7 @@ export function mysqlSearchParams(params: BaseObj<any>, isVague = false) {
 
 /**
  * 获取域名
- * @param val 
+ * @param val
  * @param prefix 是否需要带上前缀：`https`或者`http`，默认`true`
  */
 export function getDomain(val: string, prefix = true) {
@@ -291,7 +293,8 @@ export function getDomain(val: string, prefix = true) {
   if (val.includes(https)) {
     val = val.replace(https, "").split("/")[0];
     prefix && (val = https + val);
-  } else if (val.includes(http)) {
+  }
+  else if (val.includes(http)) {
     val = val.replace(http, "").split("/")[0];
     prefix && (val = http + val);
   }
@@ -301,7 +304,7 @@ export function getDomain(val: string, prefix = true) {
 /**
  * `JSON`转字符串传参
  * @param params `JSON`对象
- * @example 
+ * @example
  * ```js
  * const info = { name: "hjs", id: 123 };
  * const val = jsonToFormData(info);
@@ -317,22 +320,22 @@ export function jsonToPath(params: { [key: string]: number | string | boolean })
 }
 
 type LogColor = "red"
-  | "red-light" 
-  | "green" 
-  | "green-light" 
-  | "yellow" 
-  | "yellow-light" 
-  | "blue" 
-  | "blue-light" 
-  | "purple" 
+  | "red-light"
+  | "green"
+  | "green-light"
+  | "yellow"
+  | "yellow-light"
+  | "blue"
+  | "blue-light"
+  | "purple"
   | "purple-light"
   | "cyan"
   | "cyan-light";
 
 /**
  * 控制台打印颜色文字
- * @param text 
- * @param color 
+ * @param text
+ * @param color
  */
 export function getLogText(text: string, color: LogColor) {
   const map = {
@@ -347,7 +350,7 @@ export function getLogText(text: string, color: LogColor) {
     "purple": 95,
     "purple-light": 45,
     "cyan": 96,
-    "cyan-light": 46
-  }
+    "cyan-light": 46,
+  };
   return `\x1B[${map[color]}m${text}\x1B[0m`;
 }

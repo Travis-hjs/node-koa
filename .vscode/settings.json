@@ -1,3 +1,40 @@
 {
   "editor.tabSize": 2,
+  "editor.formatOnSave": false,
+  "prettier.enable": false,
+  "eslint.useFlatConfig": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always",
+    "source.organizeImports": "never"
+  },
+  "eslint.rules.customizations": [
+    {
+      "rule": "style/*",
+      "severity": "off"
+    },
+    {
+      "rule": "format/*",
+      "severity": "off"
+    },
+    {
+      "rule": "*-indent",
+      "severity": "off"
+    },
+    {
+      "rule": "*-spacing",
+      "severity": "off"
+    },
+    {
+      "rule": "*-spaces",
+      "severity": "off"
+    },
+    {
+      "rule": "*-order",
+      "severity": "off"
+    },
+    {
+      "rule": "*-dangle",
+      "severity": "off"
+    }
+  ]
 }

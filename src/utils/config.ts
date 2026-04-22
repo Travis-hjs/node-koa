@@ -22,15 +22,15 @@ export const config = (function () {
   const origins = [
     "http://your-project.com",
     // 本地开发
-    devDomain + ":5050",
-    devDomain + ":6060",
+    `${devDomain}:5050`,
+    `${devDomain}:6060`,
   ];
 
-  /** 服务器公网`ip` */
-  const publicIp = "123.123.123";
-  /** 服务器内网`ip` */
-  const privateIp = "";
-  
+  // /** 服务器公网`ip` */
+  // const publicIp = "123.123.123";
+  // /** 服务器内网`ip` */
+  // const privateIp = "";
+
   return {
     /** 当前环境 */
     get env() {
@@ -65,9 +65,9 @@ export const config = (function () {
         database: "node_ts",
         /** 链接上限次数 */
         maxLimit: 10,
-      }
+      };
     },
-    /** 
+    /**
      * 接口前缀
      * - 注意！！！可以为空`""`，但不能写成`"/"`
      */
@@ -84,7 +84,7 @@ export const config = (function () {
     },
     /**
      * 前端上传文件时约定的字段
-     * @example 
+     * @example
      * const formData = new FormData();
      * formData.append("file", file);
      * XHR.send(formData);
@@ -94,10 +94,10 @@ export const config = (function () {
     },
     /**
      * 路由路径，加上接口前缀处理
-     * @param path 
+     * @param path
      */
     getRoutePath(path: string) {
       return this.apiPrefix + path;
-    }
-  }
+    },
+  };
 })();

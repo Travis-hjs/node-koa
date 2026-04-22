@@ -1,9 +1,8 @@
+import type { FieldInfo, MysqlError, queryCallback } from "mysql";
 import type { BaseObj } from "../types/base.js";
 import {
-  type FieldInfo,
-  type MysqlError,
-  type queryCallback,
-  createPool
+  createPool,
+
 } from "mysql";
 import { config } from "./config.js";
 import { mysqlSearchParams } from "./index.js";
@@ -11,15 +10,15 @@ import { mysqlSearchParams } from "./index.js";
 /** `mysql`查询结果 */
 interface SqlResult<T = any> {
   /** `state === 1`时为成功 */
-  state: number
+  state: number;
   /** 结果数组 或 对象 */
-  results: T
+  results: T;
   /** 状态 */
-  fields: Array<FieldInfo>
+  fields: Array<FieldInfo>;
   /** 错误信息 */
-  error: MysqlError
+  error: MysqlError;
   /** 描述信息 */
-  msg: string
+  msg: string;
 }
 
 /** 数据库链接池 */
@@ -27,7 +26,7 @@ const pool = createPool({
   host: config.db.host,
   user: config.db.user,
   password: config.db.password,
-  database: config.db.database
+  database: config.db.database,
 });
 
 /**
@@ -41,15 +40,16 @@ export function query<T = any>(command: string, value?: Array<any>) {
     results: undefined,
     fields: [],
     error: undefined,
-    msg: ""
-  }
-  return new Promise<SqlResult<T>>(resolve => {
+    msg: "",
+  };
+  return new Promise<SqlResult<T>>((resolve) => {
     pool.getConnection((error: any, connection) => {
       if (error) {
         result.error = error;
         result.msg = "数据库连接出错";
         resolve(result);
-      } else {
+      }
+      else {
         const callback: queryCallback = (error: any, results, fields) => {
           // pool.end();
           connection.release();
@@ -57,18 +57,20 @@ export function query<T = any>(command: string, value?: Array<any>) {
             result.error = error;
             result.msg = "数据库增删改查出错";
             resolve(result);
-          } else {
+          }
+          else {
             result.state = 1;
             result.msg = "ok";
             result.results = results;
             result.fields = fields;
             resolve(result);
           }
-        }
+        };
 
         if (value) {
           pool.query(command, value, callback);
-        } else {
+        }
+        else {
           pool.query(command, callback);
         }
       }
@@ -79,60 +81,60 @@ export function query<T = any>(command: string, value?: Array<any>) {
 /** 获取查询语句参数 */
 interface SearchTextParams {
   /** 数据库表名 */
-  name: string
+  name: string;
   /** 查询的字段，默认`*` */
-  keys?: string
+  keys?: string;
   /** 模糊查询对象 */
-  vague?: BaseObj<any>
+  vague?: BaseObj<any>;
   /** 精确查询对象 */
-  accurate?: BaseObj<any>
+  accurate?: BaseObj<any>;
   /**
    * 排序字段
    * - 从小到大
    * - 多个则传数组
    */
-  asc?: string | Array<string>
+  asc?: string | Array<string>;
   /**
    * 排序字段
    * - 从大到小
    * - 多个则传数组
    */
-  desc?: string | Array<string>
+  desc?: string | Array<string>;
   /**
    * 对应`pageSize`
    * - 默认100
    */
-  size?: number
+  size?: number;
   /**
    * 对应``currentPage`
    * - 默认1
    */
-  page?: number
+  page?: number;
   /**
    * 日期范围查询信息
    */
   dateRange?: {
     /** 时间字段 */
-    key: string
+    key: string;
     /** 范围开始值 */
-    start?: string
+    start?: string;
     /** 范围结束值 */
-    end?: string
-  }
+    end?: string;
+  };
 }
 
 /**
  * 获取查询语句
- * @param params 
+ * @param params
  */
 export function getSearchText(params: SearchTextParams) {
   const {
     name,
     size = 100,
     page = 1,
-    dateRange
+    dateRange,
   } = params;
-  const tableName = "`" + name + "`";
+  const tableName = `\`${name}\``;
 
   /** 查询语句 */
   let text = "";
@@ -142,14 +144,16 @@ export function getSearchText(params: SearchTextParams) {
 
   /** 模糊查询语句 */
   const vague = params.vague ? mysqlSearchParams(params.vague, true) : "";
-  
+
   // TODO需调试验证
-  const sortText = (function() {
-    if (!params.asc && !params.desc) return "";
+  const sortText = (function () {
+    if (!params.asc && !params.desc)
+      return "";
     let result = "order by";
     if (typeof params.desc === "string") {
       result = `${result} ${params.desc} desc`;
-    } else if (Array.isArray(params.desc)) {
+    }
+    else if (Array.isArray(params.desc)) {
       result = `${result} ${params.desc.map(val => `${val} desc`).toString().replace(",", ", ")}`;
     }
 
@@ -157,10 +161,11 @@ export function getSearchText(params: SearchTextParams) {
 
     if (typeof params.asc === "string") {
       result = `${and} ${params.asc} asc`;
-    } else if (Array.isArray(params.asc)) {
+    }
+    else if (Array.isArray(params.asc)) {
       result = `${and} ${params.asc.map(val => `${val} asc`).toString().replace(",", ", ")}`;
     }
-    
+
     return result;
   })();
 
@@ -186,6 +191,6 @@ export function getSearchText(params: SearchTextParams) {
     /** 默认完整的查询语句 */
     default: `select ${params.keys || "*"} from ${tableName} ${text} ${sortText} ${limit}`,
     /** 只用于查总数量的语句，剔除了分页、排序语句 */
-    count: `select count(*) from ${tableName} ${text}`
-  }
+    count: `select count(*) from ${tableName} ${text}`,
+  };
 }

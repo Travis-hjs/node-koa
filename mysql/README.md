@@ -2,7 +2,7 @@
 
 在`Navicat Premium`工具中的`node_ts`数据库下直接导入该目录表即可
 
-# `mysql`语句操作
+> `mysql`语句操作
 
 ## 重置表
 
@@ -72,16 +72,16 @@ js格式化
 
 ```js
 const params = {
-  ids: [1, 2 , 3],
+  ids: [1, 2, 3],
   values: ["java", "php", "pyhton"]
-}
+};
 
 /** 要设置的键名 */
 const key = "`set_key`";
 
 let value = "";
 
-params.ids.forEach(function(id, index) {
+params.ids.forEach((id, index) => {
   value += `when ${id} then '${params.values[index]}'`;
 });
 

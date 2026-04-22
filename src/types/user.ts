@@ -1,47 +1,47 @@
-import type { MysqlOption } from "./base.js"
+import type { MysqlOption } from "./base.js";
 
 /** 用户必有数据 */
 interface UserData {
   /** 用户`id` */
-  id: number
+  id: number;
   /** 账号 */
-  account: string
+  account: string;
   /** 密码 */
-  password: string
+  password: string;
   /** 用户名 */
-  name: string
+  name: string;
   /** 用户类型 */
-  type: number
+  type: number;
   /** 用户分组`id` */
-  groupId: number
+  groupId: number;
 }
 
 /** 用户信息 */
 export interface UserInfo extends UserData, Partial<MysqlOption> {
   /** 请求域名 */
-  host?: string
+  host?: string;
   /** 登录时`token` */
-  token?: string
+  token?: string;
 }
 
 /** 用户表数据 */
 export interface TableUserInfo extends UserData, Partial<MysqlOption> {
   /** 处理过的字段 */
-  updateUserName?: string
+  updateUserName?: string;
 }
 
 /** `token`信息对象 */
 export interface UserInfoToken {
   /** 对标`UserInfo.id` */
-  i: number
+  i: number;
   /** 对标`UserInfo.account` */
-  a: string
+  a: string;
   /** 对标`UserInfo.password` */
-  p: string
+  p: string;
   /** 对标`UserInfo.type` */
-  t: number
+  t: number;
   /** 对标`UserInfo.groupId` */
-  g: number
+  g: number;
   /** 在线时间（毫秒） */
-  o: number
+  o: number;
 }
