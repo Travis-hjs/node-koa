@@ -5,12 +5,12 @@ namespace SqlCreator {
   /** 每一列的数据基础配置 */
   interface Base {
     /** 备注 */
-    comment: string;
+    remark: string;
     /**
      * 字段值
      * 建议用小写+下划线方式命名
      */
-    name: string;
+    key: string;
     /**
      * 字节长度
      * - 当`type: "date"时不需要设置`
@@ -31,7 +31,7 @@ namespace SqlCreator {
      * 是否为`键`
      * - 设置时为`true`时，`isNull`固定为`false`
      */
-    key?: boolean;
+    isKey?: boolean;
   }
 
   export interface Varchar extends Omit<Base, "isNull"> {
@@ -83,16 +83,16 @@ function sqlCreator(option: SqlCreator.Option) {
   let key = "";
   const fnMap = {
     int(col: SqlCreator.Int) {
-      if (col.key) {
-        key = col.name;
+      if (col.isKey) {
+        key = col.key;
       }
-      return `${getName(col.name)} int(${col.length}) ${col.key ? `${getNull(false)} AUTO_INCREMENT` : "NULL DEFAULT NULL"} ${getComment(col.comment)}`;
+      return `${getName(col.key)} int(${col.length}) ${col.isKey ? `${getNull(false)} AUTO_INCREMENT` : "NULL DEFAULT NULL"} ${getComment(col.remark)}`;
     },
     date(col: SqlCreator.Date) {
-      return `${getName(col.name)} datetime(0) NULL DEFAULT NULL ${getComment(col.comment)}`;
+      return `${getName(col.key)} datetime(0) NULL DEFAULT NULL ${getComment(col.remark)}`;
     },
     varchar(col: SqlCreator.Varchar) {
-      return `${getName(col.name)} varchar(${col.length}) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL ${getComment(col.comment)}`;
+      return `${getName(col.key)} varchar(${col.length}) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL ${getComment(col.remark)}`;
     },
   };
   const list = option.columns.map(column => fnMap[column.type](column as any));
@@ -126,45 +126,12 @@ sqlCreator({
   name: "project",
   engine: "InnoDB",
   columns: [
-    {
-      type: "int",
-      name: "id",
-      comment: "项目id",
-      length: 64,
-      isNull: false,
-      key: true,
-    },
-    {
-      type: "varchar",
-      name: "name",
-      comment: "项目名称",
-      length: 255,
-    },
-    {
-      type: "int",
-      name: "state",
-      comment: "项目状态",
-      length: 10,
-      isNull: false,
-    },
-    {
-      type: "date",
-      name: "create_time",
-      comment: "创建日期",
-    },
-    {
-      type: "int",
-      name: "create_user_id",
-      comment: "创建用户id",
-      length: 64,
-      isNull: false,
-    },
-    {
-      type: "varchar",
-      name: "remarks",
-      comment: "备注",
-      length: 255,
-    },
+    { type: "int", key: "id", remark: "项目id", length: 64, isNull: false, isKey: true },
+    { type: "varchar", key: "name", remark: "项目名称", length: 255 },
+    { type: "int", key: "state", remark: "项目状态", length: 10, isNull: false },
+    { type: "date", key: "create_time", remark: "创建日期" },
+    { type: "int", key: "create_user_id", remark: "创建用户id", length: 64, isNull: false },
+    { type: "varchar", key: "remarks", remark: "备注", length: 255 },
   ],
 });
 
@@ -172,38 +139,12 @@ sqlCreator({
 //   name: "history",
 //   engine: "InnoDB",
 //   columns: [
-//     {
-//       type: "varchar",
-//       name: "name",
-//       comment: "记录名称",
-//       length: 255
-//     },
-//     {
-//       type: "int",
-//       name: "state",
-//       comment: "状态",
-//       length: 10,
-//       isNull: false,
-//     },
-//     {
-//       type: "date",
-//       name: "create_time",
-//       comment: "创建日期",
-//     },
-//     {
-//       type: "int",
-//       name: "create_user_id",
-//       comment: "创建用户id",
-//       length: 64,
-//       isNull: false
-//     },
-//     {
-//       type: "varchar",
-//       name: "remarks",
-//       comment: "备注",
-//       length: 255
-//     }
-//   ]
+//     { type: "varchar", key: "name", remark: "记录名称", length: 255 },
+//     { type: "int", key: "state", remark: "状态", length: 10, isNull: false },
+//     { type: "date", key: "create_time", remark: "创建日期" },
+//     { type: "int", key: "create_user_id", remark: "创建用户id", length: 64, isNull: false },
+//     { type: "varchar", key: "remarks", remark: "备注", length: 255 },
+//   ],
 // });
 
 // function add() {
