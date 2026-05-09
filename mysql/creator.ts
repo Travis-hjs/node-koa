@@ -72,7 +72,7 @@ namespace SqlCreator {
  * @param option
  */
 function sqlCreator(option: SqlCreator.Option) {
-  if (option.columns.filter((col: any) => col.key).length > 1) {
+  if (option.columns.filter((col: any) => col.isKey).length > 1) {
     console.log(`\x1B[91m 一张表只能出现一个 key !!! \x1B[0m`);
     return;
   }
