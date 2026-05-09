@@ -1,9 +1,6 @@
 import type { FieldInfo, MysqlError, queryCallback } from "mysql";
 import type { BaseObj } from "../types/base.js";
-import {
-  createPool,
-
-} from "mysql";
+import { createPool } from "mysql";
 import { config } from "./config.js";
 import { mysqlSearchParams } from "./index.js";
 
@@ -82,11 +79,36 @@ export function query<T = any>(command: string, value?: Array<any>) {
 interface SearchTextParams {
   /** 数据库表名 */
   name: string;
-  /** 查询的字段，默认`*` */
+  /**
+   * 查询的字段，默认`*`
+   * @example
+   * ```ts
+   * keys: "id, name, group_id, goods_name, goods_id"
+   */
   keys?: string;
-  /** 模糊查询对象 */
+  /**
+   * 模糊查询对象
+   * - 注意：字段为数据库标准，小写+下划线
+   * @example
+   * ```ts
+   * vague: {
+   *   name: "名称名称",
+   *   goods_name: "手机"
+   * }
+   * ```
+   */
   vague?: BaseObj<any>;
-  /** 精确查询对象 */
+  /**
+   * 精确查询对象
+   * - 注意：字段为数据库标准，小写+下划线
+   * @example
+   * ```ts
+   * vague: {
+   *   id: 12,
+   *   goods_id: 6
+   * }
+   * ```
+   */
   accurate?: BaseObj<any>;
   /**
    * 排序字段
@@ -102,12 +124,12 @@ interface SearchTextParams {
   desc?: string | Array<string>;
   /**
    * 对应`pageSize`
-   * - 默认100
+   * - 默认`10`
    */
   size?: number;
   /**
    * 对应``currentPage`
-   * - 默认1
+   * - 默认`1`
    */
   page?: number;
   /**
@@ -130,7 +152,7 @@ interface SearchTextParams {
 export function getSearchText(params: SearchTextParams) {
   const {
     name,
-    size = 100,
+    size = 10,
     page = 1,
     dateRange,
   } = params;
