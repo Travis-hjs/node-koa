@@ -1,3 +1,4 @@
+import type { BaseObj } from "../types/common.js";
 import type { UserInfo } from "../types/user.js";
 import { handleResult, handleToken } from "../middleware/index.js";
 import { generateToken, getUserInfo } from "../modules/user.js";
@@ -139,9 +140,10 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     return handleResult({ ctx, data: {}, tips: "编辑失败！用户id不正确", status: 400 });
   }
 
-  if (!params.account || !/^[A-Z0-9]+$/i.test(params.account)) {
-    return handleResult({ ctx, data: {}, tips: "编辑失败！账号必须由英文或数字组成", status: 400 });
-  }
+  // 不可以修改账号
+  // if (params.account || !/^[A-Z0-9]+$/i.test(params.account)) {
+  //   return handleResult({ ctx, data: {}, tips: "编辑失败！账号必须由英文或数字组成", status: 400 });
+  // }
 
   if (!params.password || !/^[A-Z0-9]+$/i.test(params.password)) {
     return handleResult({ ctx, data: {}, tips: "编辑失败！密码必须由英文或数字组成", status: 400 });
@@ -161,25 +163,24 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     return handleResult({ ctx, data: {}, tips: "获取用户信息异常", code: 10086 });
   }
 
-  if (user.type !== 0 && params.account) {
-    return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改账号", code: -1 });
-  }
-
   const self = params.id.toString() === auth.id.toString();
 
-  if (!self) {
-    // 先查询是否有重复账号
-    const repeat = await checkAccount(params.account);
-
-    if (typeof repeat === "string") {
-      return handleResult({ ctx, data: {}, code: 400, tips: repeat });
-    }
+  if (user.type !== 0 && !self) {
+    return handleResult({ ctx, data: {}, tips: "当前账号没有权限他人信息", code: -2 });
   }
+
+  // if (!self) {
+  //   // 先查询是否有重复账号
+  //   const repeat = await checkAccount(params.account);
+
+  //   if (typeof repeat === "string") {
+  //     return handleResult({ ctx, data: {}, code: 400, tips: repeat });
+  //   }
+  // }
 
   const createTime = formatDate();
   const newVersion = getRandomText();
   const setData = mysqlSetParams({
-    account: params.account,
     password: params.password,
     name: params.name,
     type: params.type,
