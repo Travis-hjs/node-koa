@@ -22,7 +22,6 @@ namespace SqlCreator {
 
   export interface Date extends Omit<Base, "length" | "isNull"> {
     type: "date";
-
   }
 
   export interface Int extends Base {
@@ -34,11 +33,21 @@ namespace SqlCreator {
     isKey?: boolean;
   }
 
+  export interface Decimal extends Base {
+    type: "decimal";
+    /** 小数位数 */
+    digits: number;
+  }
+
+  export interface Json extends Omit<Base, "length"> {
+    type: "json";
+  }
+
   export interface Varchar extends Omit<Base, "isNull"> {
     type: "varchar";
   }
 
-  export type Column = Int | Varchar | Date;
+  export type Column = Int | Decimal | Json | Varchar | Date;
 
   export interface Option {
     /**
@@ -88,6 +97,12 @@ function sqlCreator(option: SqlCreator.Option) {
       }
       return `${getName(col.key)} int(${col.length}) ${col.isKey ? `${getNull(false)} AUTO_INCREMENT` : "NULL DEFAULT NULL"} ${getComment(col.remark)}`;
     },
+    decimal(col: SqlCreator.Decimal) {
+      return `${getName(col.key)} decimal(${col.length}, ${col.digits}) NULL DEFAULT NULL ${getComment(col.remark)}`;
+    },
+    json(col: SqlCreator.Json) {
+      return `${getName(col.key)} json ${getNull(col.isNull)} ${getComment(col.remark)}`;
+    },
     date(col: SqlCreator.Date) {
       return `${getName(col.key)} datetime(0) NULL DEFAULT NULL ${getComment(col.remark)}`;
     },
@@ -104,7 +119,7 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 CREATE TABLE \`${tableName}\` (
-  ${list.toString().replace(/,/g, ",\n  ")}
+  ${list.join(",\n  ")}
 ) ENGINE = ${option.engine} AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -136,13 +151,20 @@ sqlCreator({
 });
 
 // sqlCreator({
-//   name: "history",
+//   name: "order",
 //   engine: "InnoDB",
 //   columns: [
-//     { type: "varchar", key: "name", remark: "记录名称", length: 255 },
-//     { type: "int", key: "state", remark: "状态", length: 10, isNull: false },
-//     { type: "date", key: "create_time", remark: "创建日期" },
-//     { type: "int", key: "create_user_id", remark: "创建用户id", length: 64, isNull: false },
+//     { type: "int", key: "id", remark: "订单ID", length: 64, isNull: false, isKey: true },
+//     { type: "varchar", key: "code", remark: "订单编号", length: 24 },
+//     { type: "varchar", key: "name", remark: "订单名称", length: 64 },
+//     { type: "varchar", key: "pic", remark: "封面图", length: 255 },
+//     { type: "decimal", key: "price", remark: "订单金额", length: 10, digits: 2, isNull: false },
+//     { type: "decimal", key: "fee", remark: "手续费(百分比：0~100)", length: 10, digits: 2, isNull: false },
+//     { type: "int", key: "status", remark: "订单状态(0待支付，1支付完成，2支付失败，3订单失效)", length: 10, isNull: false },
+//     { type: "int", key: "channel", remark: "支付渠道(0银行卡，1微信，2支付宝)", length: 10, isNull: false },
+//     { type: "date", key: "create_time", remark: "订单创建时间" },
+//     { type: "json", key: "product_info", remark: "产品信息(JSON)", isNull: true },
+//     { type: "varchar", key: "create_user", remark: "创建用户", length: 10 },
 //     { type: "varchar", key: "remarks", remark: "备注", length: 255 },
 //   ],
 // });
