@@ -1,4 +1,4 @@
-import type { TheContext } from "./types/base.js";
+import type { TheContext } from "./types/common.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Koa from "koa";

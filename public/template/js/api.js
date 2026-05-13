@@ -9,7 +9,7 @@ const BASE_URL = location.host ? location.origin : "http://192.168.0.24:1995";
 export const user = {
   /**
    * 缓存用户数据
-   * @param {object} data 
+   * @param {object} data
    */
   update(data) {
     sessionStorage.setItem("userInfo", JSON.stringify(data));
@@ -89,7 +89,7 @@ function request(method, url, data = {}, option = {}) {
     const result = {
       code: -1,
       data: null,
-      msg: "" 
+      msg: ""
     }
     fetch(`${BASE_URL}/api${url}`, {
       method,
@@ -98,30 +98,26 @@ function request(method, url, data = {}, option = {}) {
       signal: controller.signal,
       ...option,
     }).then(response => {
-      if (response.status !== 200) {
-        result.code = response.status;
-        switch (response.status) {
-          case 404:
-            result.msg = "请求的地址不存在！";
-            break;
-
-          case 500:
-            // console.log(response);
-            result.msg = response.statusText;
-            break;
-
-          default:
-            break;
-        }
+      if (response.status === 404) {
+        result.msg = "请求的地址不存在！";
         message.error(result.msg);
         resolve(result);
         return;
       }
+
       if (option.responseType === "blob") {
         return response.blob();
       }
-      // 默认响应的信息转为`json`
+
+      try {
+        // 默认响应的信息转为`json`
       return response.json();
+      } catch (error) {
+        return {
+          code: -1,
+          message: `${error}`
+        }
+      }
     }).then(res => {
       clearTimeout(timer);
       if (option.responseType === "blob") {
@@ -129,7 +125,7 @@ function request(method, url, data = {}, option = {}) {
         result.data = res;
         resolve(result);
       } else {
-        if (res.code === 1) {
+        if (res.code === 200) {
           result.code = 1;
           result.data = res.data;
           result.msg = res.message || "ok";
@@ -157,7 +153,7 @@ function request(method, url, data = {}, option = {}) {
 class ModuleApi {
   /**
    * 测试`get`请求
-   * @param {string|number} id 
+   * @param {string|number} id
    */
   testGet(id = 12) {
     return request("GET", "/getData", {
@@ -167,7 +163,7 @@ class ModuleApi {
 
   /**
    * 测试`post`请求
-   * @param {{ name: string, age: string }} data 
+   * @param {{ name: string, age: string }} data
    */
   testPost(data) {
     return request("POST", "/postData", data);
@@ -185,7 +181,7 @@ class ModuleApi {
    * 登录
    * @param {object} info 注册传参
    * @param {string} info.account 账户
-   * @param {string} info.password 密码 
+   * @param {string} info.password 密码
    */
   login(info) {
     return request("POST", "/login", info);
@@ -202,8 +198,8 @@ class ModuleApi {
    * 注册
    * @param {object} info 注册传参
    * @param {string} info.account 账户
-   * @param {string} info.password 密码 
-   * @param {string} info.name 用户名 
+   * @param {string} info.password 密码
+   * @param {string} info.name 用户名
    */
   register(info) {
     return request("POST", "/register", info);
@@ -211,7 +207,7 @@ class ModuleApi {
 
   /**
    * 上传文件
-   * @param {FormData} formData 
+   * @param {FormData} formData
    * @param {(event: ProgressEvent<XMLHttpRequestEventTarget>) => void} progress
    * @returns {Promise<ApiResult>}
    */
@@ -223,7 +219,7 @@ class ModuleApi {
     const result = {
       code: -1,
       data: null,
-      msg: "" 
+      msg: ""
     }
     return new Promise(function(resolve) {
       const XHR = new XMLHttpRequest();
@@ -294,9 +290,9 @@ class ModuleApi {
   }
 
   /**
-   * 
-   * @param {"video"|"excel"} type 
-   * @returns 
+   *
+   * @param {"video"|"excel"} type
+   * @returns
    */
   getFile(type) {
     return request("GET", type === "video" ? "/getVideo" : "/getExcel", {}, {

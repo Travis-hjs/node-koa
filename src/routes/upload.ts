@@ -1,7 +1,7 @@
-import type { UploadFile } from "../types/base.js";
+import type { UploadFile } from "../types/common.js";
 import fs from "node:fs";
 import path from "node:path";
-import { apiSuccess } from "../utils/apiResult.js";
+import { handleResult } from "../middleware/index.js";
 import { config } from "../utils/config.js";
 import router from "./main.js";
 
@@ -52,5 +52,5 @@ router.post("/uploadFile", async (ctx, next) => {
 
   const res = await uploadToCloud();
 
-  ctx.body = apiSuccess(res, "上传成功");
+  handleResult({ ctx, data: res, tips: "上传成功" });
 });

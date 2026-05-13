@@ -1,8 +1,22 @@
 import type { Next } from "koa";
-import type { TheContext } from "../types/base.js";
-import { jwt } from "../modules/index.js";
+import type { HandleResult, TheContext } from "../types/common.js";
+import { verifyToken } from "../modules/user.js";
 import { config } from "../utils/config.js";
 import { getDomain } from "../utils/index.js";
+
+/**
+ * 处理响应结果
+ * @param params
+ */
+export function handleResult<T = any>(params: HandleResult<T>) {
+  const s = params.status || 200;
+  params.ctx.status = s;
+  params.ctx.body = {
+    message: params.tips || "ok",
+    code: params.code || s,
+    data: params.data,
+  };
+}
 
 /**
  * 中间件-处理`token`验证
@@ -11,10 +25,15 @@ import { getDomain } from "../utils/index.js";
  * @description 需要`token`验证的接口时使用
  */
 export async function handleToken(ctx: TheContext, next: Next) {
-  const checkInfo = jwt.checkToken(ctx);
+  const value = await verifyToken(ctx, ctx.header.authorization);
 
-  if (checkInfo.fail) {
-    ctx.body = checkInfo.info;
+  if (typeof value === "string") {
+    handleResult({
+      ctx,
+      status: 401,
+      tips: value,
+      data: {},
+    });
   }
   else {
     await next();

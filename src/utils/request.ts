@@ -1,4 +1,4 @@
-import type { BaseObj, ServeRequestResult } from "../types/base.js";
+import type { BaseObj, ServeRequestResult } from "../types/common.js";
 import http from "node:http";
 import querystring from "node:querystring";
 import zlib from "node:zlib";

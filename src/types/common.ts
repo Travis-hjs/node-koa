@@ -1,19 +1,28 @@
 import type { RouterContext } from "@koa/router";
-import type { TableUserInfo } from "./user.js";
+import type { UserInfo } from "./user.js";
 
 /** 基础对象 */
 export interface BaseObj<T = string | number> {
   [key: string]: T;
 }
 
-/** 接口响应数据，返回给前端用 */
-export interface ApiResult<T = any> {
-  /** 状态提示 */
-  message: string;
-  /** 状态码 */
-  code: number;
-  /** 返回数据 */
+export interface HandleResult<T> {
+  /** 路由上下文 */
+  ctx: TheContext;
+  /** 响应结果 */
   data: T;
+  /** 提示文案 */
+  tips?: string;
+  /**
+   * 响应码
+   * - 不传则拿`status`代替
+   */
+  code?: number;
+  /**
+   * 状态码
+   * - 不传默认为`200`
+   */
+  status?: number;
 }
 
 /**
@@ -108,16 +117,16 @@ export interface MysqlOption {
 }
 
 export interface AppState {
-  // 待补充
+  /**
+   * `token`验证通过后用户数据
+   * - 权限验证通过后才会赋值
+   */
+  user: UserInfo;
 }
 
 /** 自定义的请求上下文返回信息接口 */
 export interface AppContext {
-  /**
-   * 请求时自定义设置的一个`token`信息
-   * @description 具体看: src/module/Jwt.ts
-   */
-  theToken?: TableUserInfo;
+  // 可以为上下文设置任意值
 }
 
 export type TheContext = RouterContext<AppState, AppContext>;

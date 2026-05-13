@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { apiFail, apiSuccess } from "../utils/apiResult.js";
+import { handleResult } from "../middleware/index.js";
 import { config } from "../utils/config.js";
 import { formatDate, isType, replaceText } from "../utils/index.js";
 import request from "../utils/request.js";
@@ -63,10 +63,13 @@ router.get("/getData", (ctx) => {
 
   console.log("/getData", params);
 
-  ctx.body = apiSuccess({
-    method: "get",
-    port: config.port,
-    date: formatDate(),
+  handleResult({
+    ctx,
+    data: {
+      method: "get",
+      port: config.port,
+      date: formatDate(),
+    },
   });
 });
 
@@ -79,7 +82,10 @@ router.post("/postData", (ctx) => {
     data: params,
   };
 
-  ctx.body = apiSuccess(result, "post success");
+  handleResult({
+    ctx,
+    data: result,
+  });
 });
 
 // 请求第三方接口并把数据返回到前端
@@ -88,8 +94,12 @@ router.get("/getWeather", async (ctx) => {
   const cityCode = ctx.query.cityCode as string;
 
   if (!cityCode) {
-    ctx.body = apiSuccess({}, "缺少传参字段 cityCode", 400);
-    return;
+    return handleResult({
+      ctx,
+      data: {},
+      tips: "缺少传参字段 cityCode",
+      status: 400,
+    });
   }
 
   /**
@@ -100,9 +110,12 @@ router.get("/getWeather", async (ctx) => {
   const appKey = "";
 
   if (!appKey) {
-    ctx.status = 500;
-    ctx.body = apiFail("服务端缺少 appKey 请检查再重试", 500, {});
-    return;
+    return handleResult({
+      ctx,
+      data: {},
+      tips: "服务端缺少 appKey 请检查再重试",
+      status: 500,
+    });
   }
 
   const res = await request({
@@ -120,11 +133,18 @@ router.get("/getWeather", async (ctx) => {
     if (isType(res.result, "string")) {
       res.result = JSON.parse(res.result);
     }
-    ctx.body = apiSuccess(res.result);
+    handleResult({
+      ctx,
+      data: res.result,
+    });
   }
   else {
-    ctx.status = 500;
-    ctx.body = apiFail(res.msg, 500, res.result);
+    handleResult({
+      ctx,
+      status: 500,
+      tips: res.msg,
+      data: res.result,
+    });
   }
 });
 

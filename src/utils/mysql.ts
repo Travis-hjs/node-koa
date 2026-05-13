@@ -1,5 +1,5 @@
 import type { FieldInfo, MysqlError, queryCallback } from "mysql";
-import type { BaseObj } from "../types/base.js";
+import type { BaseObj } from "../types/common.js";
 import { createPool } from "mysql";
 import { config } from "./config.js";
 import { mysqlSearchParams } from "./index.js";

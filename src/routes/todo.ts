@@ -1,90 +1,89 @@
-import type { ApiResult } from "../types/base.js";
-import { handleToken } from "../middleware/index.js";
-import { apiFail, apiSuccess } from "../utils/apiResult.js";
+import { handleResult, handleToken } from "../middleware/index.js";
 import { arrayItemToHump, formatDate, mysqlFormatParams, mysqlSetParams } from "../utils/index.js";
-import { query } from "../utils/mysql.js";
+import { getSearchText, query } from "../utils/mysql.js";
 import router from "./main.js";
 
 // 获取所有列表
 router.get("/getList", handleToken, async (ctx) => {
-  const tokenInfo = ctx.theToken;
-  /** 返回结果 */
-  let bodyResult: ApiResult;
+  const auth = ctx.state.user;
 
   // console.log("getList >>", tokenInfo);
 
-  const res = await query(`select * from todo_table where create_user_id = '${tokenInfo.id}'`);
+  const sql = getSearchText({
+    name: "todo_table",
+    vague: {
+      create_user_id: auth.id,
+    },
+    size: 999,
+  });
+
+  const res = await query(sql.default);
 
   if (res.state === 1) {
     // console.log("/getList 查询", res.results);
-    bodyResult = apiSuccess({
-      list: res.results.length > 0 ? arrayItemToHump(res.results) : [],
-    });
+    const list = res.results.length > 0 ? arrayItemToHump(res.results) : [];
+    handleResult({ ctx, data: { list } });
   }
   else {
-    ctx.response.status = 500;
-    bodyResult = apiFail(res.msg, 500, res.error);
+    handleResult({ ctx, status: 500, data: res.error, tips: res.msg });
   }
-
-  ctx.body = bodyResult;
 });
 
 // 添加列表
 router.post("/addList", handleToken, async (ctx) => {
-  const tokenInfo = ctx.theToken;
+  const auth = ctx.state.user;
   /** 接收参数 */
   const params = ctx.request.body as any;
-  /** 返回结果 */
-  let bodyResult;
 
   if (!params.content) {
-    return ctx.body = apiSuccess({}, "添加的列表内容不能为空！", 400);
+    return handleResult({ ctx, data: {}, tips: "添加的列表内容不能为空！", status: 400 });
   }
 
   const mysqlInfo = mysqlFormatParams({
     content: params.content,
-    create_user_id: tokenInfo.id,
+    create_user_id: auth.id,
     create_time: formatDate(),
   });
 
   // 写入列表
   const res = await query(`insert into todo_table(${mysqlInfo.keys}) values(${mysqlInfo.symbols})`, mysqlInfo.values);
 
-  // console.log("写入列表", res);
+  console.log("写入列表", res);
 
-  if (res.state === 1) {
-    bodyResult = apiSuccess({
-      id: res.results.insertId,
-    }, "添加成功");
+  if (res.state !== 1) {
+    return handleResult({ ctx, status: 500, data: { error: res.error }, tips: res.msg });
   }
-  else {
-    ctx.response.status = 500;
-    bodyResult = apiFail(res.msg, 500, res.error);
-  }
-
-  ctx.body = bodyResult;
+  handleResult({ ctx, data: { id: res.results.insertId }, tips: "添加成功" });
 });
 
 // 修改列表
 router.post("/editList", handleToken, async (ctx) => {
-  const tokenInfo = ctx.theToken;
+  const auth = ctx.state.user;
   /** 接收参数 */
   const params = ctx.request.body as unknown as { id: number; content: string };
-  /** 返回结果 */
-  let bodyResult;
 
   if (!params.id) {
-    return ctx.body = apiSuccess({}, "列表id不能为空", 400);
+    return handleResult({
+      ctx,
+      data: {},
+      tips: "列表id不能为空",
+      status: 400,
+    });
   }
 
   if (!params.content) {
-    return ctx.body = apiSuccess({}, "列表内容不能为空", 400);
+    return handleResult({
+      ctx,
+      data: {},
+      tips: "列表内容不能为空",
+      status: 400,
+    });
   }
 
   const setData = mysqlSetParams({
     content: params.content,
     update_time: formatDate(),
-    update_user_id: tokenInfo.id,
+    update_user_id: auth.id,
   });
 
   // 修改列表
@@ -92,29 +91,30 @@ router.post("/editList", handleToken, async (ctx) => {
 
   // console.log("修改列表", res);
 
-  if (res.state === 1) {
-    if (res.results.affectedRows > 0) {
-      bodyResult = apiSuccess({}, "修改成功");
-    }
-    else {
-      bodyResult = apiSuccess({}, "列表id不存在", 400);
-    }
+  if (res.state !== 1) {
+    return handleResult({ ctx, status: 500, data: { error: res.error }, tips: res.msg });
+  }
+  if (res.results.affectedRows > 0) {
+    handleResult({
+      ctx,
+      data: {},
+      tips: "修改成功",
+    });
   }
   else {
-    ctx.response.status = 500;
-    bodyResult = apiFail(res.msg, 500, res.error);
+    handleResult({
+      ctx,
+      data: {},
+      tips: "列表id不存在",
+      status: 400,
+    });
   }
-
-  ctx.body = bodyResult;
 });
 
 // 删除列表
 router.post("/deleteList", handleToken, async (ctx) => {
-  // const state = ctx.theToken;
   /** 接收参数 */
   const params = ctx.request.body as unknown as { id: number };
-  /** 返回结果 */
-  let bodyResult;
 
   // 从数据库中删除
   // const res = await query(`delete from todo_table where id='${params.id}' and user_id='${state.info.id}'`)
@@ -125,16 +125,13 @@ router.post("/deleteList", handleToken, async (ctx) => {
 
   if (res.state === 1) {
     if (res.results.affectedRows > 0) {
-      bodyResult = apiSuccess({}, "删除成功");
+      handleResult({ ctx, data: {}, tips: "删除成功" });
     }
     else {
-      bodyResult = apiSuccess({}, "当前列表id不存在或已删除", 400);
+      handleResult({ ctx, data: {}, tips: "当前列表id不存在或已删除", status: 400 });
     }
   }
   else {
-    ctx.response.status = 500;
-    bodyResult = apiFail(res.msg, 500, res.error);
+    handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
   }
-
-  ctx.body = bodyResult;
 });

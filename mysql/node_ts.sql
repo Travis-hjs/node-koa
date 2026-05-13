@@ -41,6 +41,7 @@ CREATE TABLE `user_table`  (
   `password` varchar(48) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '密码',
   `account` varchar(48) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '账号',
   `type` int(22) NOT NULL COMMENT '权限类型',
+  `token_version` varchar(22) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'token 版本',
   `group_id` int(64) NULL DEFAULT NULL COMMENT '分组id',
   `create_user_id` int(64) NOT NULL COMMENT '创建用户id',
   `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',

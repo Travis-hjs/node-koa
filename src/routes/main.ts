@@ -1,4 +1,4 @@
-import type { AppContext, AppState } from "../types/base.js";
+import type { AppContext, AppState } from "../types/common.js";
 import Router from "@koa/router";
 import { config } from "../utils/config.js";
 
