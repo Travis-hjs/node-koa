@@ -47,7 +47,7 @@ router.post("/register", async (ctx) => {
   }
 
   // 先查询是否有重复账号
-  const repeat = checkAccount(params.account);
+  const repeat = await checkAccount(params.account);
 
   if (typeof repeat === "string") {
     return handleResult({ ctx, data: {}, code: 400, tips: repeat });
@@ -102,7 +102,7 @@ router.post("/login", async (ctx) => {
   }
   // 再判断账号是否可用
   if (!res.results.length) {
-    handleResult({ ctx, data: {}, tips: "该账号不存在，请先注册", code: 400 });
+    return handleResult({ ctx, data: {}, tips: "该账号不存在，请先注册", code: 400 });
   }
   const userRow = objectToHump(res.results[0]) as UserInfo;
   // 最后判断密码是否正确
@@ -155,11 +155,25 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     params.name = `用户-${formatDate(Date.now(), "YMDhms")}`;
   }
 
-  // 先查询是否有重复账号
-  const repeat = checkAccount(params.account);
+  const user = await getUserInfo({ id: auth.id });
 
-  if (typeof repeat === "string") {
-    return handleResult({ ctx, data: {}, code: 400, tips: repeat });
+  if (!user) {
+    return handleResult({ ctx, data: {}, tips: "获取用户信息异常", code: 10086 });
+  }
+
+  if (user.type !== 0 && params.account) {
+    return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改账号", code: -1 });
+  }
+
+  const self = params.id.toString() === auth.id.toString();
+
+  if (!self) {
+    // 先查询是否有重复账号
+    const repeat = await checkAccount(params.account);
+
+    if (typeof repeat === "string") {
+      return handleResult({ ctx, data: {}, code: 400, tips: repeat });
+    }
   }
 
   const createTime = formatDate();
@@ -182,7 +196,7 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
   if (res.state === 1) {
     const data: { token?: string } = {};
     // 判断是否修改自己信息，修改自己信息的时候重新返回一个新的 token
-    if (params.id.toString() === auth.id.toString()) {
+    if (self) {
       data.token = generateToken(auth.id, newVersion, getExpireTime());
     }
     handleResult({ ctx, data, tips: "编辑成功" });
@@ -300,7 +314,7 @@ router.post("/deleteUser", handleToken, async (ctx) => {
   }
 
   if (!params.id) {
-    return handleResult({ ctx, data: {}, tips: "编辑失败！用户id不正确", status: 400 });
+    return handleResult({ ctx, data: {}, tips: "用户id不正确", status: 400 });
   }
 
   // 从数据库中删除
