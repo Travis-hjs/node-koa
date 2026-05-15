@@ -1,5 +1,5 @@
 import type { Next } from "koa";
-import type { HandleResult, TheContext } from "../types/common.js";
+import type { App, HandleResult } from "../types/common.js";
 import { verifyToken } from "../modules/user.js";
 import { config } from "../utils/config.js";
 import { getDomain } from "../utils/index.js";
@@ -24,7 +24,7 @@ export function handleResult<T = any>(params: HandleResult<T>) {
  * @param next
  * @description 需要`token`验证的接口时使用
  */
-export async function handleToken(ctx: TheContext, next: Next) {
+export async function handleToken(ctx: App.Ctx, next: Next) {
   const value = await verifyToken(ctx, ctx.header.authorization);
 
   if (typeof value === "string") {
@@ -45,7 +45,7 @@ export async function handleToken(ctx: TheContext, next: Next) {
  * @param ctx
  * @param next
  */
-export async function handleDomain(ctx: TheContext, next: Next) {
+export async function handleDomain(ctx: App.Ctx, next: Next) {
   const { referer } = ctx.headers;
   // console.log(referer, origin);
 

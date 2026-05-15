@@ -1,4 +1,4 @@
-import type { TheContext } from "../types/common.js";
+import type { App } from "../types/common.js";
 import type { User } from "../types/user.js";
 import { decrypt, encrypt, objectToHump } from "../utils/index.js";
 import { getSearchText, query } from "../utils/mysql.js";
@@ -42,7 +42,7 @@ export function generateToken(userId: number, version: string, expireTime?: numb
  * @param ctx
  * @param token
  */
-export async function verifyToken(ctx: TheContext, token: string) {
+export async function verifyToken(ctx: App.Ctx, token: string) {
   if (!token)
     return "token 不存在";
   try {

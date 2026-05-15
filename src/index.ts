@@ -1,4 +1,4 @@
-import type { TheContext } from "./types/common.js";
+import type { App } from "./types/common.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Koa from "koa";
@@ -23,7 +23,7 @@ app.use(serve(path.resolve(__dirname, "../public/template")));
 app.use(serve(path.resolve(__dirname, "../public/upload")));
 
 // 先统一设置请求配置 => 跨域，请求头信息...
-app.use(async (ctx: TheContext, next) => {
+app.use(async (ctx: App.Ctx, next) => {
   console.log("--------------------------");
   console.log(getLogText(`服务器时间: ${formatDate()}`, "yellow"), ctx.request.path);
   console.count("request count");

@@ -3,7 +3,7 @@ import type { User } from "./user.js";
 
 export interface HandleResult<T> {
   /** 路由上下文 */
-  ctx: TheContext;
+  ctx: App.Ctx;
   /** 响应结果 */
   data: T;
   /** 提示文案 */
@@ -99,29 +99,90 @@ export interface ServeRequestResult {
   result: any;
 }
 
-/** `mysql`数据操作类型 */
-export interface MysqlOption {
-  /** 创建时间 */
-  createTime: string;
-  /** 创建用户`id` */
-  createUserId: number;
-  /** 更新时间 */
-  updateTime?: string;
-  /** 更新用户`id` */
-  updateUserId?: number;
+/** 当前应用类型集合 */
+export namespace App {
+  export interface RouterState {
+    /**
+     * `token`验证通过后用户数据
+     * - 权限验证通过后才会赋值
+     */
+    user: User.Row;
+  }
+
+  export interface RouterCtx {
+    // 可以为上下文设置任意值
+  }
+
+  export type Ctx = RouterContext<RouterState, RouterCtx>;
 }
 
-export interface AppState {
-  /**
-   * `token`验证通过后用户数据
-   * - 权限验证通过后才会赋值
-   */
-  user: User.Row;
-}
+/** `sql`相关 */
+export namespace Sql {
+  /** 查询语句类型 */
+  export interface Search {
+    /** 数据库表名 */
+    name: string;
+    /**
+     * 查询的字段
+     * - 不传或者传控则为`select *`
+     * - 内部会将驼峰转下划线
+     */
+    keys?: Array<string>;
+    /**
+     * 模糊查询对象
+     * - 内部会将驼峰转下划线
+     */
+    vague?: Record<string, string | number>;
+    /**
+     * 精确查询对象
+     * - 内部会将驼峰转下划线
+     */
+    accurate?: Record<string, string | number>;
+    /**
+     * 升序，支持多个字段
+     * - 从小到大
+     * - 内部会将驼峰转下划线
+     */
+    asc?: Array<string>;
+    /**
+     * 排降序，支持多个字段
+     * - 从大到小
+     * - 内部会将驼峰转下划线
+     */
+    desc?: Array<string>;
+    /**
+     * 页码（一页多少条）
+     * - 默认`10`
+     */
+    size?: number;
+    /**
+     * 当前页数
+     * - 默认`1`
+     */
+    page?: number;
+    /** 日期范围查询 */
+    dateRange?: {
+      /**
+       * 时间字段
+       * - 内部会将驼峰转下划线
+       */
+      key: string;
+      /** 范围开始值 */
+      start?: string;
+      /** 范围结束值 */
+      end?: string;
+    };
+  }
 
-/** 自定义的请求上下文返回信息接口 */
-export interface AppContext {
-  // 可以为上下文设置任意值
+  /** 通用表字段 */
+  export interface CommonRow {
+    /** 创建时间 */
+    createTime: string;
+    /** 创建用户`id` */
+    createUserId: number;
+    /** 更新时间 */
+    updateTime?: string;
+    /** 更新用户`id` */
+    updateUserId?: number;
+  }
 }
-
-export type TheContext = RouterContext<AppState, AppContext>;
