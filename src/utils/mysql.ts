@@ -2,7 +2,7 @@ import type { FieldInfo, MysqlError, queryCallback } from "mysql";
 import type { Sql } from "../types/common.js";
 import { createPool } from "mysql";
 import { config } from "./config.js";
-import { sqlSearchFormat, toLine } from "./index.js";
+import { formatSqlColumn, sqlSearchFormat } from "./index.js";
 
 /** `mysql`查询结果 */
 interface SqlResult<T = any> {
@@ -47,7 +47,7 @@ export function query<T = any>(command: string, value?: Array<any>) {
         resolve(result);
       }
       else {
-        const callback: queryCallback = (error: any, results, fields) => {
+        const callback: queryCallback = (error, results, fields) => {
           // pool.end();
           connection.release();
           if (error) {
@@ -65,10 +65,10 @@ export function query<T = any>(command: string, value?: Array<any>) {
         };
 
         if (value) {
-          pool.query(command, value, callback);
+          connection.query(command, value, callback);
         }
         else {
-          pool.query(command, callback);
+          connection.query(command, callback);
         }
       }
     });
@@ -80,32 +80,32 @@ export function query<T = any>(command: string, value?: Array<any>) {
  * @param params
  */
 export function getSearchText(params: Sql.Search) {
-  const { name, size = 10, page = 1, dateRange } = params;
+  const { name, dateRange, accurate, vague, keys = [], asc = [], desc = [] } = params;
+  const size = Math.max(1, Math.floor(Number(params.size) || 10));
+  const page = Math.max(1, Math.floor(Number(params.page) || 1));
   const tableName = `\`${name}\``;
-
-  /** 查询语句 */
-  let text = "";
+  const whereList: Array<string> = [];
+  const values: Array<any> = [];
 
   /** 精确查询语句 */
-  const accuracy = params.accurate ? sqlSearchFormat(params.accurate) : "";
+  const accuracyText = accurate ? sqlSearchFormat(accurate) : { text: "", values: [] };
 
   /** 模糊查询语句 */
-  const vague = params.vague ? sqlSearchFormat(params.vague, true) : "";
+  const vagueText = vague ? sqlSearchFormat(vague, true) : { text: "", values: [] };
 
-  // TODO需调试验证
   const sortText = (function () {
-    if (!params.asc && !params.desc)
+    if (asc.length === 0 && desc.length === 0)
       return "";
     let result = "order by";
-    const hasDesc = params.desc.length > 0;
+    const hasDesc = desc.length > 0;
     if (hasDesc) {
-      result = `${result} ${params.desc.map(key => `${toLine(key)} desc`).toString().replace(",", ", ")}`;
+      result = `${result} ${desc.map(key => `${formatSqlColumn(key)} desc`).join(", ")}`;
     }
 
     const and = hasDesc ? `${result},` : result;
 
-    if (params.asc.length > 0) {
-      result = `${and} ${params.asc.map(key => `${toLine(key)} asc`).toString().replace(",", ", ")}`;
+    if (asc.length > 0) {
+      result = `${and} ${asc.map(key => `${formatSqlColumn(key)} asc`).join(", ")}`;
     }
 
     return result;
@@ -113,29 +113,31 @@ export function getSearchText(params: Sql.Search) {
 
   const limit = `limit ${size * (page - 1)}, ${size}`;
 
-  if (accuracy) {
-    text += accuracy;
+  if (accuracyText.text) {
+    values.push(...accuracyText.values);
+    whereList.push(accuracyText.text);
   }
 
-  if (vague) {
-    text += `${text ? " and" : ""} ${vague}`;
+  if (vagueText.text) {
+    values.push(...vagueText.values);
+    whereList.push(vagueText.text);
   }
 
   if (dateRange && dateRange.start && dateRange.end) {
-    const dateKey = toLine(dateRange.key);
-    text += `${text ? " and" : ""} ${dateKey} between '${dateRange.start}' and '${dateRange.end}'`;
+    const dateKey = formatSqlColumn(dateRange.key);
+    whereList.push(`${dateKey} between ? and ?`);
+    values.push(dateRange.start, dateRange.end);
   }
 
-  if (text) {
-    text = `where ${text}`;
-  }
+  const text = whereList.length > 0 ? `where ${whereList.join(" and ")}` : "";
 
-  const selectKeys = params.keys ? params.keys.map(key => toLine(key)).toString() : "";
+  const selectKeys = keys.length > 0 ? keys.map(key => formatSqlColumn(key)).join(", ") : "";
 
   return {
     /** 默认完整的查询语句 */
     default: `select ${selectKeys || "*"} from ${tableName} ${text} ${sortText} ${limit}`,
     /** 只用于查总数量的语句，剔除了分页、排序语句 */
-    count: `select count(*) from ${tableName} ${text}`,
+    count: `select count(*) as total from ${tableName} ${text}`,
+    values,
   };
 }

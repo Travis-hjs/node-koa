@@ -187,6 +187,15 @@ export function toLine(value: string) {
 }
 
 /**
+ * 格式化`sql`表字段
+ * @param key
+ */
+export function formatSqlColumn(key: string) {
+  const lineKey = toLine(key);
+  return lineKey.includes(".") ? lineKey : `\`${lineKey}\``;
+}
+
+/**
  * 数组项全部转成驼峰
  * @param list 目标数组
  */
@@ -257,20 +266,21 @@ export function sqlInsertFormat(params: Record<string, any>, isEmptyString = fal
  */
 export function sqlUpdateFormat(params: Record<string, any>, isEmptyString = false) {
   const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
-  const values = [];
-  let result = "";
+  const values: Array<{ key: string; value: any }> = [];
   for (const key in params) {
     const value = params[key];
     const empty = isEmpty(value, rules);
-    const lineKey = toLine(key);
     if (!empty) {
-      values.push(`\`${lineKey}\`='${value}'`);
+      values.push({
+        key: formatSqlColumn(key),
+        value,
+      });
     }
   }
-  if (values.length > 0) {
-    result = `set ${values.toString()}`;
-  }
-  return result;
+  return {
+    text: values.length > 0 ? `set ${values.map(item => `${item.key} = ?`).join(", ")}` : "",
+    values: values.map(item => item.value),
+  };
 }
 
 /**
@@ -279,25 +289,27 @@ export function sqlUpdateFormat(params: Record<string, any>, isEmptyString = fal
  * @param isVague 是否模糊查询
  */
 export function sqlSearchFormat(params: Record<string, any>, isVague = false) {
-  let result = "";
+  const textList: Array<string> = [];
+  const values: Array<any> = [];
   for (const key in params) {
     const value = params[key];
     const empty = isEmpty(value);
-    const lineKey = toLine(key);
     if (!empty) {
-      const prefix = lineKey.includes(".") ? ` and ${lineKey}` : ` and \`${lineKey}\``;
+      const column = formatSqlColumn(key);
       if (isVague) {
-        result += `${prefix} like '%${value}%'`;
+        textList.push(`${column} like ?`);
+        values.push(`%${value}%`);
       }
       else {
-        result += `${prefix} = '${value}'`;
+        textList.push(`${column} = ?`);
+        values.push(value);
       }
     }
   }
-  if (result) {
-    result = result.slice(4);
-  }
-  return result;
+  return {
+    text: textList.join(" and "),
+    values,
+  };
 }
 
 /**

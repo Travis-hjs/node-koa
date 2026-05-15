@@ -17,7 +17,7 @@ router.get("/getList", handleToken, async (ctx) => {
     size: 999,
   });
 
-  const res = await query(sql.default);
+  const res = await query(sql.default, sql.values);
 
   if (res.state === 1) {
     // console.log("/getList 查询", res.results);
@@ -87,7 +87,7 @@ router.post("/editList", handleToken, async (ctx) => {
   });
 
   // 修改列表
-  const res = await query(`update todo_table ${setData} where id = '${params.id}'`);
+  const res = await query(`update todo_table ${setData.text} where id = ?`, [...setData.values, params.id]);
 
   // console.log("修改列表", res);
 
@@ -118,7 +118,7 @@ router.post("/deleteList", handleToken, async (ctx) => {
 
   // 从数据库中删除
   // const res = await query(`delete from todo_table where id='${params.id}' and user_id='${state.info.id}'`)
-  const res = await query(`delete from todo_table where id = '${params.id}'`);
+  const res = await query("delete from todo_table where id = ?", [params.id]);
   // const res = await query(`delete from todo_table where id in(${params.ids.toString()})`) // 批量删除
 
   // console.log("从数据库中删除", res);

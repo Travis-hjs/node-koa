@@ -85,7 +85,7 @@ router.post("/login", async (ctx) => {
   }
 
   // 先查询是否有当前账号
-  const res = await query(`select * from user_table where account = '${params.account}'`);
+  const res = await query("select * from user_table where account = ?", [params.account]);
 
   // console.log("登录查询", res);
 
@@ -201,7 +201,7 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     token_version: newVersion,
   });
 
-  const res = await query(`update user_table ${setData} where id = '${params.id}'`);
+  const res = await query(`update user_table ${setData.text} where id = ?`, [...setData.values, params.id]);
 
   if (res.state !== 1) {
     return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
@@ -329,7 +329,7 @@ router.post("/deleteUser", handleToken, async (ctx) => {
   }
 
   // 从数据库中删除
-  const res = await query(`delete from user_table where id = '${params.id}'`);
+  const res = await query("delete from user_table where id = ?", [params.id]);
   // console.log("获取用户列表 >>", res);
 
   if (res.state !== 1) {
@@ -348,7 +348,7 @@ router.post("/deleteUser", handleToken, async (ctx) => {
 // 退出登录
 router.get("/logout", handleToken, async (ctx) => {
   const text = sqlUpdateFormat({ tokenVersion: "" }, true);
-  const res = await query(`update user_table ${text} where id = '${ctx.state.user.id}'`);
+  const res = await query(`update user_table ${text.text} where id = ?`, [...text.values, ctx.state.user.id]);
   if (res.state !== 1) {
     return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
   }

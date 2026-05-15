@@ -16,7 +16,7 @@ export async function getUserRow(params: Partial<User.Search>, keys?: Array<keyo
     size: 3,
   });
   const result = {} as User.SqlRes;
-  const search = await query(sql.default);
+  const search = await query(sql.default, sql.values);
   if (search.state === 1) {
     const list = search.results || [];
     result.data = list[0] ? objectToHump<User.Row>(list[0]) : null;
