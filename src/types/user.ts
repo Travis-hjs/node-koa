@@ -1,40 +1,65 @@
 import type { MysqlOption } from "./common.js";
 
-/** 用户信息 */
-export interface UserInfo extends Partial<MysqlOption> {
+export namespace User {
   /**
-   * 用户`id`
-   * - 表字段
+   * 用户信息
+   * - 表结构
    */
-  id: number;
+  export interface Row extends Partial<MysqlOption> {
+    /**
+     * 用户`id`
+     * - 表字段
+     */
+    id: number;
+    /**
+     * `token`分配的对比字段
+     * - 由登录相关接口分配的字段
+     */
+    tokenVersion: string;
+    /**
+     * 账号
+     * - 表字段
+     */
+    account?: string;
+    /**
+     * 密码
+     * - 表字段
+     */
+    password?: string;
+    /**
+     * 用户名
+     * - 表字段
+     */
+    name?: string;
+    /**
+     * 用户类型
+     * - 表字段
+     */
+    type?: number;
+    /**
+     * 用户分组`id`
+     * - 表字段
+     */
+    groupId?: number;
+  }
+
+  /** 查询参数 */
+  export interface Search extends Pick<Row, "id" | "account"> {}
+
   /**
-   * `token`分配的对比字段
-   * - 由登录相关接口分配的字段
+   * `getUserInfo`响应结果
    */
-  tokenVersion: string;
-  /**
-   * 账号
-   * - 表字段
-   */
-  account?: string;
-  /**
-   * 密码
-   * - 表字段
-   */
-  password?: string;
-  /**
-   * 用户名
-   * - 表字段
-   */
-  name?: string;
-  /**
-   * 用户类型
-   * - 表字段
-   */
-  type?: number;
-  /**
-   * 用户分组`id`
-   * - 表字段
-   */
-  groupId?: number;
+  export interface SqlRes {
+    /** 成功结果 */
+    data: Row;
+    /**
+     * 查询到的用户列表
+     * - 查询原始完整数据
+     */
+    list: number;
+    /** 错误信息 */
+    error: any;
+    /** 提示 */
+    tips: string;
+  }
 }

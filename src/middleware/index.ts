@@ -9,11 +9,11 @@ import { getDomain } from "../utils/index.js";
  * @param params
  */
 export function handleResult<T = any>(params: HandleResult<T>) {
-  const s = params.status || 200;
-  params.ctx.status = s;
+  const status = params.status || 200;
+  params.ctx.status = status;
   params.ctx.body = {
     message: params.tips || "ok",
-    code: params.code || s,
+    code: params.code || status,
     data: params.data,
   };
 }

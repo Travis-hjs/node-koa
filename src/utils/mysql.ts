@@ -1,5 +1,4 @@
 import type { FieldInfo, MysqlError, queryCallback } from "mysql";
-import type { BaseObj } from "../types/common.js";
 import { createPool } from "mysql";
 import { config } from "./config.js";
 import { mysqlSearchParams } from "./index.js";
@@ -97,7 +96,7 @@ interface SearchTextParams {
    * }
    * ```
    */
-  vague?: BaseObj<any>;
+  vague?: Record<string, string | number>;
   /**
    * 精确查询对象
    * - 注意：字段为数据库标准，小写+下划线
@@ -109,7 +108,7 @@ interface SearchTextParams {
    * }
    * ```
    */
-  accurate?: BaseObj<any>;
+  accurate?: Record<string, string | number>;
   /**
    * 排序字段
    * - 从小到大

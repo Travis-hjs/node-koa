@@ -1,19 +1,14 @@
 import type { TheContext } from "../types/common.js";
-import type { UserInfo } from "../types/user.js";
+import type { User } from "../types/user.js";
 import { decrypt, encrypt, objectToHump, toLine } from "../utils/index.js";
 import { getSearchText, query } from "../utils/mysql.js";
-
-interface UserParams {
-  id: number;
-  account: string;
-}
 
 /**
  * 通过数据库查询用户信息
  * @param params 查询条件
  * @param keys 包含的用户字段，不传则查询所有字段
  */
-export async function getUserInfo(params: Partial<UserParams>, keys?: Array<keyof UserInfo>) {
+export async function getUserInfo(params: Partial<User.Search>, keys?: Array<keyof User.Row>) {
   let userKeys: Array<string> = [];
   if (keys && keys.length > 0) {
     userKeys = keys.map(key => toLine(key));
@@ -27,7 +22,7 @@ export async function getUserInfo(params: Partial<UserParams>, keys?: Array<keyo
   const res = await query(sql.default);
   if (res.state === 1) {
     const row = res.results[0];
-    return row ? objectToHump<UserInfo>(row) : null;
+    return row ? objectToHump<User.Row>(row) : null;
   }
   return null;
 }

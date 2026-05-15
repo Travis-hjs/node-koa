@@ -1,4 +1,4 @@
-import type { BaseObj, JavaScriptType, JavaScriptTypes } from "../types/common.js";
+import type { JavaScriptType, JavaScriptTypes } from "../types/common.js";
 import { createCipheriv, createDecipheriv, createHash, randomBytes, randomInt } from "node:crypto";
 
 /**
@@ -204,7 +204,7 @@ export function arrayItemToHump<T>(list: Array<T>) {
  * @param target 目标对象
  */
 export function objectToHump<T = any>(target: any): T {
-  const result: BaseObj<any> = {};
+  const result: Record<string, any> = {};
   for (const key in target) {
     result[toHump(key)] = target[key];
   }
@@ -217,7 +217,7 @@ export function objectToHump<T = any>(target: any): T {
  * @param isEmptyString 是否可以为空字符串
  * @description 数据库写入的时候用
  */
-export function mysqlFormatParams(params: BaseObj<any>, isEmptyString = false) {
+export function mysqlFormatParams(params: Record<string, any>, isEmptyString = false) {
   const keys = [];
   const values = [];
   const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
@@ -241,7 +241,7 @@ export function mysqlFormatParams(params: BaseObj<any>, isEmptyString = false) {
  * @param isEmptyString 是否可以为空字符串
  * @description 修改（更新用）
  */
-export function mysqlSetParams(params: BaseObj<any>, isEmptyString = false) {
+export function mysqlSetParams(params: Record<string, any>, isEmptyString = false) {
   const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
   const values = [];
   let result = "";
@@ -263,7 +263,7 @@ export function mysqlSetParams(params: BaseObj<any>, isEmptyString = false) {
  * @param isVague 是否模糊查询
  * @description 查询用
  */
-export function mysqlSearchParams(params: BaseObj<any>, isVague = false) {
+export function mysqlSearchParams(params: Record<string, any>, isVague = false) {
   let result = "";
   for (const key in params) {
     const empty = isEmpty(params[key]);

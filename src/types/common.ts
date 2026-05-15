@@ -1,10 +1,5 @@
 import type { RouterContext } from "@koa/router";
-import type { UserInfo } from "./user.js";
-
-/** 基础对象 */
-export interface BaseObj<T = string | number> {
-  [key: string]: T;
-}
+import type { User } from "./user.js";
 
 export interface HandleResult<T> {
   /** 路由上下文 */
@@ -121,7 +116,7 @@ export interface AppState {
    * `token`验证通过后用户数据
    * - 权限验证通过后才会赋值
    */
-  user: UserInfo;
+  user: User.Row;
 }
 
 /** 自定义的请求上下文返回信息接口 */

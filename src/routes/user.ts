@@ -1,5 +1,4 @@
-import type { BaseObj } from "../types/common.js";
-import type { UserInfo } from "../types/user.js";
+import type { User } from "../types/user.js";
 import { handleResult, handleToken } from "../middleware/index.js";
 import { generateToken, getUserInfo } from "../modules/user.js";
 import { checkType, formatDate, getLogText, getRandomText, mysqlFormatParams, mysqlSetParams, objectToHump } from "../utils/index.js";
@@ -7,7 +6,7 @@ import { query } from "../utils/mysql.js";
 import router from "./main.js";
 
 const oneDay = 86400000;
-
+/** 登录过期时间 */
 const getExpireTime = () => Date.now() + (oneDay * 7);
 
 /**
@@ -32,7 +31,7 @@ async function checkAccount(account: string) {
 // 注册
 router.post("/register", async (ctx) => {
   /** 接收参数 */
-  const params = ctx.request.body as unknown as UserInfo;
+  const params = ctx.request.body as unknown as User.Row;
   // console.log("注册传参", params);
 
   if (!/^[A-Z0-9]+$/i.test(params.account)) {
@@ -83,7 +82,7 @@ router.post("/register", async (ctx) => {
 // 登录
 router.post("/login", async (ctx) => {
   /** 接收参数 */
-  const params = ctx.request.body as unknown as UserInfo;
+  const params = ctx.request.body as unknown as User.Row;
   // console.log("登录", params);
   if (!params.account || params.account.trim() === "") {
     return handleResult({ ctx, data: {}, tips: "登录失败！账号不能为空", status: 400 });
@@ -105,7 +104,7 @@ router.post("/login", async (ctx) => {
   if (!res.results.length) {
     return handleResult({ ctx, data: {}, tips: "该账号不存在，请先注册", code: 400 });
   }
-  const userRow = objectToHump(res.results[0]) as UserInfo;
+  const userRow = objectToHump(res.results[0]) as User.Row;
   // 最后判断密码是否正确
   if (userRow.password.toString() === params.password.toString()) {
     const token = generateToken(userRow.id, userRow.tokenVersion, getExpireTime());
@@ -134,7 +133,7 @@ router.get("/getUserInfo", handleToken, async (ctx) => {
 router.post("/editUserInfo", handleToken, async (ctx) => {
   const auth = ctx.state.user;
   /** 接收参数 */
-  const params = ctx.request.body as unknown as UserInfo;
+  const params = ctx.request.body as unknown as User.Row;
 
   if (!params.id) {
     return handleResult({ ctx, data: {}, tips: "编辑失败！用户id不正确", status: 400 });
@@ -301,7 +300,7 @@ router.post("/deleteUser", handleToken, async (ctx) => {
   const auth = ctx.state.user;
 
   /** 接收参数 */
-  const params = ctx.request.body as unknown as UserInfo;
+  const params = ctx.request.body as unknown as User.Row;
   // console.log(params);
 
   const user = await getUserInfo({ id: auth.id });
