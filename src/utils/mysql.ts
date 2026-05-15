@@ -2,7 +2,7 @@ import type { FieldInfo, MysqlError, queryCallback } from "mysql";
 import type { Sql } from "../types/common.js";
 import { createPool } from "mysql";
 import { config } from "./config.js";
-import { mysqlSearchParams, toLine } from "./index.js";
+import { sqlSearchFormat, toLine } from "./index.js";
 
 /** `mysql`查询结果 */
 interface SqlResult<T = any> {
@@ -87,10 +87,10 @@ export function getSearchText(params: Sql.Search) {
   let text = "";
 
   /** 精确查询语句 */
-  const accuracy = params.accurate ? mysqlSearchParams(params.accurate) : "";
+  const accuracy = params.accurate ? sqlSearchFormat(params.accurate) : "";
 
   /** 模糊查询语句 */
-  const vague = params.vague ? mysqlSearchParams(params.vague, true) : "";
+  const vague = params.vague ? sqlSearchFormat(params.vague, true) : "";
 
   // TODO需调试验证
   const sortText = (function () {

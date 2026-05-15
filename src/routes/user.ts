@@ -1,32 +1,20 @@
 import type { User } from "../types/user.js";
 import { handleResult, handleToken } from "../middleware/index.js";
-import { generateToken, getUserInfo } from "../modules/user.js";
-import { checkType, formatDate, getLogText, getRandomText, mysqlFormatParams, mysqlSetParams, objectToHump } from "../utils/index.js";
+import { generateToken, getUserRow } from "../modules/user.js";
+import {
+  checkType,
+  formatDate,
+  getRandomText,
+  objectToHump,
+  sqlInsertFormat,
+  sqlUpdateFormat,
+} from "../utils/index.js";
 import { query } from "../utils/mysql.js";
 import router from "./main.js";
 
 const oneDay = 86400000;
 /** 登录过期时间 */
 const getExpireTime = () => Date.now() + (oneDay * 7);
-
-/**
- * 检查账号是否已经存在
- * @param account
- */
-async function checkAccount(account: string) {
-  const res = await query(`select account from user_table where account = '${account}'`);
-
-  if (res.state !== 1) {
-    console.log(getLogText("查询账号异常", "red-light"), res.msg);
-    return "查询账号异常";
-  }
-
-  if (res.results.length > 0) {
-    return "该账号已存在";
-  }
-
-  return true;
-}
 
 // 注册
 router.post("/register", async (ctx) => {
@@ -47,17 +35,21 @@ router.post("/register", async (ctx) => {
   }
 
   // 先查询是否有重复账号
-  const repeat = await checkAccount(params.account);
+  const repeat = await getUserRow({ account: params.account });
 
-  if (typeof repeat === "string") {
-    return handleResult({ ctx, data: {}, code: 400, tips: repeat });
+  if (repeat.error) {
+    return handleResult({ ctx, status: 500, data: `${repeat.error}`, tips: repeat.tips });
+  }
+
+  if (repeat.data) {
+    return handleResult({ ctx, data: {}, tips: "该账号已存在" });
   }
 
   // 再写入表格
   // 暂无分组、用户类型、创建用户id；所以给以默认值，方便后面扩充使用
   const defaultValue = 1;
   const createTime = formatDate();
-  const mysqlInfo = mysqlFormatParams({
+  const mysqlInfo = sqlInsertFormat({
     account: params.account,
     password: params.password,
     name: params.name,
@@ -119,14 +111,17 @@ router.post("/login", async (ctx) => {
 router.get("/getUserInfo", handleToken, async (ctx) => {
   const auth = ctx.state.user;
 
-  const res = await getUserInfo({ id: auth.id });
+  const user = await getUserRow({ id: auth.id });
 
-  if (res) {
-    handleResult({ ctx, data: res });
+  if (user.error) {
+    return handleResult({ ctx, status: 500, data: `${user.error}`, tips: user.tips });
   }
-  else {
-    handleResult({ ctx, data: {}, tips: "账号不存在或者被删除", code: 10086 });
+
+  if (!user.data) {
+    return handleResult({ ctx, data: {}, tips: "用户不存在", code: -2 });
   }
+
+  handleResult({ ctx, data: user.data });
 });
 
 // 编辑用户信息
@@ -136,50 +131,67 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
   const params = ctx.request.body as unknown as User.Row;
 
   if (!params.id) {
-    return handleResult({ ctx, data: {}, tips: "编辑失败！用户id不正确", status: 400 });
+    return handleResult({ ctx, data: {}, tips: "用户id不正确", status: 400 });
   }
 
-  // 不可以修改账号
-  // if (params.account || !/^[A-Z0-9]+$/i.test(params.account)) {
-  //   return handleResult({ ctx, data: {}, tips: "编辑失败！账号必须由英文或数字组成", status: 400 });
-  // }
+  if (params.account || !/^[A-Z0-9]+$/i.test(params.account)) {
+    return handleResult({ ctx, data: {}, tips: "账号必须由英文或数字组成", status: 400 });
+  }
 
   if (!params.password || !/^[A-Z0-9]+$/i.test(params.password)) {
-    return handleResult({ ctx, data: {}, tips: "编辑失败！密码必须由英文或数字组成", status: 400 });
+    return handleResult({ ctx, data: {}, tips: "密码必须由英文或数字组成", status: 400 });
   }
 
   if (checkType(params.groupId) !== "number") {
-    return handleResult({ ctx, data: {}, tips: "编辑失败！分组不正确", status: 400 });
+    return handleResult({ ctx, data: {}, tips: "分组类型不正确", status: 400 });
   }
 
   if (!params.name.trim()) {
-    params.name = `用户-${formatDate(Date.now(), "YMDhms")}`;
+    params.name = `用户未命名(${params.id})`;
   }
 
-  const user = await getUserInfo({ id: auth.id });
+  const user = await getUserRow({ id: auth.id });
 
-  if (!user) {
-    return handleResult({ ctx, data: {}, tips: "获取用户信息异常", code: 10086 });
+  if (user.error) {
+    return handleResult({ ctx, status: 500, data: `${user.error}`, tips: "查询用户信息失败" });
+  }
+
+  if (!user.data) {
+    return handleResult({ ctx, data: {}, tips: "当前操作用户不存在", code: -2 });
   }
 
   const self = params.id.toString() === auth.id.toString();
 
-  if (user.type !== 0 && !self) {
-    return handleResult({ ctx, data: {}, tips: "当前账号没有权限他人信息", code: -2 });
+  if (user.data.type !== 0 && !self) {
+    return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
   }
 
-  // if (!self) {
-  //   // 先查询是否有重复账号
-  //   const repeat = await checkAccount(params.account);
+  // 先查询是否有重复账号
+  const repeat = await getUserRow({ account: params.account });
 
-  //   if (typeof repeat === "string") {
-  //     return handleResult({ ctx, data: {}, code: 400, tips: repeat });
-  //   }
-  // }
+  if (repeat.error) {
+    return handleResult({ ctx, status: 500, data: `${repeat.error}`, tips: `查询(${params.account})账号失败` });
+  }
+
+  if (!self && user.data.type !== 0) {
+    return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
+  }
+
+  if (self && repeat.data && repeat.data.id !== auth.id) {
+    return handleResult({ ctx, data: {}, tips: "账号已存在" });
+  }
+
+  if (!self && user.data.type !== 0) {
+    return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
+  }
+
+  if (!self && repeat.data && repeat.data.id !== params.id) {
+    return handleResult({ ctx, data: {}, tips: "账号已存在" });
+  }
 
   const createTime = formatDate();
   const newVersion = getRandomText();
-  const setData = mysqlSetParams({
+  const setData = sqlUpdateFormat({
     password: params.password,
     name: params.name,
     type: params.type,
@@ -189,21 +201,17 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     token_version: newVersion,
   });
 
-  // console.log("修改用户信息语句 >>", `update user_table ${setData} where id = '${params.id}'`);
   const res = await query(`update user_table ${setData} where id = '${params.id}'`);
-  // console.log("再写入表格 >>", res);
 
-  if (res.state === 1) {
-    const data: { token?: string } = {};
-    // 判断是否修改自己信息，修改自己信息的时候重新返回一个新的 token
-    if (self) {
-      data.token = generateToken(auth.id, newVersion, getExpireTime());
-    }
-    handleResult({ ctx, data, tips: "编辑成功" });
+  if (res.state !== 1) {
+    return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
   }
-  else {
-    handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
+  const data: { token?: string } = {};
+  // 判断是否修改自己信息，修改自己信息的时候重新返回一个新的 token
+  if (self) {
+    data.token = generateToken(auth.id, newVersion, getExpireTime());
   }
+  handleResult({ ctx, data, tips: "编辑成功" });
 });
 
 // // 获取用户列表
@@ -302,19 +310,22 @@ router.post("/deleteUser", handleToken, async (ctx) => {
   /** 接收参数 */
   const params = ctx.request.body as unknown as User.Row;
   // console.log(params);
-
-  const user = await getUserInfo({ id: auth.id });
-
-  if (!user) {
-    return handleResult({ ctx, data: {}, tips: "获取用户信息异常", code: 10086 });
+  if (typeof params.id !== "number") {
+    return handleResult({ ctx, data: {}, tips: "用户 id 不正确", status: 400 });
   }
 
-  if (user.type !== 0) {
+  const user = await getUserRow({ id: auth.id });
+
+  if (user.error) {
+    return handleResult({ ctx, status: 500, data: `${user.error}`, tips: user.tips });
+  }
+
+  if (!user.data) {
+    return handleResult({ ctx, data: {}, tips: "当前操作用户不存在", code: -2 });
+  }
+
+  if (user.data.type !== 0) {
     return handleResult({ ctx, data: {}, tips: "当前账号没有权限删除用户", code: -1 });
-  }
-
-  if (!params.id) {
-    return handleResult({ ctx, data: {}, tips: "用户id不正确", status: 400 });
   }
 
   // 从数据库中删除
@@ -335,6 +346,11 @@ router.post("/deleteUser", handleToken, async (ctx) => {
 });
 
 // 退出登录
-router.get("/logout", handleToken, (ctx) => {
+router.get("/logout", handleToken, async (ctx) => {
+  const text = sqlUpdateFormat({ tokenVersion: "" }, true);
+  const res = await query(`update user_table ${text} where id = '${ctx.state.user.id}'`);
+  if (res.state !== 1) {
+    return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
+  }
   handleResult({ ctx, data: {}, tips: "退出登录成功" });
 });

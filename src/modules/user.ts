@@ -4,23 +4,30 @@ import { decrypt, encrypt, objectToHump } from "../utils/index.js";
 import { getSearchText, query } from "../utils/mysql.js";
 
 /**
- * 通过数据库查询用户信息
+ * 通过数据库查询用户数据
  * @param params 查询条件
- * @param keys 包含的用户字段，不传则查询所有字段
+ * @param keys 包含的字段，不传则查询所有字段
  */
-export async function getUserInfo(params: Partial<User.Search>, keys?: Array<keyof User.Row>) {
+export async function getUserRow(params: Partial<User.Search>, keys?: Array<keyof User.Row>) {
   const sql = getSearchText({
     name: "user_table",
     keys,
     accurate: params,
-    size: 2,
+    size: 3,
   });
-  const res = await query(sql.default);
-  if (res.state === 1) {
-    const row = res.results[0];
-    return row ? objectToHump<User.Row>(row) : null;
+  const result = {} as User.SqlRes;
+  const search = await query(sql.default);
+  if (search.state === 1) {
+    const list = search.results || [];
+    result.data = list[0] ? objectToHump<User.Row>(list[0]) : null;
+    result.list = list.map((el: any) => objectToHump<User.Row>(el));
+    result.tips = result.data ? "ok" : "用户不存在!";
   }
-  return null;
+  else {
+    result.error = search.error;
+    result.tips = search.msg;
+  }
+  return result;
 }
 
 /**
@@ -43,22 +50,26 @@ export function generateToken(userId: number, version: string, expireTime?: numb
  * @param token
  */
 export async function verifyToken(ctx: App.Ctx, token: string) {
-  if (!token)
+  if (!token) {
     return "token 不存在";
+  }
   try {
     const info = decrypt<{ id: number; version: string; expire: number }>(token);
     if (info.expire && info.expire < Date.now()) {
       return "token 已过期";
     }
-    const user = await getUserInfo({ id: info.id }, ["tokenVersion"]);
-    if (!user) {
-      return "token 不正确";
+    const user = await getUserRow({ id: info.id }, ["tokenVersion"]);
+    if (user.error) {
+      return user;
     }
-    if (user.tokenVersion !== info.version) {
+    if (!user.data) {
+      return user.tips;
+    }
+    if (user.data.tokenVersion !== info.version) {
       return "token 已失效，请重新登录";
     }
-    user.id = info.id;
-    ctx.state.user = user;
+    user.data.id = info.id;
+    ctx.state.user = user.data;
   }
   catch (error) {
     return `验证 token 失败：${error}`;

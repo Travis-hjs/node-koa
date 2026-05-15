@@ -27,17 +27,25 @@ export function handleResult<T = any>(params: HandleResult<T>) {
 export async function handleToken(ctx: App.Ctx, next: Next) {
   const value = await verifyToken(ctx, ctx.header.authorization);
 
+  if (typeof value === "object") {
+    return handleResult({
+      ctx,
+      status: 500,
+      tips: value.tips,
+      data: `${value.error}`,
+    });
+  }
+
   if (typeof value === "string") {
-    handleResult({
+    return handleResult({
       ctx,
       status: 401,
       tips: value,
       data: {},
     });
   }
-  else {
-    await next();
-  }
+
+  await next();
 }
 
 /**

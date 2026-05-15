@@ -1,5 +1,5 @@
 import { handleResult, handleToken } from "../middleware/index.js";
-import { arrayItemToHump, formatDate, mysqlFormatParams, mysqlSetParams } from "../utils/index.js";
+import { arrayItemToHump, formatDate, sqlInsertFormat, sqlUpdateFormat } from "../utils/index.js";
 import { getSearchText, query } from "../utils/mysql.js";
 import router from "./main.js";
 
@@ -39,7 +39,7 @@ router.post("/addList", handleToken, async (ctx) => {
     return handleResult({ ctx, data: {}, tips: "添加的列表内容不能为空！", status: 400 });
   }
 
-  const mysqlInfo = mysqlFormatParams({
+  const mysqlInfo = sqlInsertFormat({
     content: params.content,
     create_user_id: auth.id,
     create_time: formatDate(),
@@ -80,7 +80,7 @@ router.post("/editList", handleToken, async (ctx) => {
     });
   }
 
-  const setData = mysqlSetParams({
+  const setData = sqlUpdateFormat({
     content: params.content,
     update_time: formatDate(),
     update_user_id: auth.id,

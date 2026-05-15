@@ -224,12 +224,12 @@ export function objectToLine<T = any>(target: any): T {
 }
 
 /**
- * 数据库语句格式化
+ * 获取`sql`写入语句
  * @param params
  * @param isEmptyString 是否可以为空字符串
- * @description 数据库写入的时候用
+ * - 传入字段会作驼峰转下划线处理
  */
-export function mysqlFormatParams(params: Record<string, any>, isEmptyString = false) {
+export function sqlInsertFormat(params: Record<string, any>, isEmptyString = false) {
   const keys = [];
   const values = [];
   const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
@@ -250,12 +250,12 @@ export function mysqlFormatParams(params: Record<string, any>, isEmptyString = f
 }
 
 /**
- * 数据库更新参数语句格式化
+ * 获取`sql`更新语句
  * @param params
  * @param isEmptyString 是否可以为空字符串
- * @description 修改（更新用）
+ * - 传入字段会作驼峰转下划线处理
  */
-export function mysqlSetParams(params: Record<string, any>, isEmptyString = false) {
+export function sqlUpdateFormat(params: Record<string, any>, isEmptyString = false) {
   const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
   const values = [];
   let result = "";
@@ -274,12 +274,11 @@ export function mysqlSetParams(params: Record<string, any>, isEmptyString = fals
 }
 
 /**
- * 数据库查询参数格式化
+ * 获取`sql`查询语句
  * @param params 查询参数对象，会将驼峰转下划线
  * @param isVague 是否模糊查询
- * - 查询用
  */
-export function mysqlSearchParams(params: Record<string, any>, isVague = false) {
+export function sqlSearchFormat(params: Record<string, any>, isVague = false) {
   let result = "";
   for (const key in params) {
     const value = params[key];

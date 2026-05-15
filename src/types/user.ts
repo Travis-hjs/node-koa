@@ -50,13 +50,13 @@ export namespace User {
    * `getUserInfo`响应结果
    */
   export interface SqlRes {
-    /** 成功结果 */
-    data: Row;
     /**
-     * 查询到的用户列表
-     * - 查询原始完整数据
+     * 用户数据
+     * - 如果存在多条的情况下，为数据第一条
      */
-    list: number;
+    data: Row;
+    /** 查询到的用户列表 */
+    list: Array<Row>;
     /** 错误信息 */
     error: any;
     /** 提示 */
