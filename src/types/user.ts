@@ -1,11 +1,11 @@
-import type { MysqlOption } from "./common.js";
+import type { Sql } from "./common.js";
 
 export namespace User {
   /**
    * 用户信息
    * - 表结构
    */
-  export interface Row extends Partial<MysqlOption> {
+  export interface Row extends Partial<Sql.CommonRow> {
     /**
      * 用户`id`
      * - 表字段

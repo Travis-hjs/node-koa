@@ -12,18 +12,18 @@ import "./routes/user.js"; // 用户模块
 import "./routes/upload.js"; // 上传文件模块
 import "./routes/todo.js"; // 用户列表模块
 
-const App = new Koa();
+const app = new Koa();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 指定 public目录为静态资源目录，用来存放 js css images 等
 // 注意：这里`template`目录下如果有`index.html`的话，会默认使用`index.html`代`router.get("/")`监听的
-App.use(serve(path.resolve(__dirname, "../public/template")));
+app.use(serve(path.resolve(__dirname, "../public/template")));
 // 上传文件读取图片的目录也需要设置为静态目录
-App.use(serve(path.resolve(__dirname, "../public/upload")));
+app.use(serve(path.resolve(__dirname, "../public/upload")));
 
 // 先统一设置请求配置 => 跨域，请求头信息...
-App.use(async (ctx: TheContext, next) => {
+app.use(async (ctx: TheContext, next) => {
   console.log("--------------------------");
   console.log(getLogText(`服务器时间: ${formatDate()}`, "yellow"), ctx.request.path);
   console.count("request count");
@@ -69,7 +69,7 @@ App.use(async (ctx: TheContext, next) => {
 });
 
 // 使用中间件处理 post 传参 和上传图片
-App.use(koaBody({
+app.use(koaBody({
   multipart: true,
   formidable: {
     maxFileSize: config.uploadImgLimit,
@@ -77,22 +77,22 @@ App.use(koaBody({
 }));
 
 // 开始使用路由
-App.use(router.routes());
+app.use(router.routes());
 // allowedMethods 自动根据当前路由配置响应 OPTIONS 请求，并针对未实现的方法返回 405/501
-App.use(router.allowedMethods());
+app.use(router.allowedMethods());
 
 // 默认无路由模式
-// App.use((ctx, next) => {
+// app.use((ctx, next) => {
 //     ctx.body = html;
 //     // console.log(ctx.response);
 // });
 
-App.on("error", (err, ctx) => {
+app.on("error", (err, ctx) => {
   const text = getLogText("server error !!!!!!!!!!!!!", "red-light");
   console.log(text, err, ctx);
 });
 
-App.listen(config.port, () => {
+app.listen(config.port, () => {
   // for (let i = 0; i < 100; i++) {
   //   console.log(`\x1B[${i}m 颜色 \x1B[0m`, i);
   // }

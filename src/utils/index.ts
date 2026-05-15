@@ -212,6 +212,18 @@ export function objectToHump<T = any>(target: any): T {
 }
 
 /**
+ * 对象值全部转成小写 + 下划线
+ * @param target 目标对象
+ */
+export function objectToLine<T = any>(target: any): T {
+  const result: Record<string, any> = {};
+  for (const key in target) {
+    result[toLine(key)] = target[key];
+  }
+  return result as T;
+}
+
+/**
  * 数据库语句格式化
  * @param params
  * @param isEmptyString 是否可以为空字符串
@@ -222,10 +234,12 @@ export function mysqlFormatParams(params: Record<string, any>, isEmptyString = f
   const values = [];
   const rules = isEmptyString ? ["null", "undefined", null, undefined] : undefined;
   for (const key in params) {
-    const empty = isEmpty(params[key], rules);
+    const value = params[key];
+    const empty = isEmpty(value, rules);
+    const lineKey = toLine(key);
     if (!empty) {
-      keys.push(`\`${key}\``);
-      values.push(params[key]);
+      keys.push(`\`${lineKey}\``);
+      values.push(value);
     }
   }
   return {
@@ -246,9 +260,11 @@ export function mysqlSetParams(params: Record<string, any>, isEmptyString = fals
   const values = [];
   let result = "";
   for (const key in params) {
-    const empty = isEmpty(params[key], rules);
+    const value = params[key];
+    const empty = isEmpty(value, rules);
+    const lineKey = toLine(key);
     if (!empty) {
-      values.push(`\`${key}\`='${params[key]}'`);
+      values.push(`\`${lineKey}\`='${value}'`);
     }
   }
   if (values.length > 0) {
@@ -259,21 +275,23 @@ export function mysqlSetParams(params: Record<string, any>, isEmptyString = fals
 
 /**
  * 数据库查询参数格式化
- * @param params
+ * @param params 查询参数对象，会将驼峰转下划线
  * @param isVague 是否模糊查询
- * @description 查询用
+ * - 查询用
  */
 export function mysqlSearchParams(params: Record<string, any>, isVague = false) {
   let result = "";
   for (const key in params) {
-    const empty = isEmpty(params[key]);
+    const value = params[key];
+    const empty = isEmpty(value);
+    const lineKey = toLine(key);
     if (!empty) {
-      const prefix = key.includes(".") ? ` and ${key}` : ` and \`${key}\``;
+      const prefix = lineKey.includes(".") ? ` and ${lineKey}` : ` and \`${lineKey}\``;
       if (isVague) {
-        result += `${prefix} like '%${params[key]}%'`;
+        result += `${prefix} like '%${value}%'`;
       }
       else {
-        result += `${prefix} = '${params[key]}'`;
+        result += `${prefix} = '${value}'`;
       }
     }
   }

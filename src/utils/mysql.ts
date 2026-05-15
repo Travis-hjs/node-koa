@@ -1,7 +1,8 @@
 import type { FieldInfo, MysqlError, queryCallback } from "mysql";
+import type { Sql } from "../types/common.js";
 import { createPool } from "mysql";
 import { config } from "./config.js";
-import { mysqlSearchParams } from "./index.js";
+import { mysqlSearchParams, toLine } from "./index.js";
 
 /** `mysql`查询结果 */
 interface SqlResult<T = any> {
@@ -74,87 +75,12 @@ export function query<T = any>(command: string, value?: Array<any>) {
   });
 }
 
-/** 获取查询语句参数 */
-interface SearchTextParams {
-  /** 数据库表名 */
-  name: string;
-  /**
-   * 查询的字段，默认`*`
-   * @example
-   * ```ts
-   * keys: "id, name, group_id, goods_name, goods_id"
-   */
-  keys?: string;
-  /**
-   * 模糊查询对象
-   * - 注意：字段为数据库标准，小写+下划线
-   * @example
-   * ```ts
-   * vague: {
-   *   name: "名称名称",
-   *   goods_name: "手机"
-   * }
-   * ```
-   */
-  vague?: Record<string, string | number>;
-  /**
-   * 精确查询对象
-   * - 注意：字段为数据库标准，小写+下划线
-   * @example
-   * ```ts
-   * vague: {
-   *   id: 12,
-   *   goods_id: 6
-   * }
-   * ```
-   */
-  accurate?: Record<string, string | number>;
-  /**
-   * 排序字段
-   * - 从小到大
-   * - 多个则传数组
-   */
-  asc?: string | Array<string>;
-  /**
-   * 排序字段
-   * - 从大到小
-   * - 多个则传数组
-   */
-  desc?: string | Array<string>;
-  /**
-   * 对应`pageSize`
-   * - 默认`10`
-   */
-  size?: number;
-  /**
-   * 对应``currentPage`
-   * - 默认`1`
-   */
-  page?: number;
-  /**
-   * 日期范围查询信息
-   */
-  dateRange?: {
-    /** 时间字段 */
-    key: string;
-    /** 范围开始值 */
-    start?: string;
-    /** 范围结束值 */
-    end?: string;
-  };
-}
-
 /**
  * 获取查询语句
  * @param params
  */
-export function getSearchText(params: SearchTextParams) {
-  const {
-    name,
-    size = 10,
-    page = 1,
-    dateRange,
-  } = params;
+export function getSearchText(params: Sql.Search) {
+  const { name, size = 10, page = 1, dateRange } = params;
   const tableName = `\`${name}\``;
 
   /** 查询语句 */
@@ -171,20 +97,15 @@ export function getSearchText(params: SearchTextParams) {
     if (!params.asc && !params.desc)
       return "";
     let result = "order by";
-    if (typeof params.desc === "string") {
-      result = `${result} ${params.desc} desc`;
-    }
-    else if (Array.isArray(params.desc)) {
-      result = `${result} ${params.desc.map(val => `${val} desc`).toString().replace(",", ", ")}`;
+    const hasDesc = params.desc.length > 0;
+    if (hasDesc) {
+      result = `${result} ${params.desc.map(key => `${toLine(key)} desc`).toString().replace(",", ", ")}`;
     }
 
-    const and = params.desc ? `${result},` : result;
+    const and = hasDesc ? `${result},` : result;
 
-    if (typeof params.asc === "string") {
-      result = `${and} ${params.asc} asc`;
-    }
-    else if (Array.isArray(params.asc)) {
-      result = `${and} ${params.asc.map(val => `${val} asc`).toString().replace(",", ", ")}`;
+    if (params.asc.length > 0) {
+      result = `${and} ${params.asc.map(key => `${toLine(key)} asc`).toString().replace(",", ", ")}`;
     }
 
     return result;
@@ -201,16 +122,19 @@ export function getSearchText(params: SearchTextParams) {
   }
 
   if (dateRange && dateRange.start && dateRange.end) {
-    text += `${text ? " and" : ""} ${dateRange.key} between '${dateRange.start}' and '${dateRange.end}'`;
+    const dateKey = toLine(dateRange.key);
+    text += `${text ? " and" : ""} ${dateKey} between '${dateRange.start}' and '${dateRange.end}'`;
   }
 
   if (text) {
     text = `where ${text}`;
   }
 
+  const selectKeys = params.keys ? params.keys.map(key => toLine(key)).toString() : "";
+
   return {
     /** 默认完整的查询语句 */
-    default: `select ${params.keys || "*"} from ${tableName} ${text} ${sortText} ${limit}`,
+    default: `select ${selectKeys || "*"} from ${tableName} ${text} ${sortText} ${limit}`,
     /** 只用于查总数量的语句，剔除了分页、排序语句 */
     count: `select count(*) from ${tableName} ${text}`,
   };
