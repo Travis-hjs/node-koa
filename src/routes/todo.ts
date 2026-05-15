@@ -82,8 +82,8 @@ router.post("/editList", handleToken, async (ctx) => {
 
   const setData = sqlUpdateFormat({
     content: params.content,
-    update_time: formatDate(),
-    update_user_id: auth.id,
+    updateTime: formatDate(),
+    updateUserId: auth.id,
   });
 
   // 修改列表

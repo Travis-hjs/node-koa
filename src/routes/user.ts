@@ -5,7 +5,6 @@ import {
   checkType,
   formatDate,
   getRandomText,
-  objectToHump,
   sqlInsertFormat,
   sqlUpdateFormat,
 } from "../utils/index.js";
@@ -30,7 +29,7 @@ router.post("/register", async (ctx) => {
     return handleResult({ ctx, data: {}, tips: "注册失败！密码必须由英文或数字组成", status: 400 });
   }
 
-  if (!params.name.trim()) {
+  if (!params.name || !params.name.trim()) {
     params.name = "用户未设置昵称";
   }
 
@@ -53,18 +52,18 @@ router.post("/register", async (ctx) => {
     account: params.account,
     password: params.password,
     name: params.name,
-    create_time: createTime,
+    createTime,
     type: defaultValue,
-    group_id: defaultValue,
-    create_user_id: defaultValue,
-    token_version: getRandomText(),
+    groupId: defaultValue,
+    createUserId: defaultValue,
+    tokenVersion: getRandomText(),
   });
 
   // const res = await query(`insert into user_table(${mysqlInfo.keys}) values(${mysqlInfo.values})`) 这样也可以，不过 mysqlInfo.values 每个值都必须用单引号括起来，下面的方式就不用
   const res = await query(`insert into user_table(${mysqlInfo.keys}) values(${mysqlInfo.symbols})`, mysqlInfo.values);
 
   if (res.state === 1) {
-    handleResult({ ctx, data: params, tips: "注册成功" });
+    handleResult({ ctx, data: { id: res.results.insertId }, tips: "注册成功" });
   }
   else {
     handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
@@ -73,9 +72,8 @@ router.post("/register", async (ctx) => {
 
 // 登录
 router.post("/login", async (ctx) => {
-  /** 接收参数 */
   const params = ctx.request.body as unknown as User.Row;
-  // console.log("登录", params);
+
   if (!params.account || params.account.trim() === "") {
     return handleResult({ ctx, data: {}, tips: "登录失败！账号不能为空", status: 400 });
   }
@@ -85,26 +83,26 @@ router.post("/login", async (ctx) => {
   }
 
   // 先查询是否有当前账号
-  const res = await query("select * from user_table where account = ?", [params.account]);
+  const user = await getUserRow({ account: params.account });
 
-  // console.log("登录查询", res);
-
-  if (res.state !== 1) {
-    return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
+  if (user.error) {
+    return handleResult({ ctx, status: 500, data: `${user.error}`, tips: user.tips });
   }
+
   // 再判断账号是否可用
-  if (!res.results.length) {
+  if (!user.data) {
     return handleResult({ ctx, data: {}, tips: "该账号不存在，请先注册", code: 400 });
   }
-  const userRow = objectToHump(res.results[0]) as User.Row;
+
+  const userRow = user.data;
+
   // 最后判断密码是否正确
-  if (userRow.password.toString() === params.password.toString()) {
-    const token = generateToken(userRow.id, userRow.tokenVersion, getExpireTime());
-    handleResult({ ctx, data: { token }, tips: "登录成功" });
+  if (userRow.password.toString() !== params.password.toString()) {
+    return handleResult({ ctx, data: {}, tips: "密码不正确", code: 400 });
   }
-  else {
-    handleResult({ ctx, data: {}, tips: "密码不正确", code: 400 });
-  }
+
+  const token = generateToken(userRow.id, userRow.tokenVersion, getExpireTime());
+  handleResult({ ctx, data: { token }, tips: "登录成功" });
 });
 
 // 获取用户信息
@@ -127,27 +125,27 @@ router.get("/getUserInfo", handleToken, async (ctx) => {
 // 编辑用户信息
 router.post("/editUserInfo", handleToken, async (ctx) => {
   const auth = ctx.state.user;
-  /** 接收参数 */
   const params = ctx.request.body as unknown as User.Row;
+  const self = params.id.toString() === auth.id.toString();
+  /** 需要修改的信息 */
+  const update: Partial<User.Row> = {
+    updateTime: formatDate(),
+    updateUserId: auth.id,
+  };
 
   if (!params.id) {
-    return handleResult({ ctx, data: {}, tips: "用户id不正确", status: 400 });
+    return handleResult({ ctx, data: {}, tips: "缺少用户id", status: 400 });
   }
 
-  if (params.account || !/^[A-Z0-9]+$/i.test(params.account)) {
-    return handleResult({ ctx, data: {}, tips: "账号必须由英文或数字组成", status: 400 });
+  if (params.password) {
+    if (!/^[A-Z0-9]+$/i.test(params.password)) {
+      return handleResult({ ctx, data: {}, tips: "密码必须由英文或数字组成", status: 400 });
+    }
+    update.password = params.password;
   }
 
-  if (!params.password || !/^[A-Z0-9]+$/i.test(params.password)) {
-    return handleResult({ ctx, data: {}, tips: "密码必须由英文或数字组成", status: 400 });
-  }
-
-  if (checkType(params.groupId) !== "number") {
-    return handleResult({ ctx, data: {}, tips: "分组类型不正确", status: 400 });
-  }
-
-  if (!params.name.trim()) {
-    params.name = `用户未命名(${params.id})`;
+  if (params.name) {
+    update.name = params.name;
   }
 
   const user = await getUserRow({ id: auth.id });
@@ -157,59 +155,79 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
   }
 
   if (!user.data) {
-    return handleResult({ ctx, data: {}, tips: "当前操作用户不存在", code: -2 });
+    return handleResult({ ctx, data: {}, tips: "当前操作用户不存在", status: 400 });
   }
 
-  const self = params.id.toString() === auth.id.toString();
+  const isAdmin = user.data.type === 0;
 
-  if (user.data.type !== 0 && !self) {
-    return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
+  if (!isAdmin && !self) {
+    return handleResult({ ctx, data: {}, tips: "只有管理员才能修改他人信息", code: -2 });
   }
 
-  // 先查询是否有重复账号
-  const repeat = await getUserRow({ account: params.account });
-
-  if (repeat.error) {
-    return handleResult({ ctx, status: 500, data: `${repeat.error}`, tips: `查询(${params.account})账号失败` });
+  if (params.groupId) {
+    if (checkType(params.groupId) !== "number") {
+      return handleResult({ ctx, data: {}, tips: "分组类型不正确", status: 400 });
+    }
+    if (!isAdmin) {
+      return handleResult({ ctx, data: {}, tips: "只有管理员才能修改分组", status: 400 });
+    }
+    update.groupId = params.groupId;
   }
 
-  if (!self && user.data.type !== 0) {
-    return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
+  if (params.type) {
+    if (checkType(params.type) !== "number") {
+      return handleResult({ ctx, data: {}, tips: "分组类型不正确", status: 400 });
+    }
+    if (!isAdmin) {
+      return handleResult({ ctx, data: {}, tips: "只有管理员才能修改分组", status: 400 });
+    }
+    update.type = params.type;
   }
 
-  if (self && repeat.data && repeat.data.id !== auth.id) {
-    return handleResult({ ctx, data: {}, tips: "账号已存在" });
+  if (params.account) {
+    // 先查询是否有重复账号
+    const repeat = await getUserRow({ account: params.account });
+
+    if (repeat.error) {
+      return handleResult({ ctx, status: 500, data: `${repeat.error}`, tips: `查询(${params.account})账号失败` });
+    }
+
+    if (!self && user.data.type !== 0) {
+      return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
+    }
+
+    if (self && repeat.data && repeat.data.id !== auth.id) {
+      return handleResult({ ctx, data: {}, tips: "账号已存在" });
+    }
+
+    if (!self && user.data.type !== 0) {
+      return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
+    }
+
+    if (!self && repeat.data && repeat.data.id !== params.id) {
+      return handleResult({ ctx, data: {}, tips: "账号已存在" });
+    }
+    update.account = params.account;
   }
 
-  if (!self && user.data.type !== 0) {
-    return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
+  const needUpdateToken = !!update.account || !!update.password || !!update.groupId || !!update.type;
+
+  if (needUpdateToken) {
+    update.tokenVersion = getRandomText();
   }
 
-  if (!self && repeat.data && repeat.data.id !== params.id) {
-    return handleResult({ ctx, data: {}, tips: "账号已存在" });
-  }
-
-  const createTime = formatDate();
-  const newVersion = getRandomText();
-  const setData = sqlUpdateFormat({
-    password: params.password,
-    name: params.name,
-    type: params.type,
-    group_id: params.groupId,
-    update_time: createTime,
-    update_user_id: auth.id,
-    token_version: newVersion,
-  });
+  const setData = sqlUpdateFormat(update);
 
   const res = await query(`update user_table ${setData.text} where id = ?`, [...setData.values, params.id]);
 
   if (res.state !== 1) {
     return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
   }
+
   const data: { token?: string } = {};
   // 判断是否修改自己信息，修改自己信息的时候重新返回一个新的 token
-  if (self) {
-    data.token = generateToken(auth.id, newVersion, getExpireTime());
+  if (self && needUpdateToken) {
+    data.token = generateToken(auth.id, update.tokenVersion, getExpireTime());
   }
   handleResult({ ctx, data, tips: "编辑成功" });
 });
