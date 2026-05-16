@@ -108,26 +108,7 @@ router.post("/login", async (ctx) => {
 // 获取用户信息
 router.get("/getUserInfo", handleToken, async (ctx) => {
   const auth = ctx.state.user;
-
-  const user = await getUserRow({ id: auth.id });
-
-  if (user.error) {
-    return handleResult({ ctx, status: 500, data: `${user.error}`, tips: user.tips });
-  }
-
-  if (!user.data) {
-    return handleResult({ ctx, data: {}, tips: "用户不存在", code: -2 });
-  }
-
-  handleResult({ ctx, data: user.data });
-});
-
-// 编辑用户信息
-router.post("/editUserInfo", handleToken, async (ctx) => {
-  const auth = ctx.state.user;
   const params = ctx.request.body as unknown as User.Row;
-  const self = params.id.toString() === auth.id.toString();
-  /** 需要修改的信息 */
   const update: Partial<User.Row> = {
     updateTime: formatDate(),
     updateUserId: auth.id,
@@ -137,7 +118,9 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     return handleResult({ ctx, data: {}, tips: "缺少用户id", status: 400 });
   }
 
-  if (params.password) {
+  const self = params.id.toString() === auth.id.toString();
+
+  if (params.password !== undefined) {
     if (!/^[A-Z0-9]+$/i.test(params.password)) {
       return handleResult({ ctx, data: {}, tips: "密码必须由英文或数字组成", status: 400 });
     }
@@ -164,7 +147,17 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     return handleResult({ ctx, data: {}, tips: "只有管理员才能修改他人信息", code: -2 });
   }
 
-  if (params.groupId) {
+  const targetUser = await getUserRow({ id: params.id });
+
+  if (targetUser.error) {
+    return handleResult({ ctx, status: 500, data: `${targetUser.error}`, tips: "查询目标用户信息失败" });
+  }
+
+  if (!targetUser.data) {
+    return handleResult({ ctx, data: {}, tips: "目标用户不存在", status: 400 });
+  }
+
+  if (params.groupId !== undefined) {
     if (checkType(params.groupId) !== "number") {
       return handleResult({ ctx, data: {}, tips: "分组类型不正确", status: 400 });
     }
@@ -174,7 +167,7 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     update.groupId = params.groupId;
   }
 
-  if (params.type) {
+  if (params.type !== undefined) {
     if (checkType(params.type) !== "number") {
       return handleResult({ ctx, data: {}, tips: "分组类型不正确", status: 400 });
     }
@@ -184,51 +177,49 @@ router.post("/editUserInfo", handleToken, async (ctx) => {
     update.type = params.type;
   }
 
-  if (params.account) {
-    // 先查询是否有重复账号
+  if (params.account !== undefined) {
+    if (!/^[A-Z0-9]+$/i.test(params.account)) {
+      return handleResult({ ctx, data: {}, tips: "账号必须由英文或数字组成", status: 400 });
+    }
+
     const repeat = await getUserRow({ account: params.account });
 
     if (repeat.error) {
-      return handleResult({ ctx, status: 500, data: `${repeat.error}`, tips: `查询(${params.account})账号失败` });
+      return handleResult({ ctx, status: 500, data: `${repeat.error}`, tips: `查询账号 (${params.account}) 失败` });
     }
 
-    if (!self && user.data.type !== 0) {
-      return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
+    if (repeat.data && repeat.data.id !== params.id) {
+      return handleResult({ ctx, data: {}, tips: "账号已被注册", status: 400 });
     }
 
-    if (self && repeat.data && repeat.data.id !== auth.id) {
-      return handleResult({ ctx, data: {}, tips: "账号已存在" });
-    }
-
-    if (!self && user.data.type !== 0) {
-      return handleResult({ ctx, data: {}, tips: "当前账号没有权限修改他人信息", code: -2 });
-    }
-
-    if (!self && repeat.data && repeat.data.id !== params.id) {
-      return handleResult({ ctx, data: {}, tips: "账号已存在" });
-    }
     update.account = params.account;
   }
 
-  const needUpdateToken = !!update.account || !!update.password || !!update.groupId || !!update.type;
+  const needUpdateToken = update.account !== undefined
+    || update.password !== undefined
+    || update.groupId !== undefined
+    || update.type !== undefined;
 
   if (needUpdateToken) {
     update.tokenVersion = getRandomText();
   }
 
   const setData = sqlUpdateFormat(update);
-
   const res = await query(`update user_table ${setData.text} where id = ?`, [...setData.values, params.id]);
 
   if (res.state !== 1) {
     return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
   }
 
-  const data: { token?: string } = {};
-  // 判断是否修改自己信息，修改自己信息的时候重新返回一个新的 token
-  if (self && needUpdateToken) {
-    data.token = generateToken(auth.id, update.tokenVersion, getExpireTime());
+  if (res.results.affectedRows === 0) {
+    return handleResult({ ctx, data: {}, tips: "修改的用户不存在", status: 400 });
   }
+
+  const data: { token?: string } = {};
+  if (self && needUpdateToken) {
+    data.token = generateToken(auth.id, update.tokenVersion!, getExpireTime());
+  }
+
   handleResult({ ctx, data, tips: "编辑成功" });
 });
 
