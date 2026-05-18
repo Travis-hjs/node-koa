@@ -1,18 +1,23 @@
+import type { PageInfo } from "../types/common.js";
 import type { User } from "../types/user.js";
 import { handleResult, handleToken } from "../middleware/index.js";
 import { generateToken, getUserRow } from "../modules/user.js";
 import {
+  arrayItemToHump,
   checkType,
   formatDate,
   getRandomText,
   sqlInsertFormat,
   sqlUpdateFormat,
 } from "../utils/index.js";
-import { query } from "../utils/mysql.js";
+import { getSearchText, query } from "../utils/mysql.js";
 import router from "./main.js";
 
 const oneDay = 86400000;
-/** 登录过期时间 */
+/**
+ * 登录过期时间
+ * - 不传该方法时，token 验证将不会校验过期时间
+ */
 const getExpireTime = () => Date.now() + (oneDay * 7);
 
 // 注册
@@ -41,14 +46,14 @@ router.post("/register", async (ctx) => {
   }
 
   if (repeat.data) {
-    return handleResult({ ctx, data: {}, tips: "该账号已存在" });
+    return handleResult({ ctx, data: {}, tips: "该账号已存在", code: -2 });
   }
 
   // 再写入表格
   // 暂无分组、用户类型、创建用户id；所以给以默认值，方便后面扩充使用
   const defaultValue = 1;
   const createTime = formatDate();
-  const mysqlInfo = sqlInsertFormat({
+  const sqlInsert = sqlInsertFormat({
     account: params.account,
     password: params.password,
     name: params.name,
@@ -59,15 +64,14 @@ router.post("/register", async (ctx) => {
     tokenVersion: getRandomText(),
   });
 
-  // const res = await query(`insert into user_table(${mysqlInfo.keys}) values(${mysqlInfo.values})`) 这样也可以，不过 mysqlInfo.values 每个值都必须用单引号括起来，下面的方式就不用
-  const res = await query(`insert into user_table(${mysqlInfo.keys}) values(${mysqlInfo.symbols})`, mysqlInfo.values);
+  // const sqlRes = await query(`insert into user_table(${sqlInsert.keys}) values(${sqlInsert.values})`) 这样也可以，不过 sqlInsert.values 每个值都必须用单引号括起来，下面的方式就不用
+  const sqlRes = await query(`insert into user_table(${sqlInsert.keys}) values(${sqlInsert.symbols})`, sqlInsert.values);
 
-  if (res.state === 1) {
-    handleResult({ ctx, data: { id: res.results.insertId }, tips: "注册成功" });
+  if (sqlRes.state !== 1) {
+    return handleResult({ ctx, data: { error: sqlRes.error }, tips: sqlRes.msg, status: 500 });
   }
-  else {
-    handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
-  }
+
+  handleResult({ ctx, data: { id: sqlRes.results.insertId }, tips: "注册成功" });
 });
 
 // 登录
@@ -102,11 +106,22 @@ router.post("/login", async (ctx) => {
   }
 
   const token = generateToken(userRow.id, userRow.tokenVersion, getExpireTime());
+
   handleResult({ ctx, data: { token }, tips: "登录成功" });
 });
 
-// 获取用户信息
-router.get("/getUserInfo", handleToken, async (ctx) => {
+// 退出登录
+router.get("/logout", handleToken, async (ctx) => {
+  const text = sqlUpdateFormat({ tokenVersion: "" }, true);
+  const res = await query(`update user_table ${text.text} where id = ?`, [...text.values, ctx.state.user.id]);
+  if (res.state !== 1) {
+    return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
+  }
+  handleResult({ ctx, data: {}, tips: "退出登录成功" });
+});
+
+// 修改用户信息
+router.post("/user/update", (ctx, next) => handleToken(ctx, next, true), async (ctx) => {
   const auth = ctx.state.user;
   const params = ctx.request.body as unknown as User.Row;
   const update: Partial<User.Row> = {
@@ -131,30 +146,22 @@ router.get("/getUserInfo", handleToken, async (ctx) => {
     update.name = params.name;
   }
 
-  const user = await getUserRow({ id: auth.id });
-
-  if (user.error) {
-    return handleResult({ ctx, status: 500, data: `${user.error}`, tips: "查询用户信息失败" });
-  }
-
-  if (!user.data) {
-    return handleResult({ ctx, data: {}, tips: "当前操作用户不存在", status: 400 });
-  }
-
-  const isAdmin = user.data.type === 0;
+  const isAdmin = auth.type === 0;
 
   if (!isAdmin && !self) {
     return handleResult({ ctx, data: {}, tips: "只有管理员才能修改他人信息", code: -2 });
   }
 
-  const targetUser = await getUserRow({ id: params.id });
+  if (!self) {
+    const targetUser = await getUserRow({ id: params.id });
 
-  if (targetUser.error) {
-    return handleResult({ ctx, status: 500, data: `${targetUser.error}`, tips: "查询目标用户信息失败" });
-  }
+    if (targetUser.error) {
+      return handleResult({ ctx, status: 500, data: `${targetUser.error}`, tips: "查询目标用户信息失败" });
+    }
 
-  if (!targetUser.data) {
-    return handleResult({ ctx, data: {}, tips: "目标用户不存在", status: 400 });
+    if (!targetUser.data) {
+      return handleResult({ ctx, data: {}, tips: "目标用户不存在", status: 400 });
+    }
   }
 
   if (params.groupId !== undefined) {
@@ -204,18 +211,19 @@ router.get("/getUserInfo", handleToken, async (ctx) => {
     update.tokenVersion = getRandomText();
   }
 
-  const setData = sqlUpdateFormat(update);
-  const res = await query(`update user_table ${setData.text} where id = ?`, [...setData.values, params.id]);
+  const sqlUpdate = sqlUpdateFormat(update);
+  const sqlRes = await query(`update user_table ${sqlUpdate.text} where id = ?`, [...sqlUpdate.values, params.id]);
 
-  if (res.state !== 1) {
-    return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
+  if (sqlRes.state !== 1) {
+    return handleResult({ ctx, data: { error: sqlRes.error }, tips: sqlRes.msg, status: 500 });
   }
 
-  if (res.results.affectedRows === 0) {
+  if (sqlRes.results.affectedRows === 0) {
     return handleResult({ ctx, data: {}, tips: "修改的用户不存在", status: 400 });
   }
 
   const data: { token?: string } = {};
+
   if (self && needUpdateToken) {
     data.token = generateToken(auth.id, update.tokenVersion!, getExpireTime());
   }
@@ -223,97 +231,8 @@ router.get("/getUserInfo", handleToken, async (ctx) => {
   handleResult({ ctx, data, tips: "编辑成功" });
 });
 
-// // 获取用户列表
-// router.get("/getUserList", handleToken, async (ctx) => {
-
-//   const auth = ctx.state.user;
-//   // console.log("tokenInfo >>", tokenInfo);
-//   const params: UserListParams = ctx.request.query as any;
-
-//   const size = Number(params.pageSize) || 10;
-
-//   const page = Number(params.currentPage) || 1;
-
-//   /** 精确查询 */
-//   const accuracyText = mysqlSearchParams({
-//     "type": params.type
-//   });
-
-//   /** 模糊查询 */
-//   const vagueText = mysqlSearchParams({
-//     "name": params.name
-//   }, true)
-
-//   /** 查询语句 */
-//   const searchText = (function () {
-//     let result = "";
-
-//     if (params.groupId) {
-//       result += mysqlFindInSet("group_ids", [params.groupId]);
-//     } else {
-//       if ((tokenInfo.type >= 5)) {
-//         result += mysqlFindInSet("group_ids", tokenInfo.groupIds.split(","));
-//       }
-//     }
-
-//     if (accuracyText) {
-//       result += `${result ? " and " : ""}${accuracyText}`;
-//     }
-
-//     if (vagueText) {
-//       result += `${result ? " and " : ""}${vagueText}`;
-//     }
-
-//     if (result) {
-//       result = `where ${result}`;
-//     }
-
-//     return result;
-//   })();
-
-//   /** 结果语句 */
-//   const resultText = `${searchText} order by create_time desc limit ${size * (page - 1)}, ${size}`;
-//   // const res = await query(`select * from user_table`)
-//   const resultCountText = `select count(*) from user_table ${searchText.replace(/t2./g, "")}`;
-
-//   const countRes = await query(resultCountText)
-
-//   // console.log(selectUserTable + resultText);
-//   // "select * from user_table" + resultText
-//   // selectUserTable + resultText
-//   // console.log("用户查询语句 >>", `select * from user_table ${resultText}`);
-//   const res = await query(`select * from user_table ${resultText}`)
-//   // console.log("获取用户列表 >>", res);
-
-//   if (res.state === 1) {
-//     const list: Array<UserRow> = res.results || [];
-//     const result = [];
-//     for (let i = 0; i < list.length; i++) {
-//       const item = list[i];
-//       if (item.type < tokenInfo.type) {
-//         item.password = "******";
-//       }
-//       // 这里可以做分组名设置
-//       group.matchGroupIds(item);
-//       result.push(user.matchName(item as any));
-//     }
-//     bodyResult = apiSuccess({
-//       pageSize: size,
-//       currentPage: page,
-//       total: countRes.results[0][`count(*)`],
-//       list: result,
-//       time: Date.now()
-//     });
-//   } else {
-//     ctx.response.status = 500;
-//     bodyResult = apiFail(res.msg, 500, res.error);
-//   }
-
-//   ctx.body = bodyResult;
-// })
-
 // 删除用户
-router.post("/deleteUser", handleToken, async (ctx) => {
+router.post("/user/delete", (ctx, next) => handleToken(ctx, next, true), async (ctx) => {
   const auth = ctx.state.user;
 
   /** 接收参数 */
@@ -323,17 +242,7 @@ router.post("/deleteUser", handleToken, async (ctx) => {
     return handleResult({ ctx, data: {}, tips: "用户 id 不正确", status: 400 });
   }
 
-  const user = await getUserRow({ id: auth.id });
-
-  if (user.error) {
-    return handleResult({ ctx, status: 500, data: `${user.error}`, tips: user.tips });
-  }
-
-  if (!user.data) {
-    return handleResult({ ctx, data: {}, tips: "当前操作用户不存在", code: -2 });
-  }
-
-  if (user.data.type !== 0) {
+  if (auth.type !== 0) {
     return handleResult({ ctx, data: {}, tips: "当前账号没有权限删除用户", code: -1 });
   }
 
@@ -350,16 +259,78 @@ router.post("/deleteUser", handleToken, async (ctx) => {
     // query(`delete from street_shop_table where user_id='${params.id}'`)
   }
   else {
-    handleResult({ ctx, data: {}, tips: "当前列表id不存在或已删除", code: 400 });
+    handleResult({ ctx, data: {}, tips: "当前用户不存在或已删除", code: 400 });
   }
 });
 
-// 退出登录
-router.get("/logout", handleToken, async (ctx) => {
-  const text = sqlUpdateFormat({ tokenVersion: "" }, true);
-  const res = await query(`update user_table ${text.text} where id = ?`, [...text.values, ctx.state.user.id]);
-  if (res.state !== 1) {
-    return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
+// 获取用户信息
+router.get("/user/info", (ctx, next) => handleToken(ctx, next, true), async (ctx) => {
+  const auth = ctx.state.user;
+
+  handleResult({ ctx, data: auth, tips: "ok" });
+});
+
+interface UserListParams extends User.Row, PageInfo {
+  startTime: string;
+  endTime: string;
+}
+
+// 获取用户列表
+router.get("/user/list", (ctx, next) => handleToken(ctx, next, true), async (ctx) => {
+  const auth = ctx.state.user;
+  const params = ctx.request.query as unknown as UserListParams;
+
+  const page = params.currentPage || 1;
+  const size = params.pageSize || 10;
+  const sqlSearch = getSearchText({
+    name: "user_table",
+    vague: {
+      name: params.name,
+      account: params.account,
+    },
+    accurate: {
+      id: params.id,
+      type: params.type,
+      groupId: params.groupId,
+    },
+    dateRange: {
+      key: "createTime",
+      start: params.startTime,
+      end: params.endTime,
+    },
+    desc: ["createTime"],
+    page,
+    size,
+  });
+
+  const [sqlRes, sqlCount] = await Promise.all([
+    query(sqlSearch.default, sqlSearch.values),
+    query<Array<{ total: number }>>(sqlSearch.count, sqlSearch.values),
+  ]);
+  // console.log("查询语句 >>", sqlSearch);
+  // console.log(sqlRes.results, sqlCount.results);
+
+  if (sqlRes.state !== 1) {
+    return handleResult({ ctx, status: 500, data: sqlRes.error, tips: sqlRes.msg });
   }
-  handleResult({ ctx, data: {}, tips: "退出登录成功" });
+  const list: Array<User.Row> = sqlRes.results.length > 0 ? arrayItemToHump(sqlRes.results) : [];
+  list.forEach((row) => {
+    if (auth.type !== 0) {
+      row.password = "******";
+    }
+    row.createTime = formatDate(row.createTime);
+    if (row.updateTime) {
+      row.updateTime = formatDate(row.updateTime);
+    }
+    // TODO: 这里可以为查询出来的数据做分组和类型映射
+  });
+  handleResult({
+    ctx,
+    data: {
+      list,
+      pageSize: page,
+      currentPage: size,
+      total: sqlCount.results[0].total || 0,
+    },
+  });
 });

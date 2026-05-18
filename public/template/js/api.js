@@ -34,7 +34,7 @@ export const user = {
  * @param {{ timeout?: number, responseType?: "arraybuffer"|"blob"|"document"|"json"|"text" }} option 其他配置
  * @returns {Promise<ApiResult>}
  */
-function request(method, url, data = {}, option = {}) {
+export function request(method, url, data = {}, option = {}) {
   const userInfo = user.getInfo();
   /** 非`GET`请求传参 */
   let body = undefined;
@@ -251,14 +251,14 @@ class ModuleApi {
    * 获取用户信息
    */
   getUserInfo() {
-    return request("GET", "/getUserInfo", {});
+    return request("GET", "/user/info", {});
   }
 
   /**
    * 获取todo列表数据
    */
   getTodoList() {
-    return request("GET", "/getList", {});
+    return request("GET", "/todo/list", {});
   }
 
   /**
@@ -266,7 +266,7 @@ class ModuleApi {
    * @param {{ content: string, id: string|number }} data
    */
   modifyListItem(data) {
-    return request("POST", "/editList", data);
+    return request("POST", "/todo/edit", data);
   }
 
   /**
@@ -274,7 +274,7 @@ class ModuleApi {
    * @param {string} id
    */
   deleteListItem(id) {
-    return request("POST", "/deleteList", {
+    return request("POST", "/todo/delete", {
       id
     });
   }
@@ -284,7 +284,7 @@ class ModuleApi {
    * @param {string} value
    */
   addListItem(value) {
-    return request("POST", "/addList", {
+    return request("POST", "/todo/add", {
       content: value
     });
   }

@@ -48,8 +48,9 @@ export function generateToken(userId: number, version: string, expireTime?: numb
  * 验证`token`
  * @param ctx
  * @param token
+ * @param keys 指定从数据库获取的用户字段，传`true`则获取完整字段，不传默认只获取`tokenVersion`用于 token 验证
  */
-export async function verifyToken(ctx: App.Ctx, token: string) {
+export async function verifyToken(ctx: App.Ctx, token: string, keys?: boolean | Array<keyof User.Row>) {
   if (!token) {
     return "token 不存在";
   }
@@ -58,7 +59,17 @@ export async function verifyToken(ctx: App.Ctx, token: string) {
     if (info.expire && info.expire < Date.now()) {
       return "token 已过期";
     }
-    const user = await getUserRow({ id: info.id }, ["tokenVersion"]);
+    let userKeys: Array<keyof User.Row>;
+    if (!keys) {
+      userKeys = ["tokenVersion"];
+    }
+    else if (Array.isArray(keys) && keys.length > 0) {
+      userKeys = keys;
+      if (!userKeys.includes("tokenVersion")) {
+        userKeys.push("tokenVersion"); // 必须要包含该字段
+      }
+    }
+    const user = await getUserRow({ id: info.id }, userKeys);
     if (user.error) {
       return user;
     }

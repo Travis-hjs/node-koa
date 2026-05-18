@@ -186,3 +186,12 @@ export namespace Sql {
     updateUserId?: number;
   }
 }
+
+export interface PageInfo {
+  /** 一页多少条 */
+  pageSize: number;
+  /** 当前页，从`1`开始 */
+  currentPage: number;
+  /** 总数 */
+  total: number;
+}

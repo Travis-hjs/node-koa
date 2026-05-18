@@ -1,4 +1,4 @@
-import { api, user } from "./api.js";
+import { api, request, user } from "./api.js";
 import { find, message, dialog, setGlobal } from "./utils.js";
 
 const userInfo = user.getInfo();
@@ -13,7 +13,7 @@ if (!userInfo) {
 
 /**
  * 上传图片
- * @param {HTMLInputElement} el 
+ * @param {HTMLInputElement} el
  */
 async function uploadImg(el) {
   /** 上传文件 */
@@ -46,7 +46,7 @@ async function uploadImg(el) {
 
 /**
  * 清除图片
- * @param {HTMLElement} el 
+ * @param {HTMLElement} el
  */
 function removeImg(el) {
   el.parentNode.classList.add("hide");
@@ -57,7 +57,7 @@ function removeImg(el) {
 /** 列表节点 */
 const listEl = find(".list");
 /**
- * 模板内容 
+ * 模板内容
  * @type {HTMLTemplateElement}
  */
 const template = find("#list-item");
@@ -66,7 +66,7 @@ listEl.classList.add("hide");
 
 /**
  * 输出列表item
- * @param {{ content: string, id: number }} item 
+ * @param {{ content: string, id: number }} item
  */
 function outputList(item) {
   const itemHTML = template.innerHTML.replace("{{id}}", item.id).replace("{{content}}", item.content);
@@ -76,7 +76,7 @@ function outputList(item) {
 
 /**
  * 增加一条列表
- * @param {HTMLElement} el 
+ * @param {HTMLElement} el
  */
 async function onAdd(el) {
   /**
@@ -98,7 +98,7 @@ async function onAdd(el) {
 
 /**
  * 删除当前列表
- * @param {HTMLElement} el 
+ * @param {HTMLElement} el
  */
 function onDelete(el) {
   // return console.log(el.parentNode.dataset["id"]);
@@ -192,4 +192,19 @@ setGlobal({
   onEdit,
   getUserInfo,
   onLogout,
+  updateUser,
+  getUserList
 });
+
+function updateUser() {
+  request("POST", "/user/update", {
+    id: 3,
+    name: "测试修改用户名",
+  })
+}
+
+function getUserList() {
+  request("GET", "/user/list", {
+    // groupId: 2,
+  })
+}
