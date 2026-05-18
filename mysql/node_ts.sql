@@ -47,7 +47,8 @@ CREATE TABLE `user_table`  (
   `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   `update_user_id` int(64) NULL DEFAULT NULL COMMENT '修改用户id',
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '修改时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uniq_account`(`account`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

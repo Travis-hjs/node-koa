@@ -10,7 +10,7 @@ import {
   sqlInsertFormat,
   sqlUpdateFormat,
 } from "../utils/index.js";
-import { getSqlSearch, query } from "../utils/mysql.js";
+import { getSqlSearch, isDuplicateEntryError, query } from "../utils/mysql.js";
 import router from "./main.js";
 
 const oneDay = 86400000;
@@ -68,6 +68,10 @@ router.post("/register", async (ctx) => {
   const sqlRes = await query(`insert into user_table(${sqlInsert.keys}) values(${sqlInsert.symbols})`, sqlInsert.values);
 
   if (sqlRes.state !== 1) {
+    // 在并发情况下，应用级别的预检查是不够的，因此还需要处理数据库冲突。
+    if (isDuplicateEntryError(sqlRes.error)) {
+      return handleResult({ ctx, data: {}, tips: "账号已存在", code: -2, status: 400 });
+    }
     return handleResult({ ctx, data: { error: sqlRes.error }, tips: sqlRes.msg, status: 500 });
   }
 
@@ -215,6 +219,10 @@ router.post("/user/update", (ctx, next) => handleToken(ctx, next, ["type"]), asy
   const sqlRes = await query(`update user_table ${sqlUpdate.text} where id = ?`, [...sqlUpdate.values, params.id]);
 
   if (sqlRes.state !== 1) {
+    // 并发账户更新也应依赖数据库唯一索引作为最终保障。.
+    if (isDuplicateEntryError(sqlRes.error)) {
+      return handleResult({ ctx, data: {}, tips: "账号已存在", status: 400 });
+    }
     return handleResult({ ctx, data: { error: sqlRes.error }, tips: sqlRes.msg, status: 500 });
   }
 

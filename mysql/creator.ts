@@ -18,6 +18,8 @@ namespace SqlCreator {
     length: number;
     /** 是否可以为`null` */
     isNull: boolean;
+    /** 是否为当前列生成唯一索引 */
+    isUnique?: boolean;
   }
 
   export interface Date extends Omit<Base, "length" | "isNull"> {
@@ -90,23 +92,39 @@ function sqlCreator(option: SqlCreator.Option) {
   const getComment = (val: string) => `COMMENT '${val}'`;
   const getName = (val: string) => `\`${val}\``;
   let key = "";
+  const uniqueKeys: Array<string> = [];
   const fnMap = {
     int(col: SqlCreator.Int) {
       if (col.isKey) {
         key = col.key;
       }
+      if (col.isUnique && !col.isKey) {
+        uniqueKeys.push(col.key);
+      }
       return `${getName(col.key)} int(${col.length}) ${col.isKey ? `${getNull(false)} AUTO_INCREMENT` : "NULL DEFAULT NULL"} ${getComment(col.remark)}`;
     },
     decimal(col: SqlCreator.Decimal) {
+      if (col.isUnique) {
+        uniqueKeys.push(col.key);
+      }
       return `${getName(col.key)} decimal(${col.length}, ${col.digits}) NULL DEFAULT NULL ${getComment(col.remark)}`;
     },
     json(col: SqlCreator.Json) {
+      if (col.isUnique) {
+        uniqueKeys.push(col.key);
+      }
       return `${getName(col.key)} json ${getNull(col.isNull)} ${getComment(col.remark)}`;
     },
     date(col: SqlCreator.Date) {
+      if (col.isUnique) {
+        uniqueKeys.push(col.key);
+      }
       return `${getName(col.key)} datetime(0) NULL DEFAULT NULL ${getComment(col.remark)}`;
     },
     varchar(col: SqlCreator.Varchar) {
+      if (col.isUnique) {
+        uniqueKeys.push(col.key);
+      }
       return `${getName(col.key)} varchar(${col.length}) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL ${getComment(col.remark)}`;
     },
   };
@@ -114,6 +132,9 @@ function sqlCreator(option: SqlCreator.Option) {
   if (key) {
     list.push(`PRIMARY KEY (\`${key}\`) USING BTREE`);
   }
+  uniqueKeys.forEach((uniqueKey) => {
+    list.push(`UNIQUE INDEX \`uniq_${uniqueKey}\`(\`${uniqueKey}\`) USING BTREE`);
+  });
   const context = `
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
