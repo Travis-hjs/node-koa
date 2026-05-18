@@ -1,13 +1,13 @@
 import { handleResult, handleToken } from "../middleware/index.js";
 import { arrayItemToHump, formatDate, sqlInsertFormat, sqlUpdateFormat } from "../utils/index.js";
-import { getSearchText, query } from "../utils/mysql.js";
+import { getSqlSearch, query } from "../utils/mysql.js";
 import router from "./main.js";
 
 // 获取所有列表
 router.get("/todo/list", handleToken, async (ctx) => {
   const auth = ctx.state.user;
 
-  const sqlSearch = getSearchText({
+  const sqlSearch = getSqlSearch({
     name: "todo_table",
     vague: {
       createUserId: auth.id,

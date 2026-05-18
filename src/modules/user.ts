@@ -1,7 +1,7 @@
 import type { App } from "../types/common.js";
 import type { User } from "../types/user.js";
 import { decrypt, encrypt, objectToHump } from "../utils/index.js";
-import { getSearchText, query } from "../utils/mysql.js";
+import { getSqlSearch, query } from "../utils/mysql.js";
 
 /**
  * 通过数据库查询用户数据
@@ -9,7 +9,7 @@ import { getSearchText, query } from "../utils/mysql.js";
  * @param keys 包含的字段，不传则查询所有字段
  */
 export async function getUserRow(params: Partial<User.Search>, keys?: Array<keyof User.Row>) {
-  const sql = getSearchText({
+  const sql = getSqlSearch({
     name: "user_table",
     keys,
     accurate: params,

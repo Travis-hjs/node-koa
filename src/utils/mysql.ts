@@ -79,7 +79,7 @@ export function query<T = any>(command: string, value?: Array<any>) {
  * 获取查询语句
  * @param params
  */
-export function getSearchText(params: Sql.Search) {
+export function getSqlSearch(params: Sql.Search) {
   const { name, dateRange, accurate, vague, keys = [], asc = [], desc = [] } = params;
   const size = Math.max(1, Math.floor(Number(params.size) || 10));
   const page = Math.max(1, Math.floor(Number(params.page) || 1));

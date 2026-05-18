@@ -10,7 +10,7 @@ import {
   sqlInsertFormat,
   sqlUpdateFormat,
 } from "../utils/index.js";
-import { getSearchText, query } from "../utils/mysql.js";
+import { getSqlSearch, query } from "../utils/mysql.js";
 import router from "./main.js";
 
 const oneDay = 86400000;
@@ -26,11 +26,11 @@ router.post("/register", async (ctx) => {
   const params = ctx.request.body as unknown as User.Row;
   // console.log("注册传参", params);
 
-  if (!/^[A-Z0-9]+$/i.test(params.account)) {
+  if (!params.account || !/^[A-Z0-9]+$/i.test(params.account)) {
     return handleResult({ ctx, data: {}, tips: "注册失败！账号必须由英文或数字组成", status: 400 });
   }
 
-  if (!/^[A-Z0-9]+$/i.test(params.password)) {
+  if (!params.password || !/^[A-Z0-9]+$/i.test(params.password)) {
     return handleResult({ ctx, data: {}, tips: "注册失败！密码必须由英文或数字组成", status: 400 });
   }
 
@@ -121,7 +121,7 @@ router.get("/logout", handleToken, async (ctx) => {
 });
 
 // 修改用户信息
-router.post("/user/update", (ctx, next) => handleToken(ctx, next, true), async (ctx) => {
+router.post("/user/update", (ctx, next) => handleToken(ctx, next, ["type"]), async (ctx) => {
   const auth = ctx.state.user;
   const params = ctx.request.body as unknown as User.Row;
   const update: Partial<User.Row> = {
@@ -133,7 +133,7 @@ router.post("/user/update", (ctx, next) => handleToken(ctx, next, true), async (
     return handleResult({ ctx, data: {}, tips: "缺少用户id", status: 400 });
   }
 
-  const self = params.id.toString() === auth.id.toString();
+  const self = params.id === auth.id;
 
   if (params.password !== undefined) {
     if (!/^[A-Z0-9]+$/i.test(params.password)) {
@@ -142,7 +142,7 @@ router.post("/user/update", (ctx, next) => handleToken(ctx, next, true), async (
     update.password = params.password;
   }
 
-  if (params.name) {
+  if (params.name !== undefined) {
     update.name = params.name;
   }
 
@@ -232,7 +232,7 @@ router.post("/user/update", (ctx, next) => handleToken(ctx, next, true), async (
 });
 
 // 删除用户
-router.post("/user/delete", (ctx, next) => handleToken(ctx, next, true), async (ctx) => {
+router.post("/user/delete", (ctx, next) => handleToken(ctx, next, ["type"]), async (ctx) => {
   const auth = ctx.state.user;
 
   /** 接收参数 */
@@ -267,6 +267,9 @@ router.post("/user/delete", (ctx, next) => handleToken(ctx, next, true), async (
 router.get("/user/info", (ctx, next) => handleToken(ctx, next, true), async (ctx) => {
   const auth = ctx.state.user;
 
+  delete auth.password;
+  delete auth.tokenVersion;
+
   handleResult({ ctx, data: auth, tips: "ok" });
 });
 
@@ -276,13 +279,13 @@ interface UserListParams extends User.Row, PageInfo {
 }
 
 // 获取用户列表
-router.get("/user/list", (ctx, next) => handleToken(ctx, next, true), async (ctx) => {
+router.get("/user/list", (ctx, next) => handleToken(ctx, next, ["type"]), async (ctx) => {
   const auth = ctx.state.user;
   const params = ctx.request.query as unknown as UserListParams;
 
   const page = params.currentPage || 1;
   const size = params.pageSize || 10;
-  const sqlSearch = getSearchText({
+  const sqlSearch = getSqlSearch({
     name: "user_table",
     vague: {
       name: params.name,
@@ -313,7 +316,13 @@ router.get("/user/list", (ctx, next) => handleToken(ctx, next, true), async (ctx
   if (sqlRes.state !== 1) {
     return handleResult({ ctx, status: 500, data: sqlRes.error, tips: sqlRes.msg });
   }
+
+  if (sqlCount.state !== 1) {
+    return handleResult({ ctx, status: 500, data: sqlCount.error, tips: sqlCount.msg });
+  }
+
   const list: Array<User.Row> = sqlRes.results.length > 0 ? arrayItemToHump(sqlRes.results) : [];
+
   list.forEach((row) => {
     if (auth.type !== 0) {
       row.password = "******";
@@ -322,14 +331,16 @@ router.get("/user/list", (ctx, next) => handleToken(ctx, next, true), async (ctx
     if (row.updateTime) {
       row.updateTime = formatDate(row.updateTime);
     }
+    row.tokenVersion = "******";
     // TODO: 这里可以为查询出来的数据做分组和类型映射
   });
+
   handleResult({
     ctx,
     data: {
       list,
-      pageSize: page,
-      currentPage: size,
+      pageSize: size,
+      currentPage: page,
       total: sqlCount.results[0].total || 0,
     },
   });
