@@ -1,6 +1,6 @@
 {
   "name": "typescript-koa-node-service",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "node.js + koa + typescript 构建服务端应用",
   "main": "index.js",
   "type": "module",
