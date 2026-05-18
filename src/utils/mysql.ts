@@ -76,7 +76,7 @@ export function query<T = any>(command: string, value?: Array<any>) {
 }
 
 /**
- * 重复条目错误
+ * 重复条目错误（写入/更新时会用到）
  * - 用于索引字段并行时，数据库校验用
  * - 前提是表字段中，设置了唯一索引
  */
