@@ -1,6 +1,7 @@
 import type { App } from "../types/common.js";
 import type { User } from "../types/user.js";
-import { decrypt, encrypt, objectToHump } from "../utils/index.js";
+import { decrypt, encrypt } from "../utils/crypto.js";
+import { objectToHump } from "../utils/index.js";
 import { getSqlSearch, query } from "../utils/mysql.js";
 
 /**

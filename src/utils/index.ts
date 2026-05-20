@@ -1,5 +1,5 @@
 import type { JavaScriptType, JavaScriptTypes } from "../types/common.js";
-import { createCipheriv, createDecipheriv, createHash, randomBytes, randomInt } from "node:crypto";
+import { randomInt } from "node:crypto";
 
 /**
  * 范围随机数
@@ -385,48 +385,6 @@ export function getLogText(text: string, color: LogColor) {
   return `\x1B[${map[color]}m${text}\x1B[0m`;
 }
 
-const ALGORITHM = "aes-256-gcm";
-
-const KEY = createHash("sha256").update("node-koa-ts").digest();
-
-/**
- * 加密
- * @param data
- */
-export function encrypt<T extends object>(data: T) {
-  const iv = randomBytes(16);
-  const cipher = createCipheriv(ALGORITHM, KEY, iv);
-
-  // 1. 加密数据转为 base64
-  let encrypted = cipher.update(JSON.stringify(data), "utf8", "base64");
-  encrypted += cipher.final("base64");
-
-  // 2. 获取 AuthTag 并转为 base64
-  const authTag = cipher.getAuthTag().toString("base64");
-
-  // 3. 将 IV 也转为 base64
-  const ivBase64 = iv.toString("base64");
-
-  // 使用 . 连接，避免 base64 内部可能出现的字符冲突
-  return `${ivBase64}.${authTag}.${encrypted}`;
-}
-
-/**
- * 解密
- * @param cipherText
- */
-export function decrypt<T = any>(cipherText: string): T {
-  const [ivBS64, authTagBS64, encryptedBS64] = cipherText.split(".");
-
-  const decipher = createDecipheriv(ALGORITHM, KEY, Buffer.from(ivBS64, "base64"));
-  decipher.setAuthTag(Buffer.from(authTagBS64, "base64"));
-
-  let decrypted = decipher.update(encryptedBS64, "base64", "utf8");
-  decrypted += decipher.final("utf8");
-
-  return JSON.parse(decrypted);
-}
-
 /**
  * 获取随机字符串
  * @param length 指定长度
@@ -435,7 +393,6 @@ export function getRandomText(length = 10) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
 
-  // 使用 randomInt 保证随机性分布均匀
   for (let i = 0; i < length; i++) {
     const randomIndex = randomInt(0, chars.length);
     result += chars.charAt(randomIndex);
