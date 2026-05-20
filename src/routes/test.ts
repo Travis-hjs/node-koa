@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { handleResult } from "../middleware/index.js";
 import { config } from "../utils/config.js";
+import { decryptRsa } from "../utils/crypto.js";
 import { formatDate, isType, replaceText } from "../utils/index.js";
 import request from "../utils/request.js";
 import router from "./main.js";
@@ -74,13 +75,20 @@ router.get("/getData", (ctx) => {
 });
 
 router.post("/postData", (ctx) => {
-  const params = ctx.request.body;
-
+  const params = ctx.request.body as unknown as { encode: string };
   // console.log("/postData", params);
 
-  const result = {
-    data: params,
-  };
+  if (params.encode) {
+    // 解密参数
+    const res = decryptRsa(params.encode);
+    if (res.error) {
+      return handleResult({ ctx, tips: "解密失败", data: res.error, status: 400 });
+    }
+    console.log("解密结果 >>", res.data);
+    params.encode = res.data;
+  }
+
+  const result = params.encode ? { value: params.encode } : params;
 
   handleResult({
     ctx,

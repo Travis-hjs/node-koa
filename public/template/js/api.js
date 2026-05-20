@@ -2,8 +2,7 @@
 /// <reference path="./index.d.ts" />
 import { checkType, message } from "./utils.js";
 
-/** 本地的IP地址+端口；端口跟后台设置的一致 */
-const BASE_URL = location.host ? location.origin : "http://192.168.0.24:1995";
+const BASE_URL = location.origin.includes("http://localhost") ? "http://192.168.65.157:2019" : location.origin;
 
 /** 用户缓存模块 */
 export const user = {
@@ -151,6 +150,10 @@ export function request(method, url, data = {}, option = {}) {
 }
 
 class ModuleApi {
+  getConfig() {
+    return request("GET", "/config");
+  }
+
   /**
    * 测试`get`请求
    * @param {string|number} id

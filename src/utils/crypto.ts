@@ -113,7 +113,8 @@ export function decryptRsa(value: string) {
     const buffer = privateDecrypt(
       {
         key: rsaKeys.private,
-        padding: constants.RSA_PKCS1_PADDING,
+        padding: constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
       },
       Buffer.from(value, "base64"),
     );

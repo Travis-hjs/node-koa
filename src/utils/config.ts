@@ -24,6 +24,7 @@ export const config = (function () {
     // 本地开发
     `${devDomain}:5050`,
     `${devDomain}:6060`,
+    "http://localhost:2019",
   ];
 
   // /** 服务器公网`ip` */
