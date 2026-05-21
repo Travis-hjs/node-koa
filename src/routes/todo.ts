@@ -9,7 +9,7 @@ router.get("/todo/list", handleToken, async (ctx) => {
 
   const sqlSearch = getSqlSearch({
     name: "todo_table",
-    vague: {
+    accurate: {
       createUserId: auth.id,
     },
     size: 999,

@@ -25,13 +25,12 @@ app.use(serve(path.resolve(__dirname, "../public/upload")));
 // 先统一设置请求配置 => 跨域，请求头信息...
 app.use(async (ctx: App.Ctx, next) => {
   console.log("--------------------------");
-  console.log(getLogText(`服务器时间: ${formatDate()}`, "yellow"), ctx.request.path);
+  console.log(getLogText(`服务器时间: ${formatDate()}`, "yellow"), getLogText(ctx.request.path, "cyan"));
   console.count("request count");
-
-  const { referer } = ctx.headers;
-
-  const domain = getDomain(referer || "");
-  // console.log("referer domain >>", domain);
+  const { origin, referer } = ctx.headers;
+  // console.log("origin, referer >>", origin, referer);
+  const domain = getDomain(origin || referer || "");
+  // console.log("request domain >>", domain);
   // 如果是 允许访问的域名源 ，则给它设置跨域访问和正常的请求头配置
   if (domain && config.origins.includes(domain)) {
     ctx.set({
@@ -39,7 +38,7 @@ app.use(async (ctx: App.Ctx, next) => {
       // "Access-Control-Allow-Origin": "*", // 开启跨域，一般用于调试环境，正式环境设置指定 ip 或者指定域名
       // "Content-Type": "application/json",
       // "Access-Control-Allow-Credentials": "true",
-      // "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE",
+      "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE",
       "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
       // "X-Powered-By": "3.2.1",
       // "Content-Security-Policy": `script-src "self"` // 只允许页面`script`引入自身域名的地址
@@ -49,6 +48,7 @@ app.use(async (ctx: App.Ctx, next) => {
   // console.log(ctx.request.method);
   if (ctx.request.method === "OPTIONS") {
     ctx.response.status = 200;
+    return;
   }
 
   // const hasPath = router.stack.some(item => item.path == path);

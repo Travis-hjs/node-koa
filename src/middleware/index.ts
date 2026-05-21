@@ -56,15 +56,30 @@ export async function handleToken(ctx: App.Ctx, next: Next, keys?: boolean | Arr
  * @param next
  */
 export async function handleDomain(ctx: App.Ctx, next: Next) {
-  const { referer } = ctx.headers;
-  // console.log(referer, origin);
+  const { origin, referer } = ctx.headers;
+  // console.log(origin, referer);
 
-  const domain = getDomain(referer || "");
-
+  const domain = getDomain(origin || referer || "");
   const list = config.origins.concat([`http://${config.ip}:${config.port}`]);
 
-  // 严格判断当前请求域名是否在白名单内
-  if (domain && list.includes(domain)) {
-    await next();
+  if (!domain) {
+    return handleResult({
+      ctx,
+      status: 404,
+      tips: "error request",
+      data: {},
+    });
   }
+
+  // 严格判断当前请求域名是否在白名单内
+  if (!list.includes(domain)) {
+    return handleResult({
+      ctx,
+      status: 403,
+      tips: "forbidden: origin is not allowed",
+      data: {},
+    });
+  }
+
+  await next();
 }
