@@ -73,8 +73,10 @@ router.post("/todo/edit", handleToken, async (ctx) => {
   });
 
   // 修改列表
-  const sqlRes = await query(`update todo_table ${sqlUpdate.text} where id = ?`, [...sqlUpdate.values, params.id]);
-  // console.log("修改列表", sqlRes);
+  const sqlRes = await query(
+    `update todo_table ${sqlUpdate.text} where id = ? and create_user_id = ?`,
+    [...sqlUpdate.values, params.id, auth.id],
+  );
 
   if (sqlRes.state !== 1) {
     return handleResult({ ctx, status: 500, data: { error: sqlRes.error }, tips: sqlRes.msg });
@@ -89,12 +91,12 @@ router.post("/todo/edit", handleToken, async (ctx) => {
 
 // 删除列表
 router.post("/todo/delete", handleToken, async (ctx) => {
+  const auth = ctx.state.user;
   /** 接收参数 */
   const params = ctx.request.body as unknown as { id: number };
 
   // 从数据库中删除
-  // const sqlRes = await query(`delete from todo_table where id='${params.id}' and user_id='${state.info.id}'`)
-  const sqlRes = await query("delete from todo_table where id = ?", [params.id]);
+  const sqlRes = await query("delete from todo_table where id = ? and create_user_id = ?", [params.id, auth.id]);
   // const sqlRes = await query(`delete from todo_table where id in(${params.ids.toString()})`) // 批量删除
 
   // console.log("从数据库中删除", sqlRes);

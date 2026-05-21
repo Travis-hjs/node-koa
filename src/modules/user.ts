@@ -1,7 +1,7 @@
 import type { App } from "../types/common.js";
 import type { User } from "../types/user.js";
 import { decrypt, encrypt } from "../utils/crypto.js";
-import { objectToHump } from "../utils/index.js";
+import { getLogText, objectToHump } from "../utils/index.js";
 import { getSqlSearch, query } from "../utils/mysql.js";
 
 /**
@@ -84,7 +84,9 @@ export async function verifyToken(ctx: App.Ctx, token: string, keys?: boolean | 
     ctx.state.user = user.data;
   }
   catch (error) {
-    return `验证 token 失败：${error}`;
+    const tips = "验证 token 失败：";
+    console.log(getLogText(tips, "red"), error);
+    return `${tips}${error}`;
   }
   return true;
 }
