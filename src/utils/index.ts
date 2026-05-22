@@ -394,7 +394,7 @@ export function getRandomText(length = 10) {
   let result = "";
 
   for (let i = 0; i < length; i++) {
-    const randomIndex = randomInt(0, chars.length - 1);
+    const randomIndex = randomInt(0, chars.length);
     result += chars.charAt(randomIndex);
   }
   return result;

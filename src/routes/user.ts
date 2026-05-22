@@ -116,7 +116,7 @@ router.post("/login", async (ctx) => {
 
 // 退出登录
 router.get("/logout", handleAuth, async (ctx) => {
-  const text = sqlUpdateFormat({ tokenVersion: getRandomText() }, true);
+  const text = sqlUpdateFormat({ tokenVersion: "logout" }, true);
   const updateRes = await query(`update user_table ${text.text} where id = ?`, [...text.values, ctx.state.user.id]);
   if (updateRes.state !== 1) {
     return handleResult({ ctx, data: { error: updateRes.error }, tips: updateRes.msg, status: 500 });

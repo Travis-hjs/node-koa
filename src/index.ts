@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import Koa from "koa";
 import { koaBody } from "koa-body";
 import serve from "koa-static";
+import { handleResult } from "./middleware/index.js";
 import router from "./routes/main.js";
 import { config } from "./utils/config.js";
 import { formatDate, getDomain, getLogText } from "./utils/index.js";
@@ -42,14 +43,16 @@ app.use(async (ctx: App.Ctx, next) => {
       "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
       // "X-Powered-By": "3.2.1",
       // "Content-Security-Policy": `script-src "self"` // 只允许页面`script`引入自身域名的地址
+      "Vary": "Origin",
     });
+    // ctx.vary("Origin");
   }
 
-  // console.log(ctx.request.method);
-  if (ctx.request.method === "OPTIONS") {
-    ctx.response.status = 200;
-    return;
-  }
+  // console.log(ctx.request.method); // 下面 router.allowedMethods() 已经实现该操作
+  // if (ctx.request.method === "OPTIONS") {
+  //   ctx.response.status = 200;
+  //   return;
+  // }
 
   // const hasPath = router.stack.some(item => item.path == path);
   // // 判断是否 404
@@ -61,10 +64,12 @@ app.use(async (ctx: App.Ctx, next) => {
     await next();
   }
   catch (err) {
-    ctx.response.status = err.statusCode || err.status || 500;
-    ctx.response.body = {
-      message: err.message || `${err}`,
-    };
+    handleResult({
+      ctx,
+      data: null,
+      tips: err.message || `${err}`,
+      status: err.statusCode || err.status || 500,
+    });
   }
 });
 
