@@ -1,10 +1,10 @@
-import { handleResult, handleToken } from "../middleware/index.js";
+import { handleResult, handleAuth } from "../middleware/index.js";
 import { arrayItemToHump, formatDate, sqlInsertFormat, sqlUpdateFormat } from "../utils/index.js";
 import { getSqlSearch, query } from "../utils/mysql.js";
 import router from "./main.js";
 
 // 获取所有列表
-router.get("/todo/list", handleToken, async (ctx) => {
+router.get("/todo/list", handleAuth, async (ctx) => {
   const auth = ctx.state.user;
 
   const sqlSearch = getSqlSearch({
@@ -26,7 +26,7 @@ router.get("/todo/list", handleToken, async (ctx) => {
 });
 
 // 添加列表
-router.post("/todo/add", handleToken, async (ctx) => {
+router.post("/todo/add", handleAuth, async (ctx) => {
   const auth = ctx.state.user;
   /** 接收参数 */
   const params = ctx.request.body as any;
@@ -53,7 +53,7 @@ router.post("/todo/add", handleToken, async (ctx) => {
 });
 
 // 修改列表
-router.post("/todo/edit", handleToken, async (ctx) => {
+router.post("/todo/edit", handleAuth, async (ctx) => {
   const auth = ctx.state.user;
   /** 接收参数 */
   const params = ctx.request.body as unknown as { id: number; content: string };
@@ -90,7 +90,7 @@ router.post("/todo/edit", handleToken, async (ctx) => {
 });
 
 // 删除列表
-router.post("/todo/delete", handleToken, async (ctx) => {
+router.post("/todo/delete", handleAuth, async (ctx) => {
   const auth = ctx.state.user;
   /** 接收参数 */
   const params = ctx.request.body as unknown as { id: number };

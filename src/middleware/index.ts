@@ -26,7 +26,7 @@ export function handleResult<T = any>(params: HandleResult<T>) {
  * @param keys 指定从数据库获取的用户字段，传`true`则获取完整字段，不传默认只获取`tokenVersion`用于 token 验证
  * - 需要`token`验证的接口时使用
  */
-export async function handleToken(ctx: App.Ctx, next: Next, keys?: boolean | Array<keyof User.Row>) {
+export async function handleAuth(ctx: App.Ctx, next: Next, keys?: boolean | Array<keyof User.Row>) {
   const value = await verifyToken(ctx, ctx.header.authorization, keys);
 
   if (typeof value === "object") {

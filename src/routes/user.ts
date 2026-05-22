@@ -1,6 +1,6 @@
 import type { PageInfo } from "../types/common.js";
 import type { User } from "../types/user.js";
-import { handleResult, handleToken } from "../middleware/index.js";
+import { handleAuth, handleResult } from "../middleware/index.js";
 import { generateToken, getUserRow } from "../modules/user.js";
 import {
   arrayItemToHump,
@@ -115,17 +115,17 @@ router.post("/login", async (ctx) => {
 });
 
 // 退出登录
-router.get("/logout", handleToken, async (ctx) => {
-  const text = sqlUpdateFormat({ tokenVersion: "" }, true);
-  const res = await query(`update user_table ${text.text} where id = ?`, [...text.values, ctx.state.user.id]);
-  if (res.state !== 1) {
-    return handleResult({ ctx, data: { error: res.error }, tips: res.msg, status: 500 });
+router.get("/logout", handleAuth, async (ctx) => {
+  const text = sqlUpdateFormat({ tokenVersion: getRandomText() }, true);
+  const updateRes = await query(`update user_table ${text.text} where id = ?`, [...text.values, ctx.state.user.id]);
+  if (updateRes.state !== 1) {
+    return handleResult({ ctx, data: { error: updateRes.error }, tips: updateRes.msg, status: 500 });
   }
   handleResult({ ctx, data: {}, tips: "退出登录成功" });
 });
 
 // 修改用户信息
-router.post("/user/update", (ctx, next) => handleToken(ctx, next, ["type"]), async (ctx) => {
+router.post("/user/update", (ctx, next) => handleAuth(ctx, next, ["type"]), async (ctx) => {
   const auth = ctx.state.user;
   const params = ctx.request.body as unknown as User.Row;
   const update: Partial<User.Row> = {
@@ -240,7 +240,7 @@ router.post("/user/update", (ctx, next) => handleToken(ctx, next, ["type"]), asy
 });
 
 // 删除用户
-router.post("/user/delete", (ctx, next) => handleToken(ctx, next, ["type"]), async (ctx) => {
+router.post("/user/delete", (ctx, next) => handleAuth(ctx, next, ["type"]), async (ctx) => {
   const auth = ctx.state.user;
 
   /** 接收参数 */
@@ -272,7 +272,7 @@ router.post("/user/delete", (ctx, next) => handleToken(ctx, next, ["type"]), asy
 });
 
 // 获取用户信息
-router.get("/user/info", (ctx, next) => handleToken(ctx, next, true), async (ctx) => {
+router.get("/user/info", (ctx, next) => handleAuth(ctx, next, true), async (ctx) => {
   const auth = ctx.state.user;
 
   delete auth.password;
@@ -287,7 +287,7 @@ interface UserListParams extends User.Row, PageInfo {
 }
 
 // 获取用户列表
-router.get("/user/list", (ctx, next) => handleToken(ctx, next, ["type"]), async (ctx) => {
+router.get("/user/list", (ctx, next) => handleAuth(ctx, next, ["type"]), async (ctx) => {
   const auth = ctx.state.user;
   const params = ctx.request.query as unknown as UserListParams;
 
@@ -333,13 +333,13 @@ router.get("/user/list", (ctx, next) => handleToken(ctx, next, ["type"]), async 
 
   list.forEach((row) => {
     if (auth.type !== 0) {
-      row.password = "******";
+      row.password = undefined;
     }
     row.createTime = formatDate(row.createTime);
     if (row.updateTime) {
       row.updateTime = formatDate(row.updateTime);
     }
-    row.tokenVersion = "******";
+    row.tokenVersion = undefined;
     // TODO: 这里可以为查询出来的数据做分组和类型映射
   });
 
