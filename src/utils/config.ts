@@ -64,8 +64,6 @@ export const config = (function () {
         password: environment === "dev" ? "DRsXT5ZJ6Oi55LPQ" : "服务器密码",
         /** 数据库名 */
         database: "node_ts",
-        /** 链接上限次数 */
-        maxLimit: 10,
       };
     },
     /**
