@@ -32,13 +32,13 @@ const pool = createPool({
  * @param value 对应的值
  */
 export function query<T = any>(command: string, value?: Array<any>) {
-  const result: SqlResult = {
+  const result = {
     state: 0,
     results: undefined,
     fields: [],
     error: undefined,
     msg: "",
-  };
+  } as unknown as SqlResult<T>;
   return new Promise<SqlResult<T>>((resolve) => {
     pool.getConnection((error: any, connection) => {
       if (error) {
@@ -59,7 +59,7 @@ export function query<T = any>(command: string, value?: Array<any>) {
             result.state = 1;
             result.msg = "ok";
             result.results = results;
-            result.fields = fields;
+            result.fields = fields as any;
             resolve(result);
           }
         };

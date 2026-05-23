@@ -105,7 +105,7 @@ router.post("/login", async (ctx) => {
   const userRow = user.data;
 
   // 最后判断密码是否正确
-  if (userRow.password.toString() !== params.password.toString()) {
+  if (userRow.password!.toString() !== params.password.toString()) {
     return handleResult({ ctx, data: {}, tips: "密码不正确", code: 400 });
   }
 
@@ -275,8 +275,8 @@ router.post("/user/delete", (ctx, next) => handleAuth(ctx, next, ["type"]), asyn
 router.get("/user/info", (ctx, next) => handleAuth(ctx, next, true), async (ctx) => {
   const auth = ctx.state.user;
 
-  delete auth.password;
-  delete auth.tokenVersion;
+  auth.password = undefined;
+  auth.tokenVersion = undefined as any;
 
   handleResult({ ctx, data: auth, tips: "ok" });
 });
@@ -296,13 +296,13 @@ router.get("/user/list", (ctx, next) => handleAuth(ctx, next, ["type"]), async (
   const sqlSearch = getSqlSearch({
     name: "user_table",
     vague: {
-      name: params.name,
-      account: params.account,
+      name: params.name!,
+      account: params.account!,
     },
     accurate: {
       id: params.id,
-      type: params.type,
-      groupId: params.groupId,
+      type: params.type!,
+      groupId: params.groupId!,
     },
     dateRange: {
       key: "createTime",
@@ -339,7 +339,7 @@ router.get("/user/list", (ctx, next) => handleAuth(ctx, next, ["type"]), async (
     if (row.updateTime) {
       row.updateTime = formatDate(row.updateTime);
     }
-    row.tokenVersion = undefined;
+    row.tokenVersion = undefined as any;
     // TODO: 这里可以为查询出来的数据做分组和类型映射
   });
 

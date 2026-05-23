@@ -81,19 +81,18 @@ function getRsaKeys() {
     return generateRsaKey();
   }
 
+  const res = { public: "", private: "" };
+
   try {
     const content = readFileSync(rsaFilePath, "utf8");
-    const keys = JSON.parse(content) as {
-      public?: string;
-      private?: string;
-    };
+    const keys = JSON.parse(content) as typeof res;
 
     if (keys.public && keys.private) {
-      return {
-        public: keys.public,
-        private: keys.private,
-      };
+      res.private = keys.private;
+      res.public = keys.public;
     }
+
+    return res;
   }
   catch (error) {
     console.log("rsa-keys.json 为空或格式错误，已经重新生成", error);

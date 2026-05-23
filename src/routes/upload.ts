@@ -10,7 +10,7 @@ import router from "./main.js";
 // learn: https://blog.csdn.net/qq_24134853/article/details/81745104
 // [图片类型参考](https://developer.mozilla.org/zh-CN/docs/Web/Media/Formats/Image_types#webp_image)
 router.post("/uploadFile", async (ctx, next) => {
-  const file: UploadFile = ctx.request.files[config.uploadName] as any;
+  const file: UploadFile = ctx.request.files![config.uploadName] as any;
   // console.log("file >>", file);
   const fileName = file.originalFilename;
   // console.log("fileName >>", fileName);
@@ -22,7 +22,7 @@ router.post("/uploadFile", async (ctx, next) => {
 
   // 创建可读流
   const render = fs.createReadStream(file.filepath);
-  const filePath = path.join(folderPath, fileName);
+  const filePath = path.join(folderPath, fileName!);
   const fileDir = path.join(folderPath);
 
   if (!fs.existsSync(fileDir)) {

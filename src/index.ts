@@ -63,7 +63,7 @@ app.use(async (ctx: App.Ctx, next) => {
   try {
     await next();
   }
-  catch (err) {
+  catch (err: any) {
     handleResult({
       ctx,
       data: null,

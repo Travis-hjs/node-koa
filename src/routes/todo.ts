@@ -1,4 +1,4 @@
-import { handleResult, handleAuth } from "../middleware/index.js";
+import { handleAuth, handleResult } from "../middleware/index.js";
 import { arrayItemToHump, formatDate, sqlInsertFormat, sqlUpdateFormat } from "../utils/index.js";
 import { getSqlSearch, query } from "../utils/mysql.js";
 import router from "./main.js";

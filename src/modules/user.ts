@@ -20,7 +20,7 @@ export async function getUserRow(params: Partial<User.Search>, keys?: Array<keyo
   const search = await query(sql.default, sql.values);
   if (search.state === 1) {
     const list = search.results || [];
-    result.data = list[0] ? objectToHump<User.Row>(list[0]) : null;
+    result.data = list[0] ? objectToHump<User.Row>(list[0]) : (null as any);
     result.list = list.map((el: any) => objectToHump<User.Row>(el));
     result.tips = result.data ? "ok" : "用户不存在!";
   }
@@ -51,7 +51,7 @@ export function generateToken(userId: number, version: string, expireTime?: numb
  * @param token
  * @param keys 指定从数据库获取的用户字段，传`true`则获取完整字段，不传默认只获取`tokenVersion`用于 token 验证
  */
-export async function verifyToken(ctx: App.Ctx, token: string, keys?: boolean | Array<keyof User.Row>) {
+export async function verifyToken(ctx: App.Ctx, token?: string, keys?: boolean | Array<keyof User.Row>) {
   if (!token) {
     return "token 不存在";
   }
@@ -70,7 +70,7 @@ export async function verifyToken(ctx: App.Ctx, token: string, keys?: boolean | 
         userKeys.push("tokenVersion"); // 必须要包含该字段
       }
     }
-    const user = await getUserRow({ id: info.id }, userKeys);
+    const user = await getUserRow({ id: info.id }, userKeys!);
     if (user.error) {
       return user;
     }
