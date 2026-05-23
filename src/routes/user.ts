@@ -296,13 +296,13 @@ router.get("/user/list", (ctx, next) => handleAuth(ctx, next, ["type"]), async (
   const sqlSearch = getSqlSearch({
     name: "user_table",
     vague: {
-      name: params.name!,
-      account: params.account!,
+      name: params.name,
+      account: params.account,
     },
     accurate: {
       id: params.id,
-      type: params.type!,
-      groupId: params.groupId!,
+      type: params.type,
+      groupId: params.groupId,
     },
     dateRange: {
       key: "createTime",

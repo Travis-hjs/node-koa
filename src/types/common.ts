@@ -132,12 +132,12 @@ export namespace Sql {
      * 模糊查询对象
      * - 内部会将驼峰转下划线
      */
-    vague?: Record<string, string | number>;
+    vague?: Record<string, string | number | undefined | null>;
     /**
      * 精确查询对象
      * - 内部会将驼峰转下划线
      */
-    accurate?: Record<string, string | number>;
+    accurate?: Record<string, string | number | undefined | null>;
     /**
      * 升序，支持多个字段
      * - 从小到大
