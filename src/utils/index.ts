@@ -349,42 +349,6 @@ export function jsonToPath(params: { [key: string]: number | string | boolean })
   return result.slice(1);
 }
 
-type LogColor = "red"
-  | "red-light"
-  | "green"
-  | "green-light"
-  | "yellow"
-  | "yellow-light"
-  | "blue"
-  | "blue-light"
-  | "purple"
-  | "purple-light"
-  | "cyan"
-  | "cyan-light";
-
-/**
- * 控制台打印颜色文字
- * @param text
- * @param color
- */
-export function getLogText(text: string, color: LogColor) {
-  const map = {
-    "red": 31,
-    "red-light": 41,
-    "green": 92,
-    "green-light": 42,
-    "yellow": 33,
-    "yellow-light": 40,
-    "blue": 36,
-    "blue-light": 44,
-    "purple": 95,
-    "purple-light": 45,
-    "cyan": 96,
-    "cyan-light": 46,
-  };
-  return `\x1B[${map[color]}m${text}\x1B[0m`;
-}
-
 /**
  * 获取随机字符串
  * @param length 指定长度

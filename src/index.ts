@@ -7,7 +7,8 @@ import serve from "koa-static";
 import { handleResult } from "./middleware/index.js";
 import router from "./routes/main.js";
 import { config } from "./utils/config.js";
-import { formatDate, getDomain, getLogText } from "./utils/index.js";
+import { formatDate, getDomain } from "./utils/index.js";
+import { getLogText, trackLog } from "./utils/log.js";
 import "./routes/test.js"; // 基础测试模块
 import "./routes/user.js"; // 用户模块
 import "./routes/upload.js"; // 上传文件模块
@@ -70,6 +71,7 @@ app.use(async (ctx: App.Ctx, next) => {
       tips: err.message || `${err}`,
       status: err.statusCode || err.status || 500,
     });
+    trackLog("error", ctx.request.path, err);
   }
 });
 
@@ -93,8 +95,7 @@ app.use(router.allowedMethods());
 // });
 
 app.on("error", (err, ctx) => {
-  const text = getLogText("server error !!!!!!!!!!!!!", "red-light");
-  console.log(text, err, ctx);
+  trackLog("error", "server error !!!!!!!!!!!!!", err, ctx);
 });
 
 app.listen(config.port, () => {

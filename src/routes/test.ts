@@ -63,6 +63,7 @@ router.get("/getData", (ctx) => {
   const params = ctx.query || ctx.querystring;
 
   console.log("/getData", params);
+  (params as any).push("1");
 
   handleResult({
     ctx,

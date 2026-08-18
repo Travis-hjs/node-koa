@@ -98,5 +98,12 @@ export const config = (function () {
     getRoutePath(path: string) {
       return this.apiPrefix + path;
     },
+    /**
+     * 日志打印文件目录
+     * - 可以为绝对路径，例如：`/log/list`
+     */
+    get logFilePath() {
+      return "./log/list";
+    },
   };
 })();
